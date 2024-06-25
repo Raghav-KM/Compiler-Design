@@ -1,4 +1,2 @@
-DBG 1invalid;
-DBG 2021;
-DBG 3;
-random text
+dbg 10;
+let variable_name = 10;

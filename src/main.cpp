@@ -1,4 +1,5 @@
 #include "./headers/lexer.h"
+#include "./headers/parser.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -30,6 +31,15 @@ int main(int argc, char *argv[]) {
   Lexical_Analyzer analyzer;
   analyzer.set_input_stream(input_buffer.str());
   analyzer.print_token_stream();
+
+  Parser parser(analyzer);
+
+  if (parser.parse_program()) {
+    cout << "Program Syntax Correct" << endl;
+  } else {
+    cout << "Program Syntax Incorrect" << endl;
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }

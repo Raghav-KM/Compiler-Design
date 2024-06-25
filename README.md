@@ -2,6 +2,8 @@
 g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 
 **TODO : Add regex to check the type tokens**
+**TODO : Add Support for negative integers**
+**TODO : Add Test-CASE support**
 
 
 # 22-06-2024
@@ -10,3 +12,10 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 24-06-2024
 - TOKENIZE the input string
 - Create MakeFile
+
+# 25-06-2024
+- Store value of a token
+- Add let,'=' tokens
+- Begin with parser
+- Begin with some basic-grammar construction
+
