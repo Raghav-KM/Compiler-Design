@@ -8,15 +8,19 @@ Token::Token(TOKEN_TYPES type) {
   token_type = type;
   value = 0;
 }
-Token::Token(TOKEN_TYPES type, int value) {
+Token::Token(TOKEN_TYPES type, int value, string body) {
   token_type = type;
   this->value = value;
+  this->body = body;
 }
 
 void Token::set_type(TOKEN_TYPES type) { token_type = type; }
 TOKEN_TYPES Token::get_type() { return token_type; }
 void Token::set_value(int val) { this->value = val; }
 int Token::get_value() { return value; }
+
+void Token::set_body(string body) { this->body = body; }
+string Token::get_body() { return body; }
 
 //--- Lexical Analyzer ---//
 
@@ -94,7 +98,7 @@ void Lexical_Analyzer::analyse() {
           token_stream.push_back(Token(DEBUG));
           break;
         case FOUND_INT_LIT:
-          token_stream.push_back(Token(INT_LIT, stoi(buffer)));
+          token_stream.push_back(Token(INT_LIT, stoi(buffer), ""));
           break;
         case FOUND_LET:
           token_stream.push_back(Token(LET));
@@ -103,7 +107,7 @@ void Lexical_Analyzer::analyse() {
           token_stream.push_back(Token(EQUALS));
           break;
         case FOUND_IDENTIFIER:
-          token_stream.push_back(Token(IDENTIFIER));
+          token_stream.push_back(Token(IDENTIFIER, 0, buffer));
           break;
         default:
           throw std::runtime_error("Error: Invalid token encountered");
@@ -138,13 +142,7 @@ void Lexical_Analyzer::print_token_stream() {
   analyse();
   cout << "\n";
   for (auto token : token_stream) {
-    if (token.get_type() == INT_LIT) {
-      cout << "[" << get_token_name(token.get_type()) << ","
-           << token.get_value() << "] ";
-    } else {
-
-      cout << "[" << get_token_name(token.get_type()) << "] ";
-    }
+    cout << "[" << get_token_name(token.get_type()) << "] ";
   }
   cout << "\n";
 }

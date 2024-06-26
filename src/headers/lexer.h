@@ -33,15 +33,18 @@ class Token {
 private:
   TOKEN_TYPES token_type;
   int value;
+  string body;
 
 public:
   Token(TOKEN_TYPES type);
-  Token(TOKEN_TYPES type, int value);
+  Token(TOKEN_TYPES type, int value, string body);
 
   void set_type(TOKEN_TYPES type);
   TOKEN_TYPES get_type();
   void set_value(int val);
   int get_value();
+  void set_body(string body);
+  string get_body();
 };
 
 class Lexical_Analyzer {

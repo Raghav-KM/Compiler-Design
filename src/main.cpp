@@ -34,8 +34,9 @@ int main(int argc, char *argv[]) {
 
   Parser parser(analyzer);
 
-  if (parser.parse_program()) {
+  if (NodeProgram *program = parser.parse_program()) {
     cout << "Program Syntax Correct" << endl;
+    cout << NodeProgram::print_program(program) << endl;
   } else {
     cout << "Program Syntax Incorrect" << endl;
     return EXIT_FAILURE;

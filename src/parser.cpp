@@ -19,66 +19,144 @@ Token Parser::look_ahead() {
 
 void Parser::consume() { ptr++; }
 
-bool Parser::parse_program() {
+NodeProgram *Parser::parse_program() {
+  NodeProgram *program = new NodeProgram();
+
   while (look_ahead().get_type() != END_FILE) {
-    if (!parse_statement())
-      return false;
+    NodeStatement *stmt = parse_statement();
+    if (!stmt)
+      return NULL;
+    program->stmts.push_back(stmt);
   }
-  return true;
+  return program;
 }
 
-bool Parser::parse_statement() {
-  if (token_stream[ptr].get_type() == DEBUG) {
-    consume();
-    return parse_debug();
-  } else if (token_stream[ptr].get_type() == LET) {
-    consume();
-    return parse_let();
-  } else {
-    return false;
+NodeStatement *Parser::parse_statement() {
+
+  if (look_ahead().get_type() == DEBUG) {
+    NodeDebug *debug = parse_debug();
+    if (!debug) {
+      return NULL;
+    }
+    return new NodeStatement(debug);
+  } else if (look_ahead().get_type() == LET) {
+    NodeLet *let = parse_let();
+    if (!let) {
+      return NULL;
+    }
+    return new NodeStatement(let);
   }
+  return NULL;
 }
 
-bool Parser::parse_debug() {
+NodeDebug *Parser::parse_debug() {
+  consume();
   if (look_ahead().get_type() == INT_LIT) {
-    consume();
+    NodeINT *INT = parse_int();
+    if (!INT) {
+      return NULL;
+    }
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
-      return true;
+      return new NodeDebug(INT);
     } else {
-      cerr << "Error: ';' Missing" << endl;
-      return false;
+      return NULL;
     }
-  } else {
-    cerr << "Error: Invalid DEBUG Statement" << endl;
-    return false;
   }
+  return NULL;
 }
 
-bool Parser::parse_let() {
+NodeLet *Parser::parse_let() {
+  consume();
   if (look_ahead().get_type() == IDENTIFIER) {
-    consume();
+    NodeIdentifier *identifier = parse_identifier();
+    if (!identifier)
+      return NULL;
     if (look_ahead().get_type() == EQUALS) {
       consume();
       if (look_ahead().get_type() == INT_LIT) {
-        consume();
+        NodeINT *INT = parse_int();
+        if (!INT) {
+          return NULL;
+        }
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
-          return true;
+          return new NodeLet(INT, identifier);
         } else {
-          cerr << "Error: ';' Missing" << endl;
-          return false;
+          return NULL;
         }
-      } else {
-        cerr << "Error: Invalid LET Statement" << endl;
-        return false;
       }
     } else {
-      cerr << "Error: Invalid LET Statement" << endl;
-      return false;
+      return NULL;
     }
-  } else {
-    cerr << "Error: Invalid LET Statement" << endl;
-    return false;
   }
+  return NULL;
+}
+
+NodeINT *Parser::parse_int() {
+  NodeINT *INT = new NodeINT(look_ahead().get_value());
+  consume();
+  return INT;
+}
+NodeIdentifier *Parser::parse_identifier() {
+  NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
+  consume();
+  return identifier;
+}
+
+// --- AST-Node --- //
+
+NodeStatement::NodeStatement(NodeDebug *debug) {
+  this->let = NULL;
+  this->debug = debug;
+}
+NodeStatement::NodeStatement(NodeLet *let) {
+  this->let = let;
+  this->debug = NULL;
+}
+
+NodeDebug::NodeDebug(NodeINT *INT) { this->INT = INT; }
+
+NodeLet::NodeLet(NodeINT *INT, NodeIdentifier *identifier) {
+  this->INT = INT;
+  this->identifier = identifier;
+}
+NodeIdentifier::NodeIdentifier(string value) { name = value; }
+NodeINT::NodeINT(int value) { this->value = value; }
+
+string NodeINT::print_INT(NodeINT *INT) {
+  return "{ int_lit: " + to_string(INT->value) + "}";
+}
+
+string NodeIdentifier::print_identifier(NodeIdentifier *identifier) {
+  return "{ identifier: " + identifier->name + "}";
+}
+
+string NodeLet::print_let(NodeLet *let) {
+  return "{ let: " + NodeINT::print_INT(let->INT) +
+         NodeIdentifier::print_identifier(let->identifier) + "}";
+}
+
+string NodeDebug::print_debug(NodeDebug *debug) {
+  return "{ debug: " + NodeINT::print_INT(debug->INT) + "}";
+}
+
+string NodeStatement::print_statement(NodeStatement *stmt) {
+  if (stmt->debug)
+    if (stmt->debug) {
+      return "{ statement: " + NodeDebug::print_debug(stmt->debug) + "}";
+    }
+  if (stmt->let) {
+    return "{ statement: " + NodeLet::print_let(stmt->let) + "}";
+  }
+  return "";
+}
+
+string NodeProgram::print_program(NodeProgram *program) {
+  string res = "{ program: ";
+  for (auto stmt : program->stmts) {
+    res += NodeStatement::print_statement(stmt);
+  }
+  res += "}\n";
+  return res;
 }
