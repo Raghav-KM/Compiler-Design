@@ -40,9 +40,11 @@ public:
 class NodeDebug {
   friend class Parser;
   NodeINT *INT;
+  NodeIdentifier *identifier;
 
 public:
   NodeDebug(NodeINT *INT);
+  NodeDebug(NodeIdentifier *identifier);
   static string print_debug(NodeDebug *debug, int indent);
 };
 

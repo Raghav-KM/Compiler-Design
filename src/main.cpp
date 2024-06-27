@@ -8,7 +8,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-
+  cout << endl;
   if (argc != 2) {
     cerr << "ERR : Input File Missing" << endl;
     return EXIT_FAILURE;
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   input_buffer << f_input.rdbuf();
   f_input.close();
 
-  cout << input_buffer.str() << endl;
+  cout << input_buffer.str();
 
   Lexical_Analyzer analyzer;
   analyzer.set_input_stream(input_buffer.str());
@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
     cout << "Program Syntax Correct" << endl;
     cout << NodeProgram::print_program(program, 0) << endl;
   } else {
-    cout << "Program Syntax Incorrect" << endl;
     return EXIT_FAILURE;
   }
 

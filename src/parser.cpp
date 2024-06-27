@@ -46,6 +46,7 @@ NodeStatement *Parser::parse_statement() {
     }
     return new NodeStatement(let);
   }
+  Error::invalid_syntax();
   return NULL;
 }
 
@@ -60,9 +61,28 @@ NodeDebug *Parser::parse_debug() {
       consume();
       return new NodeDebug(INT);
     } else {
+      Error::invalid_syntax();
+      return NULL;
+    }
+  } else if (look_ahead().get_type() == IDENTIFIER) {
+    NodeIdentifier *identifier = parse_identifier();
+    if (!identifier) {
+      return NULL;
+    }
+    if (symbol_table.check(identifier->name) == Undeclared) {
+      Error::undefined_variable(identifier->name);
+      return NULL;
+    }
+    if (look_ahead().get_type() == SEMICOLON) {
+      consume();
+      return new NodeDebug(identifier);
+    } else {
+      Error::invalid_syntax();
       return NULL;
     }
   }
+  Error::invalid_syntax();
+
   return NULL;
 }
 
@@ -72,6 +92,10 @@ NodeLet *Parser::parse_let() {
     NodeIdentifier *identifier = parse_identifier();
     if (!identifier)
       return NULL;
+    if (symbol_table.declare(identifier->name) == Redeclaration) {
+      Error::redeclaration_variable(identifier->name);
+      return NULL;
+    }
     if (look_ahead().get_type() == EQUALS) {
       consume();
       if (look_ahead().get_type() == INT_LIT) {
@@ -83,13 +107,19 @@ NodeLet *Parser::parse_let() {
           consume();
           return new NodeLet(INT, identifier);
         } else {
+          Error::invalid_syntax();
           return NULL;
         }
+      } else {
+        Error::invalid_syntax();
+        return NULL;
       }
     } else {
+      Error::invalid_syntax();
       return NULL;
     }
   }
+  Error::invalid_syntax();
   return NULL;
 }
 
@@ -103,4 +133,3 @@ NodeIdentifier *Parser::parse_identifier() {
   consume();
   return identifier;
 }
-

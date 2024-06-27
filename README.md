@@ -5,7 +5,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 **TODO : Add Support for negative integers**
 **TODO : Add Test-CASE support**
 **TODO : Create Destructors for all AST_NODE classes**
-**TODO : Create a Error Class**
+<!-- **TODO : Create a Error Class** -->
 **TODO : Get DBG to compile to ASM**
 
 
@@ -27,5 +27,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Add print functionality to ast nodes
 
 # 27-06-2024
-- Add test-case support
 - improve ast-print functionality
+- Add Error Class
+- Add Symbol table
+- Add Undeclared/Redeclaration Errors

@@ -1,3 +1,4 @@
 dbg 123;
-dbg 10;
 let variable_name = 10;
+let variable_name = 10;
+dbg variable_name;

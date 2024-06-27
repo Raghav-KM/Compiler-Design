@@ -14,10 +14,15 @@ ast.o = ./build/ast.o
 ast.h = ./src/headers/ast.h
 ast.cpp = ./src/ast.cpp
 
+utils.o = ./build/utils.o
+utils.h = ./src/headers/utils.h
+utils.cpp = ./src/utils.cpp
+
+
 output = ./build/output
 input = ./input/source.dc
 
-output:	${main.o} ${lexer.o} ${parser.o} ${ast.o}
+output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o}
 	g++ $^ -o ${output}
 
 ${main.o}: ${main.cpp}
@@ -31,6 +36,9 @@ ${parser.o}: ${parser.cpp} ${parser.h}
 
 ${ast.o}: ${ast.cpp} ${ast.h}
 	g++ -c ${ast.cpp} -o ${ast.o}
+
+${utils.o}: ${utils.cpp} ${utils.h}
+	g++ -c ${utils.cpp} -o ${utils.o}
 
 run: output
 	${output} ${input};

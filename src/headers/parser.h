@@ -2,11 +2,13 @@
 #define PARSER_H
 #include "ast.h"
 #include "lexer.h"
+#include "utils.h"
 
 class Parser {
 private:
   vector<Token> token_stream;
   int ptr;
+  SymbolTable symbol_table;
   NodeStatement *parse_statement();
   NodeDebug *parse_debug();
   NodeLet *parse_let();

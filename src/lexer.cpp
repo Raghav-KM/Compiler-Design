@@ -144,5 +144,5 @@ void Lexical_Analyzer::print_token_stream() {
   for (auto token : token_stream) {
     cout << "[" << get_token_name(token.get_type()) << "] ";
   }
-  cout << "\n";
+  cout << "\n\n";
 }

@@ -9,7 +9,14 @@ NodeStatement::NodeStatement(NodeLet *let) {
   this->debug = NULL;
 }
 
-NodeDebug::NodeDebug(NodeINT *INT) { this->INT = INT; }
+NodeDebug::NodeDebug(NodeINT *INT) {
+  this->identifier = NULL;
+  this->INT = INT;
+}
+NodeDebug::NodeDebug(NodeIdentifier *identifier) {
+  this->identifier = identifier;
+  this->INT = NULL;
+}
 
 NodeLet::NodeLet(NodeINT *INT, NodeIdentifier *identifier) {
   this->INT = INT;
@@ -36,8 +43,16 @@ string NodeLet::print_let(NodeLet *let, int indent) {
 }
 
 string NodeDebug::print_debug(NodeDebug *debug, int indent) {
-  return tab(indent) + "{ debug: \n" +
-         NodeINT::print_INT(debug->INT, indent + 1) + tab(indent) + "}\n";
+  if (debug->INT) {
+    return tab(indent) + "{ debug: \n" +
+           NodeINT::print_INT(debug->INT, indent + 1) + tab(indent) + "}\n";
+  }
+  if (debug->identifier) {
+    return tab(indent) + "{ debug: \n" +
+           NodeIdentifier::print_identifier(debug->identifier, indent + 1) +
+           tab(indent) + "}\n";
+  }
+  return "";
 }
 
 string NodeStatement::print_statement(NodeStatement *stmt, int indent) {
