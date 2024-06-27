@@ -22,7 +22,10 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Begin with parser
 - Begin with some basic-grammar construction
 
-
 # 26-06-2024
 - Create a AST (for the existing grammer)
 - Add print functionality to ast nodes
+
+# 27-06-2024
+- Add test-case support
+- improve ast-print functionality
