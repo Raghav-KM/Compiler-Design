@@ -6,7 +6,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 **TODO : Add Test-CASE support**
 **TODO : Create Destructors for all AST_NODE classes**
 <!-- **TODO : Create a Error Class** -->
-**TODO : Get DBG to compile to ASM**
+<!-- **TODO : Get DBG to compile to ASM** -->
 **TODO : Create destructor for singleton-SymbolTable class**
 
 
