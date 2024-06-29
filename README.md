@@ -36,3 +36,8 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 28-06-2024
 - Singleton Symbol table
 - NASM installation and ASM-Make File
+
+
+# 29-06-2024
+- Codegen class
+- let and debug working as per current grammar

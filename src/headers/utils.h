@@ -19,6 +19,8 @@ public:
 };
 
 class SymbolTable {
+  friend class Codegen;
+
 private:
   static SymbolTable *instance;
   map<string, int> table;

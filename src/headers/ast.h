@@ -12,6 +12,7 @@ using namespace std;
 
 class NodeINT {
   friend class Parser;
+  friend class Codegen;
   int value;
 
 public:
@@ -21,6 +22,7 @@ public:
 
 class NodeIdentifier {
   friend class Parser;
+  friend class Codegen;
   string name;
 
 public:
@@ -30,6 +32,7 @@ public:
 
 class NodeLet {
   friend class Parser;
+  friend class Codegen;
   NodeINT *INT;
   NodeIdentifier *identifier;
 
@@ -40,6 +43,7 @@ public:
 
 class NodeDebug {
   friend class Parser;
+  friend class Codegen;
   NodeINT *INT;
   NodeIdentifier *identifier;
 
@@ -51,6 +55,7 @@ public:
 
 class NodeStatement {
   friend class Parser;
+  friend class Codegen;
   NodeDebug *debug;
   NodeLet *let;
 
@@ -63,6 +68,7 @@ public:
 
 class NodeProgram {
   friend class Parser;
+  friend class Codegen;
   vector<NodeStatement *> stmts;
 
 public:

@@ -1,20 +1,47 @@
 section .data
-    msg db '2', 0xA  ; Message to write, followed by newline (0xA)
+    variable_name dd 125
 
 section .bss
+    buffer resb 12
 
 section .text
-    global _start    ; Entry point for the program
+    global _start
 
 _start:
-    ; Write the message to stdout
-    mov eax, 4       ; syscall number for sys_write
-    mov ebx, 1       ; file descriptor 1 (stdout)
-    mov ecx, msg     ; pointer to the message
-    mov edx, 2       ; number of bytes to write (including newline)
-    int 0x80         ; make kernel call
+    push eax
+    mov eax, 123
+    call print_integer
+    pop eax
+    push eax
+    mov eax, [variable_name]
+    call print_integer
+    pop eax
 
-    ; Exit the program
-    mov eax, 1       ; syscall number for sys_exit
-    xor ebx, ebx     ; exit code 0
-    int 0x80         ; make kernel call
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+  
+print_integer:
+    push eax
+    mov ecx, buffer + 10
+    mov byte [ecx], 0xA
+    dec ecx
+
+.convert_loop:
+    xor edx, edx
+    mov ebx, 10
+    div ebx
+    add dl, '0'
+    mov [ecx], dl
+    dec ecx
+    test eax, eax 
+    jnz .convert_loop
+    inc ecx
+    mov edx, buffer + 11
+    sub edx, ecx
+    mov eax, 4
+    mov ebx, 1
+    int 0x80
+
+    pop eax 
+    ret

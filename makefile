@@ -14,6 +14,11 @@ ast.o = ./build/ast.o
 ast.h = ./src/headers/ast.h
 ast.cpp = ./src/ast.cpp
 
+codegen.o = ./build/codegen.o
+codegen.h = ./src/headers/codegen.h
+codegen.cpp = ./src/codegen.cpp
+
+
 utils.o = ./build/utils.o
 utils.h = ./src/headers/utils.h
 utils.cpp = ./src/utils.cpp
@@ -26,7 +31,7 @@ program = ./build/Assembly/program
 output = ./build/output
 input = ./input/source.dc
 
-output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o}
+output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${codegen.o}
 	g++ $^ -o ${output}
 
 ${main.o}: ${main.cpp}
@@ -40,6 +45,9 @@ ${parser.o}: ${parser.cpp} ${parser.h}
 
 ${ast.o}: ${ast.cpp} ${ast.h}
 	g++ -c ${ast.cpp} -o ${ast.o}
+	
+${codegen.o}: ${codegen.cpp} ${codegen.h}
+	g++ -c ${codegen.cpp} -o ${codegen.o}
 
 ${utils.o}: ${utils.cpp} ${utils.h}
 	g++ -c ${utils.cpp} -o ${utils.o}
