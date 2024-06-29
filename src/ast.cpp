@@ -33,7 +33,9 @@ string NodeINT::print_INT(NodeINT *INT, int indent) {
 
 string NodeIdentifier::print_identifier(NodeIdentifier *identifier,
                                         int indent) {
-  return tab(indent) + "{ identifier: " + identifier->name + " }\n";
+  return tab(indent) + "{ identifier: [" + identifier->name + "," +
+         to_string(SymbolTable::get_instance()->get_value(identifier->name)) +
+         "] }\n";
 }
 
 string NodeLet::print_let(NodeLet *let, int indent) {

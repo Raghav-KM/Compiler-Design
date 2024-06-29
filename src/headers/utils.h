@@ -20,10 +20,16 @@ public:
 
 class SymbolTable {
 private:
+  static SymbolTable *instance;
   map<string, int> table;
+  SymbolTable();
 
 public:
+  static SymbolTable *get_instance();
+
   RESULT_TYPE declare(string symbol_name);
+  RESULT_TYPE declare(string symbol_name, int symbol_value);
+
   RESULT_TYPE update(string symbol_name, int symbol_value);
   RESULT_TYPE check(string symbol_name);
   int get_value(string symbol_name);

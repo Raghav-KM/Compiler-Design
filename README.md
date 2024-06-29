@@ -7,6 +7,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 **TODO : Create Destructors for all AST_NODE classes**
 <!-- **TODO : Create a Error Class** -->
 **TODO : Get DBG to compile to ASM**
+**TODO : Create destructor for singleton-SymbolTable class**
 
 
 # 22-06-2024
@@ -31,3 +32,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Add Error Class
 - Add Symbol table
 - Add Undeclared/Redeclaration Errors
+
+# 28-06-2024
+- Singleton Symbol table
+- NASM installation and ASM-Make File

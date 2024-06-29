@@ -9,6 +9,7 @@
 Parser::Parser(Lexical_Analyzer &lexer) {
   token_stream = lexer.token_stream;
   ptr = 0;
+  symbol_table = SymbolTable::get_instance();
 }
 
 Token Parser::look_ahead() {
@@ -69,7 +70,7 @@ NodeDebug *Parser::parse_debug() {
     if (!identifier) {
       return NULL;
     }
-    if (symbol_table.check(identifier->name) == Undeclared) {
+    if (symbol_table->check(identifier->name) == Undeclared) {
       Error::undefined_variable(identifier->name);
       return NULL;
     }
@@ -92,10 +93,6 @@ NodeLet *Parser::parse_let() {
     NodeIdentifier *identifier = parse_identifier();
     if (!identifier)
       return NULL;
-    if (symbol_table.declare(identifier->name) == Redeclaration) {
-      Error::redeclaration_variable(identifier->name);
-      return NULL;
-    }
     if (look_ahead().get_type() == EQUALS) {
       consume();
       if (look_ahead().get_type() == INT_LIT) {
@@ -105,6 +102,11 @@ NodeLet *Parser::parse_let() {
         }
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
+          if (symbol_table->declare(identifier->name, INT->value) ==
+              Redeclaration) {
+            Error::redeclaration_variable(identifier->name);
+            return NULL;
+          }
           return new NodeLet(INT, identifier);
         } else {
           Error::invalid_syntax();
@@ -128,6 +130,7 @@ NodeINT *Parser::parse_int() {
   consume();
   return INT;
 }
+
 NodeIdentifier *Parser::parse_identifier() {
   NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
   consume();

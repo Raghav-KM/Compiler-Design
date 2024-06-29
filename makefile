@@ -19,6 +19,10 @@ utils.h = ./src/headers/utils.h
 utils.cpp = ./src/utils.cpp
 
 
+program.asm = ./build/Assembly/program.asm
+program.o = ./build/Assembly/program.o
+program = ./build/Assembly/program
+
 output = ./build/output
 input = ./input/source.dc
 
@@ -43,5 +47,11 @@ ${utils.o}: ${utils.cpp} ${utils.h}
 run: output
 	${output} ${input};
 
+asm:
+	nasm -f elf -o ${program.o} ${program.asm}
+	ld -m elf_i386 -o ${program} ${program.o}
+	${program}
+
 clean: 
 	rm ./build/*.o ${output}
+	rm ${program.o} ${program}

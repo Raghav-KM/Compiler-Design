@@ -1,6 +1,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include "utils.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

@@ -14,15 +14,34 @@ void Error::redeclaration_variable(string symbol_name) {
 
 // --- Symbol Table --- //
 
+SymbolTable *SymbolTable::instance = NULL;
+
+SymbolTable::SymbolTable() {}
+
+SymbolTable *SymbolTable::get_instance() {
+  if (instance == NULL) {
+    return instance = new SymbolTable();
+  }
+  return instance;
+}
+
 RESULT_TYPE SymbolTable::declare(string symbol_name) {
   if (table.find(symbol_name) == table.end()) {
     table[symbol_name] = 0;
   } else {
-    // Error: Symbol Redeclaration
     return Redeclaration;
   }
   return Success;
 }
+RESULT_TYPE SymbolTable::declare(string symbol_name, int symbol_value) {
+  if (table.find(symbol_name) == table.end()) {
+    table[symbol_name] = symbol_value;
+  } else {
+    return Redeclaration;
+  }
+  return Success;
+}
+
 RESULT_TYPE SymbolTable::update(string symbol_name, int symbol_value) {
   if (table.find(symbol_name) != table.end()) {
     table[symbol_name] = symbol_value;
