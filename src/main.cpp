@@ -39,9 +39,6 @@ int main(int argc, char *argv[]) {
   if (NodeProgram *program = parser.parse_program()) {
     cout << "Program Syntax Correct" << endl;
     cout << NodeProgram::print_program(program, 0) << endl;
-    Codegen codegen;
-    codegen.traverse_parse_tree(program);
-    codegen.export_asm();
   } else {
     return EXIT_FAILURE;
   }

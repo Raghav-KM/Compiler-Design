@@ -15,6 +15,7 @@ private:
   NodeLet *parse_let();
   NodeINT *parse_int();
   NodeIdentifier *parse_identifier();
+  NodeExpression *parse_expression();
 
 public:
   Parser(Lexical_Analyzer &lexer);

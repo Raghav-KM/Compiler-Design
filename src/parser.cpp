@@ -22,7 +22,6 @@ void Parser::consume() { ptr++; }
 
 NodeProgram *Parser::parse_program() {
   NodeProgram *program = new NodeProgram();
-
   while (look_ahead().get_type() != END_FILE) {
     NodeStatement *stmt = parse_statement();
     if (!stmt)
@@ -33,106 +32,69 @@ NodeProgram *Parser::parse_program() {
 }
 
 NodeStatement *Parser::parse_statement() {
-
-  if (look_ahead().get_type() == DEBUG) {
-    NodeDebug *debug = parse_debug();
-    if (!debug) {
-      return NULL;
-    }
+  if (NodeDebug *debug = parse_debug()) {
     return new NodeStatement(debug);
-  } else if (look_ahead().get_type() == LET) {
-    NodeLet *let = parse_let();
-    if (!let) {
-      return NULL;
-    }
+  } else if (NodeLet *let = parse_let()) {
     return new NodeStatement(let);
   }
-  Error::invalid_syntax();
   return NULL;
 }
 
 NodeDebug *Parser::parse_debug() {
-  consume();
-  if (look_ahead().get_type() == INT_LIT) {
-    NodeINT *INT = parse_int();
-    if (!INT) {
-      return NULL;
-    }
-    if (look_ahead().get_type() == SEMICOLON) {
-      consume();
-      return new NodeDebug(INT);
-    } else {
-      Error::invalid_syntax();
-      return NULL;
-    }
-  } else if (look_ahead().get_type() == IDENTIFIER) {
-    NodeIdentifier *identifier = parse_identifier();
-    if (!identifier) {
-      return NULL;
-    }
-    if (symbol_table->check(identifier->name) == Undeclared) {
-      Error::undefined_variable(identifier->name);
-      return NULL;
-    }
-    if (look_ahead().get_type() == SEMICOLON) {
-      consume();
-      return new NodeDebug(identifier);
-    } else {
-      Error::invalid_syntax();
-      return NULL;
+  if (look_ahead().get_type() == DEBUG) {
+    consume();
+    if (NodeExpression *expression = parse_expression()) {
+      if (look_ahead().get_type() == SEMICOLON) {
+        consume();
+        return new NodeDebug(expression);
+      }
     }
   }
-  Error::invalid_syntax();
-
   return NULL;
 }
 
 NodeLet *Parser::parse_let() {
-  consume();
-  if (look_ahead().get_type() == IDENTIFIER) {
-    NodeIdentifier *identifier = parse_identifier();
-    if (!identifier)
-      return NULL;
-    if (look_ahead().get_type() == EQUALS) {
-      consume();
-      if (look_ahead().get_type() == INT_LIT) {
-        NodeINT *INT = parse_int();
-        if (!INT) {
-          return NULL;
-        }
-        if (look_ahead().get_type() == SEMICOLON) {
-          consume();
-          if (symbol_table->declare(identifier->name, INT->value) ==
-              Redeclaration) {
-            Error::redeclaration_variable(identifier->name);
-            return NULL;
+  if (look_ahead().get_type() == LET) {
+    consume();
+    if (NodeIdentifier *identifier = parse_identifier()) {
+      if (look_ahead().get_type() == EQUALS) {
+        consume();
+        if (NodeExpression *expression = parse_expression()) {
+          if (look_ahead().get_type() == SEMICOLON) {
+            consume();
+            return new NodeLet(identifier, expression);
           }
-          return new NodeLet(INT, identifier);
-        } else {
-          Error::invalid_syntax();
-          return NULL;
         }
-      } else {
-        Error::invalid_syntax();
-        return NULL;
       }
-    } else {
-      Error::invalid_syntax();
-      return NULL;
     }
   }
-  Error::invalid_syntax();
+  return NULL;
+}
+
+NodeExpression *Parser::parse_expression() {
+  if (NodeINT *INT = parse_int()) {
+    return new NodeExpression(INT);
+  }
+  if (NodeIdentifier *identifier = parse_identifier()) {
+    return new NodeExpression(identifier);
+  }
   return NULL;
 }
 
 NodeINT *Parser::parse_int() {
-  NodeINT *INT = new NodeINT(look_ahead().get_value());
-  consume();
-  return INT;
+  if (look_ahead().get_type() == INT_LIT) {
+    NodeINT *INT = new NodeINT(look_ahead().get_value());
+    consume();
+    return INT;
+  }
+  return NULL;
 }
 
 NodeIdentifier *Parser::parse_identifier() {
-  NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
-  consume();
-  return identifier;
+  if (look_ahead().get_type() == IDENTIFIER) {
+    NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
+    consume();
+    return identifier;
+  }
+  return NULL;
 }

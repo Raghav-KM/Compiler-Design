@@ -30,26 +30,37 @@ public:
   static string print_identifier(NodeIdentifier *identifier, int indent);
 };
 
-class NodeLet {
+class NodeExpression {
   friend class Parser;
   friend class Codegen;
+
   NodeINT *INT;
   NodeIdentifier *identifier;
 
 public:
-  NodeLet(NodeINT *INT, NodeIdentifier *identifier);
+  NodeExpression(NodeIdentifier *identifier);
+  NodeExpression(NodeINT *INT);
+  static string print_expression(NodeExpression *expression, int indent);
+};
+
+class NodeLet {
+  friend class Parser;
+  friend class Codegen;
+  NodeIdentifier *identifier;
+  NodeExpression *expression;
+
+public:
+  NodeLet(NodeIdentifier *identifier, NodeExpression *exp);
   static string print_let(NodeLet *let, int indent);
 };
 
 class NodeDebug {
   friend class Parser;
   friend class Codegen;
-  NodeINT *INT;
-  NodeIdentifier *identifier;
+  NodeExpression *expression;
 
 public:
-  NodeDebug(NodeINT *INT);
-  NodeDebug(NodeIdentifier *identifier);
+  NodeDebug(NodeExpression *expression);
   static string print_debug(NodeDebug *debug, int indent);
 };
 

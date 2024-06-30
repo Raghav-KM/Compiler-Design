@@ -9,18 +9,22 @@ NodeStatement::NodeStatement(NodeLet *let) {
   this->debug = NULL;
 }
 
-NodeDebug::NodeDebug(NodeINT *INT) {
-  this->identifier = NULL;
-  this->INT = INT;
-}
-NodeDebug::NodeDebug(NodeIdentifier *identifier) {
-  this->identifier = identifier;
-  this->INT = NULL;
+NodeDebug::NodeDebug(NodeExpression *expression) {
+  this->expression = expression;
 }
 
-NodeLet::NodeLet(NodeINT *INT, NodeIdentifier *identifier) {
-  this->INT = INT;
+NodeLet::NodeLet(NodeIdentifier *identifier, NodeExpression *expression) {
   this->identifier = identifier;
+  this->expression = expression;
+}
+
+NodeExpression::NodeExpression(NodeIdentifier *identifier) {
+  this->INT = NULL;
+  this->identifier = identifier;
+}
+NodeExpression::NodeExpression(NodeINT *INT) {
+  this->INT = INT;
+  this->identifier = NULL;
 }
 
 NodeIdentifier::NodeIdentifier(string value) { name = value; }
@@ -38,23 +42,33 @@ string NodeIdentifier::print_identifier(NodeIdentifier *identifier,
          "] }\n";
 }
 
-string NodeLet::print_let(NodeLet *let, int indent) {
-  return tab(indent) + "{ let: \n" +
-         NodeIdentifier::print_identifier(let->identifier, indent + 1) +
-         NodeINT::print_INT(let->INT, indent + 1) + tab(indent) + "}\n";
-}
-
-string NodeDebug::print_debug(NodeDebug *debug, int indent) {
-  if (debug->INT) {
-    return tab(indent) + "{ debug: \n" +
-           NodeINT::print_INT(debug->INT, indent + 1) + tab(indent) + "}\n";
+string NodeExpression::print_expression(NodeExpression *expression,
+                                        int indent) {
+  if (expression->INT) {
+    return tab(indent) + "{ expression : \n" +
+           NodeINT::print_INT(expression->INT, indent + 1) + tab(indent) +
+           "}\n";
   }
-  if (debug->identifier) {
-    return tab(indent) + "{ debug: \n" +
-           NodeIdentifier::print_identifier(debug->identifier, indent + 1) +
+  if (expression->identifier) {
+    return tab(indent) + "{ expression : \n" +
+           NodeIdentifier::print_identifier(expression->identifier,
+                                            indent + 1) +
            tab(indent) + "}\n";
   }
   return "";
+}
+
+string NodeLet::print_let(NodeLet *let, int indent) {
+  return tab(indent) + "{ let: \n" +
+         NodeIdentifier::print_identifier(let->identifier, indent + 1) +
+         NodeExpression::print_expression(let->expression, indent + 1) +
+         tab(indent) + "}\n";
+}
+
+string NodeDebug::print_debug(NodeDebug *debug, int indent) {
+  return tab(indent) + "{ debug: \n" +
+         NodeExpression::print_expression(debug->expression, indent + 1) +
+         tab(indent) + "}\n";
 }
 
 string NodeStatement::print_statement(NodeStatement *stmt, int indent) {

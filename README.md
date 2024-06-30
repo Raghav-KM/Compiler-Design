@@ -41,3 +41,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 29-06-2024
 - Codegen class
 - let and debug working as per current grammar
+
+# 30-06-2024
+- Added Expression
+- Re-Wrote the parser
