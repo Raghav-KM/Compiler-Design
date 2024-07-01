@@ -9,11 +9,14 @@
 
 using namespace std;
 
+enum COMPILER_STAGE { LEXING, PARSING, CODEGEN, TESTING };
+
 enum RESULT_TYPE { Undeclared, Redeclaration, Success };
 
 class Error {
 public:
   static void invalid_syntax();
+  static void invalid_syntax(string msg);
   static void undefined_variable(string symbol_name);
   static void redeclaration_variable(string symbol_name);
 };

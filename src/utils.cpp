@@ -3,6 +3,7 @@
 // --- Error --- //
 
 void Error::invalid_syntax() { cerr << "Error: Invalid Syntax\n"; }
+void Error::invalid_syntax(string msg) { cerr << "Error: " + msg + "\n"; }
 
 void Error::undefined_variable(string symbol_name) {
   cerr << "Error: Undefined Variable [ " << symbol_name << " ]\n";

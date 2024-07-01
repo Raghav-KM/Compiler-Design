@@ -15,6 +15,10 @@ enum TOKEN_TYPES {
   IDENTIFIER,
   LET,
   EQUALS,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
   SEMICOLON,
   INVALID_TOKEN,
   END_FILE,
@@ -26,6 +30,10 @@ enum STATE_RETURN_VALUE {
   FOUND_IDENTIFIER,
   FOUND_LET,
   FOUND_EQUALS,
+  FOUND_ADD,
+  FOUND_SUB,
+  FOUND_MUL,
+  FOUND_DIV,
   NOT_FOUND,
 };
 
@@ -72,6 +80,8 @@ public:
   Lexical_Analyzer();
   void set_input_stream(string stream);
   void print_token_stream();
+  string get_token_stream();
+  void reset();
 };
 
 #endif

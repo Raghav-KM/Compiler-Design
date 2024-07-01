@@ -63,7 +63,7 @@ string Lexical_Analyzer::get_token_name(TOKEN_TYPES token) {
   case INVALID_TOKEN:
     return "INVALID_TOKEN";
   case EQUALS:
-    return "EQUALS";
+    return "EQUAL";
   case LET:
     return "LET";
   default:
@@ -81,6 +81,14 @@ STATE_RETURN_VALUE Lexical_Analyzer::initial_state() {
     return FOUND_EQUALS;
   } else if (buffer == "let") {
     return FOUND_LET;
+  } else if (buffer == "+") {
+    return FOUND_ADD;
+  } else if (buffer == "-") {
+    return FOUND_SUB;
+  } else if (buffer == "*") {
+    return FOUND_MUL;
+  } else if (buffer == "/") {
+    return FOUND_DIV;
   } else if (is_identifier(buffer)) {
     return FOUND_IDENTIFIER;
   }
@@ -134,15 +142,25 @@ Lexical_Analyzer::Lexical_Analyzer() {
 
 void Lexical_Analyzer::Lexical_Analyzer::set_input_stream(string stream) {
   input_stream = stream;
-  // remove_endline();
-  // cout << input_stream << "\n";
 }
 
 void Lexical_Analyzer::print_token_stream() {
+  cout << "\n" << get_token_stream() << "\n";
+}
+
+string Lexical_Analyzer::get_token_stream() {
   analyse();
-  cout << "\n";
-  for (auto token : token_stream) {
-    cout << "[" << get_token_name(token.get_type()) << "] ";
+  string token_stream_str = "";
+  for (int i = 0; i < token_stream.size(); i++) {
+    token_stream_str += "[" + get_token_name(token_stream[i].get_type()) + "]";
+    if (i != token_stream.size() - 1)
+      token_stream_str += " ";
   }
-  cout << "\n\n";
+  return token_stream_str;
+}
+
+void Lexical_Analyzer::reset() {
+  input_stream = "";
+  buffer = "";
+  token_stream.clear();
 }

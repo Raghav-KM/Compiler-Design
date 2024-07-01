@@ -18,11 +18,13 @@ codegen.o = ./build/codegen.o
 codegen.h = ./src/headers/codegen.h
 codegen.cpp = ./src/codegen.cpp
 
-
 utils.o = ./build/utils.o
 utils.h = ./src/headers/utils.h
 utils.cpp = ./src/utils.cpp
 
+testing.o = ./build/testing.o
+testing.h = ./src/headers/testing.h
+testing.cpp = ./src/testing.cpp
 
 program.asm = ./build/Assembly/program.asm
 program.o = ./build/Assembly/program.o
@@ -31,7 +33,7 @@ program = ./build/Assembly/program
 output = ./build/output
 input = ./input/source.dc
 
-output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${codegen.o}
+output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${testing.o} ${codegen.o}
 	g++ $^ -o ${output}
 
 ${main.o}: ${main.cpp}
@@ -51,6 +53,9 @@ ${codegen.o}: ${codegen.cpp} ${codegen.h}
 
 ${utils.o}: ${utils.cpp} ${utils.h}
 	g++ -c ${utils.cpp} -o ${utils.o}
+
+${testing.o}: ${testing.cpp} ${testing.h}
+	g++ -c ${testing.cpp} -o ${testing.o}
 
 run: output
 	${output} ${input};

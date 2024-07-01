@@ -115,13 +115,13 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
 }
 
 void Codegen::traverse_debug(NodeDebug *debug) {
-  if (debug->identifier) {
-    generate_debug(debug->identifier->name);
-  } else if (debug->INT) {
-    generate_debug(debug->INT->value);
-  }
+  // if (debug->identifier) {
+  //   generate_debug(debug->identifier->name);
+  // } else if (debug->INT) {
+  //   generate_debug(debug->INT->value);
+  // }
 }
 
 void Codegen::traverse_let(NodeLet *let) {
-  declare_variable_data_section(let->identifier->name, let->INT->value);
+  // declare_variable_data_section(let->identifier->name, let->INT->value);
 }

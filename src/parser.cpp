@@ -32,69 +32,83 @@ NodeProgram *Parser::parse_program() {
 }
 
 NodeStatement *Parser::parse_statement() {
-  if (NodeDebug *debug = parse_debug()) {
-    return new NodeStatement(debug);
-  } else if (NodeLet *let = parse_let()) {
-    return new NodeStatement(let);
+  if (look_ahead().get_type() == DEBUG) {
+    if (NodeDebug *debug = parse_debug()) {
+      return new NodeStatement(debug);
+    }
+    return NULL;
   }
+  if (look_ahead().get_type() == LET) {
+    if (NodeLet *let = parse_let()) {
+      return new NodeStatement(let);
+    }
+    return NULL;
+  }
+  Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let'");
   return NULL;
 }
 
 NodeDebug *Parser::parse_debug() {
-  if (look_ahead().get_type() == DEBUG) {
-    consume();
-    if (NodeExpression *expression = parse_expression()) {
-      if (look_ahead().get_type() == SEMICOLON) {
-        consume();
-        return new NodeDebug(expression);
-      }
+  consume();
+  if (NodeExpression *expression = parse_expression()) {
+    if (look_ahead().get_type() == SEMICOLON) {
+      consume();
+      return new NodeDebug(expression);
     }
+    Error::invalid_syntax("Missing ';'");
   }
   return NULL;
 }
 
 NodeLet *Parser::parse_let() {
-  if (look_ahead().get_type() == LET) {
-    consume();
-    if (NodeIdentifier *identifier = parse_identifier()) {
-      if (look_ahead().get_type() == EQUALS) {
-        consume();
-        if (NodeExpression *expression = parse_expression()) {
-          if (look_ahead().get_type() == SEMICOLON) {
-            consume();
-            return new NodeLet(identifier, expression);
+  consume();
+  if (NodeIdentifier *identifier = parse_identifier()) {
+    if (look_ahead().get_type() == EQUALS) {
+      consume();
+      if (NodeExpression *expression = parse_expression()) {
+        if (look_ahead().get_type() == SEMICOLON) {
+          consume();
+          if (symbol_table->declare(identifier->name) == Redeclaration) {
+            Error::redeclaration_variable(identifier->name);
+            return NULL;
           }
+          return new NodeLet(identifier, expression);
         }
+        Error::invalid_syntax("Missing ';'");
+        return NULL;
       }
     }
+    Error::invalid_syntax("Invalid TOKEN - Expected '='");
+    return NULL;
   }
   return NULL;
 }
 
 NodeExpression *Parser::parse_expression() {
-  if (NodeINT *INT = parse_int()) {
-    return new NodeExpression(INT);
+  if (look_ahead().get_type() == INT_LIT) {
+    if (NodeINT *INT = parse_int()) {
+      return new NodeExpression(INT);
+    }
+    return NULL;
   }
-  if (NodeIdentifier *identifier = parse_identifier()) {
-    return new NodeExpression(identifier);
+  if (look_ahead().get_type() == IDENTIFIER) {
+    if (NodeIdentifier *identifier = parse_identifier()) {
+      return new NodeExpression(identifier);
+    }
+    return NULL;
   }
+  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
   return NULL;
 }
 
 NodeINT *Parser::parse_int() {
-  if (look_ahead().get_type() == INT_LIT) {
-    NodeINT *INT = new NodeINT(look_ahead().get_value());
-    consume();
-    return INT;
-  }
-  return NULL;
+  NodeINT *INT = new NodeINT(look_ahead().get_value());
+  consume();
+  return INT;
 }
 
 NodeIdentifier *Parser::parse_identifier() {
-  if (look_ahead().get_type() == IDENTIFIER) {
-    NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
-    consume();
-    return identifier;
-  }
-  return NULL;
+  NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
+  consume();
+  return identifier;
 }

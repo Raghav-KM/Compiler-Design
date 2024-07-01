@@ -9,6 +9,8 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 <!-- **TODO : Get DBG to compile to ASM** -->
 **TODO : Create destructor for singleton-SymbolTable class**
 
+**TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
+
 
 # 22-06-2024
 - Read a file that is passed as an argument 
@@ -37,7 +39,6 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Singleton Symbol table
 - NASM installation and ASM-Make File
 
-
 # 29-06-2024
 - Codegen class
 - let and debug working as per current grammar
@@ -45,3 +46,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 30-06-2024
 - Added Expression
 - Re-Wrote the parser
+
+# 1-07-2024
+- Revert back to the old parser
+- Lexer Testcase Class
