@@ -17,10 +17,9 @@ private:
   Lexical_Analyzer lexer;
 
 public:
-  
-  void run_all_tests();
+  bool run_all_tests();
 
-  void run_test(string input_file, string output_file);
+  bool run_test(string input_file, string output_file);
 };
 
 #endif

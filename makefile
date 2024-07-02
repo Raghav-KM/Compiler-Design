@@ -33,6 +33,7 @@ program = ./build/Assembly/program
 output = ./build/output
 input = ./input/source.dc
 
+
 output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${testing.o} ${codegen.o}
 	g++ $^ -o ${output}
 
@@ -58,7 +59,10 @@ ${testing.o}: ${testing.cpp} ${testing.h}
 	g++ -c ${testing.cpp} -o ${testing.o}
 
 run: output
-	${output} ${input};
+	${output} ${input}
+
+test: output
+	${output} ${input} -t
 
 asm:
 	nasm -f elf -o ${program.o} ${program.asm}

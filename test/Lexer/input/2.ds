@@ -1,0 +1,2 @@
+let variable_name = 10;
+let variable_name = variable_name;

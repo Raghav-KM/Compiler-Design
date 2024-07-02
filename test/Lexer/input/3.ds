@@ -1,0 +1,15 @@
+10 + 10
+10 + variable_name
+variable_name + variable_name
+
+10 - 10
+10 - variable_name
+variable_name - variable_name
+
+10 * 10
+10 * variable_name
+variable_name * variable_name
+
+10 / 10
+10 / variable_name
+variable_name / variable_name

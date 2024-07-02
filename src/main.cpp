@@ -12,18 +12,19 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   cout << endl;
-  if (argc != 2) {
+  bool do_testing = false;
+
+  if (argc < 2) {
     cerr << "ERR : Input File Missing" << endl;
     return EXIT_FAILURE;
   }
 
-  bool do_testing = true;
-
-  if (argc >= 3) {
-    if (argv[2] == "-t") {
+  if (argc == 3) {
+    if (string(argv[2]) == "-t") {
       do_testing = true;
     } else {
       cerr << "ERR : Invalid Flag [" << argv[2] << "]" << endl;
+      return EXIT_FAILURE;
     }
   }
 

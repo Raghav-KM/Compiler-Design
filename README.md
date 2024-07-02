@@ -50,3 +50,8 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 1-07-2024
 - Revert back to the old parser
 - Lexer Testcase Class
+
+
+# 2-07-2023
+- Lexer Testcase Class Completed
+- +,-,*,/ tokens added

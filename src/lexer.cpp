@@ -66,6 +66,14 @@ string Lexical_Analyzer::get_token_name(TOKEN_TYPES token) {
     return "EQUAL";
   case LET:
     return "LET";
+  case ADD:
+    return "ADD";
+  case SUB:
+    return "SUB";
+  case MUL:
+    return "MUL";
+  case DIV:
+    return "DIV";
   default:
     return "INVALID";
   }
@@ -98,7 +106,8 @@ STATE_RETURN_VALUE Lexical_Analyzer::initial_state() {
 void Lexical_Analyzer::analyse() {
   int ptr = 0;
   while (ptr != input_stream.size()) {
-    if (isspace(input_stream[ptr]) || input_stream[ptr] == ';') {
+    if (isspace(input_stream[ptr]) || input_stream[ptr] == ';' ||
+        ptr == input_stream.size() - 1) {
       if (buffer.size() > 0) {
         STATE_RETURN_VALUE state_value = initial_state();
         switch (state_value) {
@@ -116,6 +125,18 @@ void Lexical_Analyzer::analyse() {
           break;
         case FOUND_IDENTIFIER:
           token_stream.push_back(Token(IDENTIFIER, 0, buffer));
+          break;
+        case FOUND_ADD:
+          token_stream.push_back(Token(ADD));
+          break;
+        case FOUND_SUB:
+          token_stream.push_back(Token(SUB));
+          break;
+        case FOUND_MUL:
+          token_stream.push_back(Token(MUL));
+          break;
+        case FOUND_DIV:
+          token_stream.push_back(Token(DIV));
           break;
         default:
           throw std::runtime_error("Error: Invalid token encountered");
