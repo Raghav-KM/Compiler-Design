@@ -50,10 +50,10 @@ NodeStatement *Parser::parse_statement() {
 
 NodeDebug *Parser::parse_debug() {
   consume();
-  if (NodeExpression *expression = parse_expression()) {
+  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
-      return new NodeDebug(expression);
+      return new NodeDebug(add_exp);
     }
     Error::invalid_syntax("Missing ';'");
   }
@@ -65,14 +65,14 @@ NodeLet *Parser::parse_let() {
   if (NodeIdentifier *identifier = parse_identifier()) {
     if (look_ahead().get_type() == EQUALS) {
       consume();
-      if (NodeExpression *expression = parse_expression()) {
+      if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
           if (symbol_table->declare(identifier->name) == Redeclaration) {
             Error::redeclaration_variable(identifier->name);
             return NULL;
           }
-          return new NodeLet(identifier, expression);
+          return new NodeLet(identifier, add_exp);
         }
         Error::invalid_syntax("Missing ';'");
         return NULL;
@@ -98,6 +98,58 @@ NodeExpression *Parser::parse_expression() {
     return NULL;
   }
   Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
+  return NULL;
+}
+
+NodeAdditiveExpression *Parser::parse_additive_expression() {
+  if (NodeMultiplicativeExpression *mul_exp =
+          parse_multiplicative_expression()) {
+    if (NodeAdditiveOperator *add_op = parse_additive_operator()) {
+      if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+        return new NodeAdditiveExpression(add_exp, add_op, mul_exp);
+      }
+      return NULL;
+    }
+    return new NodeAdditiveExpression(mul_exp);
+  }
+  return NULL;
+}
+
+NodeAdditiveOperator *Parser::parse_additive_operator() {
+  if (look_ahead().get_type() == ADD) {
+    consume();
+    return new NodeAdditiveOperator('+');
+  }
+  if (look_ahead().get_type() == SUB) {
+    consume();
+    return new NodeAdditiveOperator('-');
+  }
+  return NULL;
+}
+
+NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {
+  if (NodeExpression *exp = parse_expression()) {
+    if (NodeMultiplicativeOperator *mul_op = parse_multiplicative_operator()) {
+      if (NodeMultiplicativeExpression *mul_exp =
+              parse_multiplicative_expression()) {
+        return new NodeMultiplicativeExpression(mul_exp, mul_op, exp);
+      }
+      return NULL;
+    }
+    return new NodeMultiplicativeExpression(exp);
+  }
+  return NULL;
+}
+
+NodeMultiplicativeOperator *Parser::parse_multiplicative_operator() {
+  if (look_ahead().get_type() == MUL) {
+    consume();
+    return new NodeMultiplicativeOperator('*');
+  }
+  if (look_ahead().get_type() == DIV) {
+    consume();
+    return new NodeMultiplicativeOperator('/');
+  }
   return NULL;
 }
 

@@ -1,5 +1,1 @@
-dbg 123;
-let variable_name = 125;
-dbg variable_name;
-let variable_name = 123;
-
+let variable_nameA = 1 + 2;

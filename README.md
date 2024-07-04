@@ -55,3 +55,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 2-07-2023
 - Lexer Testcase Class Completed
 - +,-,*,/ tokens added
+- Grammar for Arithemetic operations
+
+# 4-07-2023
+- Implement Arithemetic operations grammar

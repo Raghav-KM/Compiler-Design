@@ -16,6 +16,10 @@ private:
   NodeINT *parse_int();
   NodeIdentifier *parse_identifier();
   NodeExpression *parse_expression();
+  NodeAdditiveExpression *parse_additive_expression();
+  NodeMultiplicativeExpression *parse_multiplicative_expression();
+  NodeAdditiveOperator *parse_additive_operator();
+  NodeMultiplicativeOperator *parse_multiplicative_operator();
 
 public:
   Parser(Lexical_Analyzer &lexer);

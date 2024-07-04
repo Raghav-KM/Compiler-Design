@@ -69,6 +69,7 @@ private:
   void push_to_buffer(char);
   bool is_integer_literal(string &token);
   bool is_identifier(string &token);
+  bool is_operator(char);
 
   string get_token_name(TOKEN_TYPES token);
 

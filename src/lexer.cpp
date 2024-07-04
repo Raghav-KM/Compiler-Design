@@ -49,6 +49,11 @@ bool Lexical_Analyzer::is_identifier(string &token) {
   }
   return true;
 }
+bool Lexical_Analyzer::is_operator(char c) {
+  if (c == '+' || c == '-' || c == '*' || c == '/')
+    return true;
+  return false;
+}
 
 string Lexical_Analyzer::get_token_name(TOKEN_TYPES token) {
   switch (token) {
@@ -139,7 +144,7 @@ void Lexical_Analyzer::analyse() {
           token_stream.push_back(Token(DIV));
           break;
         default:
-          throw std::runtime_error("Error: Invalid token encountered");
+          // throw std::runtime_error("Error: Invalid token encountered");
           token_stream.push_back(Token(INVALID_TOKEN));
           break;
         }

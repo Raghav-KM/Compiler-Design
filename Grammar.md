@@ -42,10 +42,10 @@ LET_STML -->
 [MULT_OP] --> DIV | MUL
 
 [ADD_EXP] --> 
-    [ADD_EXP] [ADD_OP] [MULT_EXP] | [MULTI_EXP]
+    [MULT_EXP] [ADD_OP] [ADD_EXP] | [MULTI_EXP]
 
 [MULT_EXP] --> 
-    [MULT_EXP] [MULT_OP] [TERM_EXP] | [TERM_EXP]
+    [TERM_EXP] [MULT_OP] [MULT_EXP] | [TERM_EXP]
 
 [TERM_EXP] --> 
     IDENTIFIER
