@@ -34,7 +34,7 @@ output = ./build/output
 input = ./input/source.dc
 
 
-output:	${main.o} ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${testing.o} ${codegen.o}
+output:	${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${codegen.o} ${main.o} ${testing.o}
 	g++ $^ -o ${output}
 
 ${main.o}: ${main.cpp}

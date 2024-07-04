@@ -31,6 +31,8 @@ int main(int argc, char *argv[]) {
   if (do_testing) {
     Test_Lexical_Analyser test_lexer;
     test_lexer.run_all_tests();
+    Test_Parser test_parser;
+    test_parser.run_all_tests();
   } else {
     string input_file_path = argv[1];
     ifstream f_input(input_file_path);

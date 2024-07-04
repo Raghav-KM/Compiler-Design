@@ -1,0 +1,13 @@
+[ 'program': 
+ [ 'statement': 
+  [ 'debug': 
+   [ 'add_expression': 
+    [ 'mul_expression': 
+     [ 'expression': 
+      [ 'int_lit': 1 ]
+     ]
+    ]
+   ]
+  ]
+ ]
+]

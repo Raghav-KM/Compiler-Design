@@ -1,12 +1,4 @@
-id+id id-id id*id id/id
-
-id+id+id id+id-id id+id*id id+id/id
-
-id-id+id id-id-id id-id*id id-id/id
-
-id*id+id id*id-id id*id*id id*id/id
-
-id/id+id id/id-id id/id*id id/id/id
+dbg 1;
 
 
 

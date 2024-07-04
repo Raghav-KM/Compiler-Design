@@ -11,6 +11,13 @@ Parser::Parser(Lexical_Analyzer &lexer) {
   ptr = 0;
   symbol_table = SymbolTable::get_instance();
 }
+Parser::Parser() { ptr = 0; }
+
+void Parser::init_parser(vector<Token> token_stream) {
+  this->token_stream = token_stream;
+  ptr = 0;
+  symbol_table = SymbolTable::get_instance();
+}
 
 Token Parser::look_ahead() {
   if (ptr == token_stream.size())

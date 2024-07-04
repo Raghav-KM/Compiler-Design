@@ -22,9 +22,11 @@ private:
   NodeMultiplicativeOperator *parse_multiplicative_operator();
 
 public:
+  Parser();
   Parser(Lexical_Analyzer &lexer);
   Token look_ahead();
   void consume();
+  void init_parser(vector<Token> token_stream);
 
   NodeProgram *parse_program();
 };

@@ -2,6 +2,7 @@
 #define TESTING_H
 
 #include "lexer.h"
+#include "parser.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -11,14 +12,32 @@
 
 using namespace std;
 
-class Test_Lexical_Analyser {
-private:
-  static vector<pair<string, string>> test_file_names;
+class TestCompiler {
+protected:
   Lexical_Analyzer lexer;
+  Parser parser;
 
 public:
-  bool run_all_tests();
+  TestCompiler();
+};
 
+class Test_Lexical_Analyser : TestCompiler {
+private:
+  static vector<pair<string, string>> test_file_names;
+
+public:
+  Test_Lexical_Analyser();
+  bool run_all_tests();
+  bool run_test(string input_file, string output_file);
+};
+
+class Test_Parser : TestCompiler {
+private:
+  static vector<pair<string, string>> test_file_names;
+
+public:
+  Test_Parser();
+  bool run_all_tests();
   bool run_test(string input_file, string output_file);
 };
 
