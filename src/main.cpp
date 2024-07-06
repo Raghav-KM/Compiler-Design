@@ -59,7 +59,11 @@ int main(int argc, char *argv[]) {
     if (NodeProgram *program = parser.parse_program(lexer.get_token_stream())) {
       cout << "Program Syntax Correct" << endl;
       cout << NodeProgram::print_program(program, 0) << endl;
+
+      Codegen codegen;
+      codegen.traverse_parse_tree(program);
     } else {
+      Error::print_error();
       return EXIT_FAILURE;
     }
 

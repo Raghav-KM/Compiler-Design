@@ -70,16 +70,12 @@ NodeDebug *Parser::parse_debug() {
 
 NodeLet *Parser::parse_let() {
   consume();
-  if (NodeIdentifier *identifier = parse_identifier()) {
+  if (NodeIdentifier *identifier = parse_identifier(REDECLARATION)) {
     if (look_ahead().get_type() == EQUALS) {
       consume();
       if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
-          if (symbol_table->declare(identifier->name) == Redeclaration) {
-            Error::redeclaration_variable(identifier->name);
-            return NULL;
-          }
           return new NodeLet(identifier, add_exp);
         }
         Error::invalid_syntax("Missing ';'");
@@ -167,8 +163,21 @@ NodeINT *Parser::parse_int() {
   return INT;
 }
 
-NodeIdentifier *Parser::parse_identifier() {
-  NodeIdentifier *identifier = new NodeIdentifier(look_ahead().get_body());
+NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
+
+  string symbol_name = look_ahead().get_body();
+  if (symbol_table->exists(symbol_name) == UNDECLARED &&
+      check_type == UNDECLARED) {
+    Error::undefined_variable(symbol_name);
+    return NULL;
+  }
+  if (symbol_table->declare(symbol_name) == REDECLARATION &&
+      check_type == REDECLARATION) {
+    Error::redeclaration_variable(symbol_name);
+    return NULL;
+  }
+
+  NodeIdentifier *identifier = new NodeIdentifier(symbol_name);
   consume();
   return identifier;
 }

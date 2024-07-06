@@ -60,4 +60,5 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Implement Arithemetic operations grammar
 
 # 6-07-2023
-- 
+- Refactored Lexer, Parse, Error
+- 3 Address Code generation

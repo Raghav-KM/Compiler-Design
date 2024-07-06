@@ -2,16 +2,21 @@
 
 // --- Error --- //
 
-void Error::invalid_syntax() { cerr << "Error: Invalid Syntax\n"; }
-void Error::invalid_syntax(string msg) { cerr << "Error: " + msg + "\n"; }
+string Error::err_buffer = "";
+
+void Error::invalid_syntax() { err_buffer += "Error: Invalid Syntax\n"; }
+
+void Error::invalid_syntax(string msg) { err_buffer += "Error: " + msg + "\n"; }
 
 void Error::undefined_variable(string symbol_name) {
-  cerr << "Error: Undefined Variable [ " << symbol_name << " ]\n";
+  err_buffer += "Error: Undefined Variable [ " + symbol_name + " ]\n";
 }
 
 void Error::redeclaration_variable(string symbol_name) {
-  cerr << "Error: Redefination of Variable [ " << symbol_name << " ]\n";
+  err_buffer += "Error: Redefination of Variable [ " + symbol_name + " ]\n";
 }
+
+void Error::print_error() { cerr << err_buffer; }
 
 // --- Symbol Table --- //
 
@@ -28,35 +33,18 @@ SymbolTable *SymbolTable::get_instance() {
 
 RESULT_TYPE SymbolTable::declare(string symbol_name) {
   if (table.find(symbol_name) == table.end()) {
-    table[symbol_name] = 0;
+    table[symbol_name] = true;
   } else {
-    return Redeclaration;
+    return REDECLARATION;
   }
-  return Success;
-}
-RESULT_TYPE SymbolTable::declare(string symbol_name, int symbol_value) {
-  if (table.find(symbol_name) == table.end()) {
-    table[symbol_name] = symbol_value;
-  } else {
-    return Redeclaration;
-  }
-  return Success;
+  return SUCCESS;
 }
 
-RESULT_TYPE SymbolTable::update(string symbol_name, int symbol_value) {
-  if (table.find(symbol_name) != table.end()) {
-    table[symbol_name] = symbol_value;
-  } else {
-    return Undeclared;
-  }
-  return Success;
-}
-
-RESULT_TYPE SymbolTable::check(string symbol_name) {
+RESULT_TYPE SymbolTable::exists(string symbol_name) {
   if (table.find(symbol_name) == table.end()) {
-    return Undeclared;
+    return UNDECLARED;
   }
-  return Success;
+  return SUCCESS;
 }
 
 int SymbolTable::get_value(string symbol_name) { return table[symbol_name]; }

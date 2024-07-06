@@ -14,7 +14,7 @@ private:
   NodeDebug *parse_debug();
   NodeLet *parse_let();
   NodeINT *parse_int();
-  NodeIdentifier *parse_identifier();
+  NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
   NodeExpression *parse_expression();
   NodeAdditiveExpression *parse_additive_expression();
   NodeMultiplicativeExpression *parse_multiplicative_expression();

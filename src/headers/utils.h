@@ -9,16 +9,17 @@
 
 using namespace std;
 
-enum COMPILER_STAGE { LEXING, PARSING, CODEGEN, TESTING };
-
-enum RESULT_TYPE { Undeclared, Redeclaration, Success };
+enum RESULT_TYPE { UNDECLARED, REDECLARATION, SUCCESS };
 
 class Error {
+  static string err_buffer;
+
 public:
   static void invalid_syntax();
   static void invalid_syntax(string msg);
   static void undefined_variable(string symbol_name);
   static void redeclaration_variable(string symbol_name);
+  static void print_error();
 };
 
 class SymbolTable {
@@ -26,17 +27,15 @@ class SymbolTable {
 
 private:
   static SymbolTable *instance;
-  map<string, int> table;
+  map<string, bool> table;
   SymbolTable();
 
 public:
   static SymbolTable *get_instance();
 
   RESULT_TYPE declare(string symbol_name);
-  RESULT_TYPE declare(string symbol_name, int symbol_value);
+  RESULT_TYPE exists(string symbol_name);
 
-  RESULT_TYPE update(string symbol_name, int symbol_value);
-  RESULT_TYPE check(string symbol_name);
   int get_value(string symbol_name);
   void reset();
 };
