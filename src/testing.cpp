@@ -48,8 +48,8 @@ bool Test_Lexical_Analyser::run_test(string input_file_path,
     return true;
   } else {
     cout << "FAIL\n";
-    cout << "Expected Output : " << expected_output << "\n";
-    cout << "Output          : " << output << "\n";
+    cout << "Expected Output :\n" << expected_output << "\n";
+    cout << "Output          :\n" << output << "\n";
     cout << "\n";
     return false;
   }
@@ -57,6 +57,8 @@ bool Test_Lexical_Analyser::run_test(string input_file_path,
 
 vector<pair<string, string>> Test_Parser::test_file_names = {
     {"./test/Parser/input/1.ds", "./test/Parser/output/1.txt"},
+    {"./test/Parser/input/2.ds", "./test/Parser/output/2.txt"},
+    {"./test/Parser/input/3.ds", "./test/Parser/output/3.txt"},
 };
 
 Test_Parser::Test_Parser() : TestCompiler() {}
@@ -99,8 +101,8 @@ bool Test_Parser::run_test(string input_file_path, string output_file_path) {
       return true;
     } else {
       cout << "FAIL\n";
-      cout << "Expected Output : " << expected_output << "\n";
-      cout << "Output          : " << output << "\n";
+      cout << "Expected Output :\n" << expected_output << "\n";
+      cout << "Output          :\n" << output << "\n";
       cout << "\n";
       return false;
     }

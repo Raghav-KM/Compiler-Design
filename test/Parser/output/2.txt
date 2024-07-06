@@ -1,7 +1,8 @@
 [ 'program': 
  [ 'statement': 
-  [ 'debug': 
-   [ 'add_expression': 
+  [ 'let': 
+   [ 'identifier': variable_nameA ]
+    [ 'add_expression': 
     [ 'mul_expression': 
      [ 'expression': 
       [ 'int_lit': 1 ]
@@ -11,11 +12,12 @@
   ]
  ]
  [ 'statement': 
-  [ 'debug': 
-   [ 'add_expression': 
+  [ 'let': 
+   [ 'identifier': variable_nameB ]
+    [ 'add_expression': 
     [ 'mul_expression': 
      [ 'expression': 
-      [ 'identifier': variable_name ]
+      [ 'identifier': variable_nameA ]
      ]
     ]
    ]

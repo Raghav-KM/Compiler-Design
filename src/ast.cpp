@@ -73,9 +73,7 @@ string NodeINT::print_INT(NodeINT *INT, int indent) {
 
 string NodeIdentifier::print_identifier(NodeIdentifier *identifier,
                                         int indent) {
-  return tab(indent) + "[ 'identifier': [" + identifier->name + "," +
-         to_string(SymbolTable::get_instance()->get_value(identifier->name)) +
-         "] ]\n";
+  return tab(indent) + "[ 'identifier': " + identifier->name + " ]\n";
 }
 
 string NodeExpression::print_expression(NodeExpression *expression,
@@ -110,7 +108,7 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
 }
 
 string NodeAdditiveOperator::print(NodeAdditiveOperator *add_op, int indent) {
-  return tab(indent) + "[ 'add_operator': " + (add_op->op) + "]\n";
+  return tab(indent) + "[ 'add_operator': " + (add_op->op) + " ]\n";
 }
 string
 NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
@@ -130,7 +128,7 @@ NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
 }
 string NodeMultiplicativeOperator::print(NodeMultiplicativeOperator *mul_op,
                                          int indent) {
-  return tab(indent) + "[ 'mul_operator': " + (mul_op->op) + "]\n";
+  return tab(indent) + "[ 'mul_operator': " + (mul_op->op) + " ]\n";
 }
 
 string NodeLet::print_let(NodeLet *let, int indent) {
