@@ -38,6 +38,7 @@ public:
   RESULT_TYPE update(string symbol_name, int symbol_value);
   RESULT_TYPE check(string symbol_name);
   int get_value(string symbol_name);
+  void reset();
 };
 
 #endif

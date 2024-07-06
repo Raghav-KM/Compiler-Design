@@ -6,7 +6,7 @@ vector<pair<string, string>> Test_Lexical_Analyser::test_file_names = {
     {"./test/Lexer/input/3.ds", "./test/Lexer/output/3.txt"},
 };
 
-TestCompiler::TestCompiler() : lexer(), parser(lexer) {}
+TestCompiler::TestCompiler() : lexer(), parser() {}
 
 Test_Lexical_Analyser::Test_Lexical_Analyser() : TestCompiler() {}
 
@@ -39,20 +39,18 @@ bool Test_Lexical_Analyser::run_test(string input_file_path,
   string input = input_buffer.str();
   string expected_output = output_buffer.str();
 
-  lexer.set_input_stream(input);
+  lexer.analyse(input);
   cout << "Testcase " + input_file_path.substr(19, 1) << " : ";
-  string output = lexer.get_token_stream();
+  string output = lexer.to_string();
 
   if (output == expected_output) {
     cout << "PASS\n";
-    lexer.reset();
     return true;
   } else {
     cout << "FAIL\n";
     cout << "Expected Output : " << expected_output << "\n";
     cout << "Output          : " << output << "\n";
     cout << "\n";
-    lexer.reset();
     return false;
   }
 }
@@ -91,23 +89,23 @@ bool Test_Parser::run_test(string input_file_path, string output_file_path) {
   string input = input_buffer.str();
   string expected_output = output_buffer.str();
 
-  lexer.set_input_stream(input);
-  lexer.get_token_stream();
-  parser = Parser(lexer);
+  lexer.analyse(input);
 
-  string output = NodeProgram::print_program(parser.parse_program(), 0);
   cout << "Testcase " + input_file_path.substr(20, 1) << " : ";
-
-  if (output == expected_output) {
-    cout << "PASS\n";
-    lexer.reset();
-    return true;
+  if (NodeProgram *program = parser.parse_program(lexer.get_token_stream())) {
+    string output = NodeProgram::print_program(program, 0);
+    if (output == expected_output) {
+      cout << "PASS\n";
+      return true;
+    } else {
+      cout << "FAIL\n";
+      cout << "Expected Output : " << expected_output << "\n";
+      cout << "Output          : " << output << "\n";
+      cout << "\n";
+      return false;
+    }
   } else {
-    cout << "FAIL\n";
-    cout << "Expected Output : " << expected_output << "\n";
-    cout << "Output          : " << output << "\n";
-    cout << "\n";
-    lexer.reset();
+    cout << "FAIL [Parsing Failed]\n";
     return false;
   }
 }

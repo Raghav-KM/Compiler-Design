@@ -29,11 +29,14 @@ int main(int argc, char *argv[]) {
   }
 
   if (do_testing) {
+    cout << "Lexical-Anlayser-\n";
     Test_Lexical_Analyser test_lexer;
     test_lexer.run_all_tests();
+    cout << "\nParser-\n";
     Test_Parser test_parser;
     test_parser.run_all_tests();
   } else {
+
     string input_file_path = argv[1];
     ifstream f_input(input_file_path);
     if (f_input.fail()) {
@@ -46,14 +49,14 @@ int main(int argc, char *argv[]) {
     input_buffer << f_input.rdbuf();
     f_input.close();
 
-    cout << input_buffer.str();
+    cout << input_buffer.str() << endl;
 
-    Lexical_Analyzer analyzer;
-    analyzer.set_input_stream(input_buffer.str());
-    analyzer.print_token_stream();
+    Lexical_Analyzer lexer;
+    lexer.analyse(input_buffer.str());
+    cout << lexer.to_string() << "\n";
 
-    Parser parser(analyzer);
-    if (NodeProgram *program = parser.parse_program()) {
+    Parser parser;
+    if (NodeProgram *program = parser.parse_program(lexer.get_token_stream())) {
       cout << "Program Syntax Correct" << endl;
       cout << NodeProgram::print_program(program, 0) << endl;
     } else {

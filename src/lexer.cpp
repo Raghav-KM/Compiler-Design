@@ -55,7 +55,7 @@ bool Lexical_Analyzer::is_operator(char c) {
   return false;
 }
 
-string Lexical_Analyzer::get_token_name(TOKEN_TYPES token) {
+string Token::get_token_name(TOKEN_TYPES token) {
   switch (token) {
   case DEBUG:
     return "DEBUG";
@@ -84,67 +84,67 @@ string Lexical_Analyzer::get_token_name(TOKEN_TYPES token) {
   }
 }
 
-STATE_RETURN_VALUE Lexical_Analyzer::initial_state() {
-
+TOKEN_TYPES Lexical_Analyzer::analyse_buffer() {
   if (buffer == "dbg") {
-    return FOUND_DEBUG;
+    return DEBUG;
   } else if (is_integer_literal(buffer)) {
-    return FOUND_INT_LIT;
+    return INT_LIT;
   } else if (buffer == "=") {
-    return FOUND_EQUALS;
+    return EQUALS;
   } else if (buffer == "let") {
-    return FOUND_LET;
+    return LET;
   } else if (buffer == "+") {
-    return FOUND_ADD;
+    return ADD;
   } else if (buffer == "-") {
-    return FOUND_SUB;
+    return SUB;
   } else if (buffer == "*") {
-    return FOUND_MUL;
+    return MUL;
   } else if (buffer == "/") {
-    return FOUND_DIV;
+    return DIV;
   } else if (is_identifier(buffer)) {
-    return FOUND_IDENTIFIER;
+    return IDENTIFIER;
   }
-  return NOT_FOUND;
+  return INVALID_TOKEN;
 }
 
-void Lexical_Analyzer::analyse() {
+void Lexical_Analyzer::analyse(string stream) {
+  reset();
+  input_stream = stream;
   int ptr = 0;
   while (ptr != input_stream.size()) {
     if (isspace(input_stream[ptr]) || input_stream[ptr] == ';' ||
         ptr == input_stream.size() - 1) {
       if (buffer.size() > 0) {
-        STATE_RETURN_VALUE state_value = initial_state();
-        switch (state_value) {
-        case FOUND_DEBUG:
+        TOKEN_TYPES token = analyse_buffer();
+        switch (token) {
+        case DEBUG:
           token_stream.push_back(Token(DEBUG));
           break;
-        case FOUND_INT_LIT:
+        case INT_LIT:
           token_stream.push_back(Token(INT_LIT, stoi(buffer), ""));
           break;
-        case FOUND_LET:
+        case LET:
           token_stream.push_back(Token(LET));
           break;
-        case FOUND_EQUALS:
+        case EQUALS:
           token_stream.push_back(Token(EQUALS));
           break;
-        case FOUND_IDENTIFIER:
+        case IDENTIFIER:
           token_stream.push_back(Token(IDENTIFIER, 0, buffer));
           break;
-        case FOUND_ADD:
+        case ADD:
           token_stream.push_back(Token(ADD));
           break;
-        case FOUND_SUB:
+        case SUB:
           token_stream.push_back(Token(SUB));
           break;
-        case FOUND_MUL:
+        case MUL:
           token_stream.push_back(Token(MUL));
           break;
-        case FOUND_DIV:
+        case DIV:
           token_stream.push_back(Token(DIV));
           break;
         default:
-          // throw std::runtime_error("Error: Invalid token encountered");
           token_stream.push_back(Token(INVALID_TOKEN));
           break;
         }
@@ -166,24 +166,18 @@ Lexical_Analyzer::Lexical_Analyzer() {
   token_stream = vector<Token>();
 }
 
-void Lexical_Analyzer::Lexical_Analyzer::set_input_stream(string stream) {
-  input_stream = stream;
-}
-
-void Lexical_Analyzer::print_token_stream() {
-  cout << "\n" << get_token_stream() << "\n";
-}
-
-string Lexical_Analyzer::get_token_stream() {
-  analyse();
+string Lexical_Analyzer::to_string() {
   string token_stream_str = "";
   for (int i = 0; i < token_stream.size(); i++) {
-    token_stream_str += "[" + get_token_name(token_stream[i].get_type()) + "]";
+    token_stream_str +=
+        "[" + Token::get_token_name(token_stream[i].get_type()) + "]";
     if (i != token_stream.size() - 1)
       token_stream_str += " ";
   }
   return token_stream_str;
 }
+
+vector<Token> Lexical_Analyzer::get_token_stream() { return token_stream; }
 
 void Lexical_Analyzer::reset() {
   input_stream = "";

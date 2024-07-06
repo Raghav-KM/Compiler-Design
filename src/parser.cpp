@@ -6,17 +6,16 @@
 
 // --- Public Member Functions --- //
 
-Parser::Parser(Lexical_Analyzer &lexer) {
-  token_stream = lexer.token_stream;
+Parser::Parser() {
   ptr = 0;
   symbol_table = SymbolTable::get_instance();
 }
-Parser::Parser() { ptr = 0; }
 
-void Parser::init_parser(vector<Token> token_stream) {
-  this->token_stream = token_stream;
+void Parser::reset() {
   ptr = 0;
   symbol_table = SymbolTable::get_instance();
+  symbol_table->reset();
+  this->token_stream.clear();
 }
 
 Token Parser::look_ahead() {
@@ -27,7 +26,9 @@ Token Parser::look_ahead() {
 
 void Parser::consume() { ptr++; }
 
-NodeProgram *Parser::parse_program() {
+NodeProgram *Parser::parse_program(vector<Token> token_stream) {
+  reset();
+  this->token_stream = token_stream;
   NodeProgram *program = new NodeProgram();
   while (look_ahead().get_type() != END_FILE) {
     NodeStatement *stmt = parse_statement();

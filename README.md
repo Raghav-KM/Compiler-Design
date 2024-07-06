@@ -8,9 +8,8 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 <!-- **TODO : Create a Error Class** -->
 <!-- **TODO : Get DBG to compile to ASM** -->
 **TODO : Create destructor for singleton-SymbolTable class**
-
 **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
-
+**TODO : Change lexer to be able to recognize operators even without space**
 
 # 22-06-2024
 - Read a file that is passed as an argument 
@@ -59,3 +58,6 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 
 # 4-07-2023
 - Implement Arithemetic operations grammar
+
+# 6-07-2023
+- 

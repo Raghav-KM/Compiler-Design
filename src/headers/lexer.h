@@ -24,19 +24,6 @@ enum TOKEN_TYPES {
   END_FILE,
 };
 
-enum STATE_RETURN_VALUE {
-  FOUND_DEBUG,
-  FOUND_INT_LIT,
-  FOUND_IDENTIFIER,
-  FOUND_LET,
-  FOUND_EQUALS,
-  FOUND_ADD,
-  FOUND_SUB,
-  FOUND_MUL,
-  FOUND_DIV,
-  NOT_FOUND,
-};
-
 class Token {
 private:
   TOKEN_TYPES token_type;
@@ -53,6 +40,7 @@ public:
   int get_value();
   void set_body(string body);
   string get_body();
+  static string get_token_name(TOKEN_TYPES token);
 };
 
 class Lexical_Analyzer {
@@ -70,19 +58,14 @@ private:
   bool is_integer_literal(string &token);
   bool is_identifier(string &token);
   bool is_operator(char);
-
-  string get_token_name(TOKEN_TYPES token);
-
-  STATE_RETURN_VALUE initial_state();
-
-  void analyse();
+  TOKEN_TYPES analyse_buffer();
+  void reset();
 
 public:
   Lexical_Analyzer();
-  void set_input_stream(string stream);
-  void print_token_stream();
-  string get_token_stream();
-  void reset();
+  void analyse(string stream);
+  string to_string();
+  vector<Token> get_token_stream();
 };
 
 #endif
