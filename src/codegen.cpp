@@ -7,7 +7,8 @@ Codegen::Codegen() {
   require_print_integer_subroutine = false;
 }
 
-int Codegen::count = 0;
+int Codegen::count = 1;
+int Codegen::max_count = 1;
 
 void Codegen::push_eax() { text_section += "    push eax\n"; }
 
@@ -25,20 +26,49 @@ void Codegen::generate_debug(string variable_name) {
   if (!require_print_integer_subroutine) {
     require_print_integer_subroutine = true;
   }
-  push_eax();
   text_section +=
-      "    mov eax, [" + variable_name + "]\n    call print_integer\n";
-  pop_eax();
+      "    mov eax, " + variable_name + "\n    call print_integer\n\n";
+  Codegen::reset_count();
 }
 
 void Codegen::generate_debug(int value) {
   if (!require_print_integer_subroutine) {
     require_print_integer_subroutine = true;
   }
-  push_eax();
   text_section +=
       "    mov eax, " + to_string(value) + "\n    call print_integer\n";
-  pop_eax();
+  Codegen::reset_count();
+}
+
+void Codegen::generate_expressions(string new_var_name, string opdA, char op,
+                                   string opdB) {
+  text_section += "    mov eax, " + opdA + "\n";
+  if (op == '+') {
+    text_section += "    add eax, " + opdB + "\n";
+  }
+  if (op == '-') {
+    text_section += "    sub eax, " + opdB + "\n";
+  }
+  if (op == '*') {
+    text_section += "    imul eax, " + opdB + "\n";
+  }
+  if (op == '/') {
+    text_section += "    imul eax, " + opdB + "\n";
+  }
+  text_section += "    mov " + new_var_name + ", eax\n";
+  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
+}
+
+void Codegen::generate_let(string lval, string rval) {
+  text_section += "    mov eax, " + rval + "\n";
+  text_section += "    mov " + lval + ", eax\n";
+  cout << lval << " = " << rval << "\n\n";
+  Codegen::reset_count();
+}
+
+string Codegen::get_new_temp_variable() {
+  count++;
+  return "[t_" + to_string(count) + "]";
 }
 
 void Codegen::export_asm() {
@@ -51,8 +81,13 @@ void Codegen::export_asm() {
   // --- Bss Section --- //
   program += "section .bss\n";
   if (require_print_integer_subroutine) {
-    program += "    buffer resb 12\n\n";
+    program += "    buffer resb 12\n";
   }
+  for (int i = 1; i <= Codegen::max_count; i++) {
+    program += "    t_" + to_string(i) + " resb 1\n";
+  }
+  program += bss_section;
+  program += "\n";
 
   // --- Text Section --- //
 
@@ -74,24 +109,37 @@ print_integer:
     mov byte [ecx], 0xA
     dec ecx
 
-.convert_loop:
     xor edx, edx
     mov ebx, 10
+
+    cmp eax, 0
+    jge .convert_loop
+    neg eax
+
+.convert_loop:
+    xor edx, edx
     div ebx
     add dl, '0'
     mov [ecx], dl
     dec ecx
-    test eax, eax 
+    test eax, eax
     jnz .convert_loop
+
+    pop eax
+    cmp eax, 0
+    jge .print
+    mov byte [ecx], '-'
+    dec ecx
+
+.print:
     inc ecx
     mov edx, buffer + 11
     sub edx, ecx
     mov eax, 4
     mov ebx, 1
     int 0x80
-
-    pop eax 
     ret
+
 )";
   }
 
@@ -121,11 +169,14 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
 
 void Codegen::traverse_debug(NodeDebug *debug) {
   string var = traverse_additive_expression(debug->add_exp);
-  cout << "debug " << var << "\n";
+  // cout << "debug " << var << "\n";
+  generate_debug(var);
 }
 
 void Codegen::traverse_let(NodeLet *let) {
-  // declare_variable_data_section(let->identifier->name, let->INT->value);
+  string var = traverse_additive_expression(let->add_exp);
+  declare_variable_bss_section(let->identifier->name);
+  generate_let("[" + let->identifier->name + "]", var);
 }
 
 string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
@@ -158,18 +209,13 @@ string Codegen::traverse_multiplicative_expression(
 
 string Codegen::traverse_expression(NodeExpression *exp) {
   if (exp->identifier != NULL) {
-    return exp->identifier->name;
+    return "[" + exp->identifier->name + "]";
   } else {
     return to_string(exp->INT->value);
   }
 }
 
-void Codegen::generate_expressions(string new_var_name, string opdA, char op,
-                                   string opdB) {
-  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
-}
-
-string Codegen::get_new_temp_variable() {
-  count++;
-  return "[t_" + to_string(count) + "]";
+void Codegen::reset_count() {
+  Codegen::max_count = max(max_count, count);
+  Codegen::count = 1;
 }

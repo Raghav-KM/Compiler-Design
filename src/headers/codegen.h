@@ -11,6 +11,7 @@ using namespace std;
 
 class Codegen {
 private:
+  static int max_count;
   static int count;
   string data_section;
   string bss_section;
@@ -21,6 +22,7 @@ public:
   Codegen();
 
   string get_new_temp_variable();
+  static void reset_count();
 
   void push_eax();
   void pop_eax();
@@ -29,8 +31,8 @@ public:
 
   void generate_debug(string variable_name);
   void generate_debug(int value);
+  void generate_let(string lval, string rval);
   void generate_expressions(string, string, char, string);
-
   void export_asm();
 
   void traverse_parse_tree(NodeProgram *program);

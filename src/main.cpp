@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
 
       Codegen codegen;
       codegen.traverse_parse_tree(program);
+      codegen.export_asm();
     } else {
       Error::print_error();
       return EXIT_FAILURE;
