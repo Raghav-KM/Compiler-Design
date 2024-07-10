@@ -2,9 +2,36 @@
  [ 'statement': 
   [ 'debug': 
    [ 'add_expression': 
+    [ 'add_expression': 
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 1 ]
+      ]
+     ]
+    ]
+    [ 'add_operator': + ]
     [ 'mul_expression': 
      [ 'expression': 
-      [ 'int_lit': 1 ]
+      [ 'int_lit': 2 ]
+     ]
+    ]
+   ]
+  ]
+ ]
+ [ 'statement': 
+  [ 'debug': 
+   [ 'add_expression': 
+    [ 'add_expression': 
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 1 ]
+      ]
+     ]
+    ]
+    [ 'add_operator': - ]
+    [ 'mul_expression': 
+     [ 'expression': 
+      [ 'int_lit': 2 ]
      ]
     ]
    ]
@@ -14,8 +41,31 @@
   [ 'debug': 
    [ 'add_expression': 
     [ 'mul_expression': 
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 1 ]
+      ]
+     ]
+     [ 'mul_operator': * ]
      [ 'expression': 
-      [ 'identifier': variable_name ]
+      [ 'int_lit': 2 ]
+     ]
+    ]
+   ]
+  ]
+ ]
+ [ 'statement': 
+  [ 'debug': 
+   [ 'add_expression': 
+    [ 'mul_expression': 
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 1 ]
+      ]
+     ]
+     [ 'mul_operator': / ]
+     [ 'expression': 
+      [ 'int_lit': 2 ]
      ]
     ]
    ]

@@ -1,5 +1,7 @@
-dbg 1;
-dbg variable_name;
+dbg 1 + 2;
+dbg 1 - 2;
+dbg 1 * 2;
+dbg 1 / 2;
 
 
 

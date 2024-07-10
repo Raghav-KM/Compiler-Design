@@ -1,3 +1,0 @@
-dbg 1 + 2;
-dbg 3 + variable_name;
-dbg variable_name + variable_name;

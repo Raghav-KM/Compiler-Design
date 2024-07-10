@@ -1,2 +1,4 @@
-let variable_nameA = 1;
-let variable_nameB = variable_nameA;
+dbg 1 + 2 + 3;
+dbg 1 - 2 - 3;
+dbg 1 * 2 * 3;
+dbg 1 / 2 / 3;

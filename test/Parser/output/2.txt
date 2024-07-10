@@ -1,23 +1,99 @@
 [ 'program': 
  [ 'statement': 
-  [ 'let': 
-   [ 'identifier': variable_nameA ]
+  [ 'debug': 
+   [ 'add_expression': 
     [ 'add_expression': 
+     [ 'add_expression': 
+      [ 'mul_expression': 
+       [ 'expression': 
+        [ 'int_lit': 1 ]
+       ]
+      ]
+     ]
+     [ 'add_operator': + ]
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 2 ]
+      ]
+     ]
+    ]
+    [ 'add_operator': + ]
     [ 'mul_expression': 
      [ 'expression': 
-      [ 'int_lit': 1 ]
+      [ 'int_lit': 3 ]
      ]
     ]
    ]
   ]
  ]
  [ 'statement': 
-  [ 'let': 
-   [ 'identifier': variable_nameB ]
+  [ 'debug': 
+   [ 'add_expression': 
     [ 'add_expression': 
+     [ 'add_expression': 
+      [ 'mul_expression': 
+       [ 'expression': 
+        [ 'int_lit': 1 ]
+       ]
+      ]
+     ]
+     [ 'add_operator': - ]
+     [ 'mul_expression': 
+      [ 'expression': 
+       [ 'int_lit': 2 ]
+      ]
+     ]
+    ]
+    [ 'add_operator': - ]
     [ 'mul_expression': 
      [ 'expression': 
-      [ 'identifier': variable_nameA ]
+      [ 'int_lit': 3 ]
+     ]
+    ]
+   ]
+  ]
+ ]
+ [ 'statement': 
+  [ 'debug': 
+   [ 'add_expression': 
+    [ 'mul_expression': 
+     [ 'mul_expression': 
+      [ 'mul_expression': 
+       [ 'expression': 
+        [ 'int_lit': 1 ]
+       ]
+      ]
+      [ 'mul_operator': * ]
+      [ 'expression': 
+       [ 'int_lit': 2 ]
+      ]
+     ]
+     [ 'mul_operator': * ]
+     [ 'expression': 
+      [ 'int_lit': 3 ]
+     ]
+    ]
+   ]
+  ]
+ ]
+ [ 'statement': 
+  [ 'debug': 
+   [ 'add_expression': 
+    [ 'mul_expression': 
+     [ 'mul_expression': 
+      [ 'mul_expression': 
+       [ 'expression': 
+        [ 'int_lit': 1 ]
+       ]
+      ]
+      [ 'mul_operator': / ]
+      [ 'expression': 
+       [ 'int_lit': 2 ]
+      ]
+     ]
+     [ 'mul_operator': / ]
+     [ 'expression': 
+      [ 'int_lit': 3 ]
      ]
     ]
    ]
