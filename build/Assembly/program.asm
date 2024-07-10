@@ -2,21 +2,28 @@ section .data
 
 section .bss
     buffer resb 12
-    t_1 resb 1
-    t_2 resb 1
-    t_3 resb 1
+    t_1 resd 1
+    t_2 resd 1
+    t_3 resd 1
+    t_4 resd 1
 
 section .text
     global _start
 
 _start:
     mov eax, 4
-    add eax, 20
+    imul eax, 10
     mov [t_3], eax
-    mov eax, 3
+    mov eax, 1
+    add eax, 13
+    mov [t_4], eax
+    mov eax, [t_4]
     sub eax, [t_3]
     mov [t_2], eax
     mov eax, [t_2]
+    add eax, 20
+    mov [t_1], eax
+    mov eax, [t_1]
     call print_integer
 
 

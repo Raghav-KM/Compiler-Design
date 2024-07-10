@@ -108,13 +108,13 @@ NodeExpression *Parser::parse_expression() {
 NodeAdditiveExpression *Parser::parse_additive_expression() {
   if (NodeMultiplicativeExpression *mul_exp =
           parse_multiplicative_expression()) {
-    if (NodeAdditiveOperator *add_op = parse_additive_operator()) {
-      if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
-        return new NodeAdditiveExpression(add_exp, add_op, mul_exp);
-      }
-      return NULL;
+    NodeAdditiveExpression *add_exp = new NodeAdditiveExpression(mul_exp);
+    while (NodeAdditiveOperator *add_op = parse_additive_operator()) {
+      NodeMultiplicativeExpression *new_mul_exp =
+          parse_multiplicative_expression();
+      add_exp = new NodeAdditiveExpression(add_exp, add_op, new_mul_exp);
     }
-    return new NodeAdditiveExpression(mul_exp);
+    return add_exp;
   }
   return NULL;
 }
@@ -133,14 +133,14 @@ NodeAdditiveOperator *Parser::parse_additive_operator() {
 
 NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {
   if (NodeExpression *exp = parse_expression()) {
-    if (NodeMultiplicativeOperator *mul_op = parse_multiplicative_operator()) {
-      if (NodeMultiplicativeExpression *mul_exp =
-              parse_multiplicative_expression()) {
-        return new NodeMultiplicativeExpression(mul_exp, mul_op, exp);
-      }
-      return NULL;
+    NodeMultiplicativeExpression *mul_exp =
+        new NodeMultiplicativeExpression(exp);
+    while (NodeMultiplicativeOperator *mul_op =
+               parse_multiplicative_operator()) {
+      NodeExpression *new_exp = parse_expression();
+      mul_exp = new NodeMultiplicativeExpression(mul_exp, mul_op, new_exp);
     }
-    return new NodeMultiplicativeExpression(exp);
+    return mul_exp;
   }
   return NULL;
 }

@@ -7,8 +7,8 @@ Codegen::Codegen() {
   require_print_integer_subroutine = false;
 }
 
-int Codegen::count = 1;
-int Codegen::max_count = 1;
+int Codegen::count = 0;
+int Codegen::max_count = 0;
 
 void Codegen::push_eax() { text_section += "    push eax\n"; }
 
@@ -84,7 +84,7 @@ void Codegen::export_asm() {
     program += "    buffer resb 12\n";
   }
   for (int i = 1; i <= Codegen::max_count; i++) {
-    program += "    t_" + to_string(i) + " resb 1\n";
+    declare_variable_bss_section("t_" + to_string(i));
   }
   program += bss_section;
   program += "\n";
@@ -186,9 +186,9 @@ string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
     string new_temp_var = get_new_temp_variable();
 
     generate_expressions(new_temp_var,
-                         traverse_multiplicative_expression(add_exp->mul_exp),
+                         traverse_additive_expression(add_exp->add_exp),
                          add_exp->add_operator->op,
-                         traverse_additive_expression(add_exp->add_exp));
+                         traverse_multiplicative_expression(add_exp->mul_exp));
 
     return new_temp_var;
   }
@@ -200,9 +200,9 @@ string Codegen::traverse_multiplicative_expression(
     return traverse_expression(mul_exp->exp);
   } else {
     string new_temp_var = get_new_temp_variable();
-    generate_expressions(new_temp_var, traverse_expression(mul_exp->exp),
-                         mul_exp->mul_operator->op,
-                         traverse_multiplicative_expression(mul_exp->mul_exp));
+    generate_expressions(
+        new_temp_var, traverse_multiplicative_expression(mul_exp->mul_exp),
+        mul_exp->mul_operator->op, traverse_expression(mul_exp->exp));
     return new_temp_var;
   }
 }
@@ -217,5 +217,5 @@ string Codegen::traverse_expression(NodeExpression *exp) {
 
 void Codegen::reset_count() {
   Codegen::max_count = max(max_count, count);
-  Codegen::count = 1;
+  Codegen::count = 0;
 }

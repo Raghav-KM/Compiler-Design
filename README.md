@@ -46,23 +46,26 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Added Expression
 - Re-Wrote the parser
 
-# 1-07-2024
+# 01-07-2024
 - Revert back to the old parser
 - Lexer Testcase Class
 
 
-# 2-07-2024
+# 02-07-2024
 - Lexer Testcase Class Completed
 - +,-,*,/ tokens added
 - Grammar for Arithemetic operations
 
-# 4-07-2024
+# 04-07-2024
 - Implement Arithemetic operations grammar
 
-# 6-07-2024
+# 06-07-2024
 - Refactored Lexer, Parse, Error
 - 3 Address Code generation
 
-# 9-07-2024
+# 09-07-2024
 - Implemented Codegen of the expressions
 - Found issue in the parse-tree
+
+# 10-07-2024
+- Corrected the parser for expresssion

@@ -96,9 +96,9 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
                                      int indent) {
   if (add_exp->add_operator != NULL && add_exp->add_exp != NULL) {
     return tab(indent) + "[ 'add_expression': \n" +
-           NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
-           NodeAdditiveOperator::print(add_exp->add_operator, indent + 1) +
            NodeAdditiveExpression::print(add_exp->add_exp, indent + 1) +
+           NodeAdditiveOperator::print(add_exp->add_operator, indent + 1) +
+           NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
            tab(indent) + "]\n";
   } else {
     return tab(indent) + "[ 'add_expression': \n" +
@@ -115,10 +115,10 @@ NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
                                     int indent) {
   if (mul_exp->mul_operator != NULL && mul_exp->mul_exp != NULL) {
     return tab(indent) + "[ 'mul_expression': \n" +
-           NodeExpression::print_expression(mul_exp->exp, indent + 1) +
+           NodeMultiplicativeExpression::print(mul_exp->mul_exp, indent + 1) +
            NodeMultiplicativeOperator::print(mul_exp->mul_operator,
                                              indent + 1) +
-           NodeMultiplicativeExpression::print(mul_exp->mul_exp, indent + 1) +
+           NodeExpression::print_expression(mul_exp->exp, indent + 1) +
            tab(indent) + "]\n";
   } else {
     return tab(indent) + "[ 'mul_expression': \n" +
