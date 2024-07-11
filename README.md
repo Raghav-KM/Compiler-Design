@@ -11,6 +11,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 **TODO : Change lexer to be able to recognize operators even without space**
 
+
 # 22-06-2024
 - Read a file that is passed as an argument 
 
@@ -69,3 +70,21 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 
 # 10-07-2024
 - Corrected the parser for expresssion
+
+# 11-07-2024
+- rewrite lexer
+
+# 12-07-2024
+- Write IF-ELSE
+
+# 13-07-2024
+- Determine grammar for functions 
+
+# 14-07-2024
+- Implement Functions 
+
+# 15-07-2024
+- Determine grammar for function with parameters
+
+# 16-07-2024
+- Implement Functions

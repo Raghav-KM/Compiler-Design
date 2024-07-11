@@ -3,10 +3,17 @@
 NodeStatement::NodeStatement(NodeDebug *debug) {
   this->let = NULL;
   this->debug = debug;
+  this->IF = NULL;
 }
 NodeStatement::NodeStatement(NodeLet *let) {
   this->let = let;
   this->debug = NULL;
+  this->IF = NULL;
+}
+NodeStatement::NodeStatement(NodeIf *IF) {
+  this->let = NULL;
+  this->debug = NULL;
+  this->IF = IF;
 }
 
 NodeDebug::NodeDebug(NodeAdditiveExpression *add_exp) {
@@ -16,6 +23,10 @@ NodeDebug::NodeDebug(NodeAdditiveExpression *add_exp) {
 NodeLet::NodeLet(NodeIdentifier *identifier, NodeAdditiveExpression *add_exp) {
   this->identifier = identifier;
   this->add_exp = add_exp;
+}
+NodeIf::NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list) {
+  this->add_exp = add_exp;
+  this->stmt_list = stmt_list;
 }
 
 NodeExpression::NodeExpression(NodeIdentifier *identifier) {
@@ -110,6 +121,7 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
 string NodeAdditiveOperator::print(NodeAdditiveOperator *add_op, int indent) {
   return tab(indent) + "[ 'add_operator': " + (add_op->op) + " ]\n";
 }
+
 string
 NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
                                     int indent) {
@@ -144,6 +156,13 @@ string NodeDebug::print_debug(NodeDebug *debug, int indent) {
          tab(indent) + "]\n";
 }
 
+string NodeIf::print_if(NodeIf *IF, int indent) {
+  return tab(indent) + "[ 'if': \n" +
+         NodeAdditiveExpression::print(IF->add_exp, indent + 1) +
+         NodeStatementList::print_statement_list(IF->stmt_list, indent + 1) +
+         tab(indent) + "]\n";
+}
+
 string NodeStatement::print_statement(NodeStatement *stmt, int indent) {
   if (stmt->debug)
     if (stmt->debug) {
@@ -155,14 +174,28 @@ string NodeStatement::print_statement(NodeStatement *stmt, int indent) {
     return tab(indent) + "[ 'statement': \n" +
            NodeLet::print_let(stmt->let, indent + 1) + tab(indent) + "]\n";
   }
+  if (stmt->IF) {
+    return tab(indent) + "[ 'statment': \n" +
+           NodeIf::print_if(stmt->IF, indent + 1) + tab(indent) + "]\n";
+  }
   return "";
+}
+string NodeStatementList::print_statement_list(NodeStatementList *stmt_list,
+                                               int indent) {
+  string res = "";
+  for (auto stmt : stmt_list->stmts) {
+    res += NodeStatement::print_statement(stmt, indent);
+  }
+  return res;
 }
 
 string NodeProgram::print_program(NodeProgram *program, int indent) {
   string res = "[ 'program': \n";
-  for (auto stmt : program->stmts) {
-    res += NodeStatement::print_statement(stmt, indent + 1);
-  }
+  res +=
+      NodeStatementList::print_statement_list(program->stmt_list, indent + 1);
+  // for (auto stmt : program->stmts) {
+  //   res += NodeStatement::print_statement(stmt, indent + 1);
+  // }
   res += "]";
   return res;
 }

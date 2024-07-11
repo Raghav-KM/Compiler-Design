@@ -29,14 +29,24 @@ void Parser::consume() { ptr++; }
 NodeProgram *Parser::parse_program(vector<Token> token_stream) {
   reset();
   this->token_stream = token_stream;
-  NodeProgram *program = new NodeProgram();
-  while (look_ahead().get_type() != END_FILE) {
+  if (NodeStatementList *stmt_list = parse_statement_list(END_FILE)) {
+    NodeProgram *program = new NodeProgram();
+    program->stmt_list = stmt_list;
+    return program;
+  }
+  return NULL;
+}
+
+NodeStatementList *Parser::parse_statement_list(TOKEN_TYPES END_TOKEN) {
+  NodeStatementList *stmt_list = new NodeStatementList();
+  while (look_ahead().get_type() != END_TOKEN &&
+         look_ahead().get_type() != END_FILE) {
     NodeStatement *stmt = parse_statement();
     if (!stmt)
       return NULL;
-    program->stmts.push_back(stmt);
+    stmt_list->stmts.push_back(stmt);
   }
-  return program;
+  return stmt_list;
 }
 
 NodeStatement *Parser::parse_statement() {
@@ -52,7 +62,34 @@ NodeStatement *Parser::parse_statement() {
     }
     return NULL;
   }
-  Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let'");
+  if (look_ahead().get_type() == IF) {
+    if (NodeIf *IF = parse_if()) {
+      return new NodeStatement(IF);
+    }
+    return NULL;
+  }
+  cout << look_ahead().get_type() << " ";
+  Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if'");
+  return NULL;
+}
+
+NodeIf *Parser::parse_if() {
+  consume();
+  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
+      consume();
+      if (NodeStatementList *stmt_list =
+              parse_statement_list(BRACKET_CLOSE_CURLY)) {
+        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+          consume();
+          return new NodeIf(add_exp, stmt_list);
+        }
+        Error::invalid_syntax("Expected '}'");
+        return NULL;
+      }
+    }
+    Error::invalid_syntax("Expected '{'");
+  }
   return NULL;
 }
 
@@ -88,31 +125,17 @@ NodeLet *Parser::parse_let() {
   return NULL;
 }
 
-NodeExpression *Parser::parse_expression() {
-  if (look_ahead().get_type() == INT_LIT) {
-    if (NodeINT *INT = parse_int()) {
-      return new NodeExpression(INT);
-    }
-    return NULL;
-  }
-  if (look_ahead().get_type() == IDENTIFIER) {
-    if (NodeIdentifier *identifier = parse_identifier()) {
-      return new NodeExpression(identifier);
-    }
-    return NULL;
-  }
-  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
-  return NULL;
-}
-
 NodeAdditiveExpression *Parser::parse_additive_expression() {
   if (NodeMultiplicativeExpression *mul_exp =
           parse_multiplicative_expression()) {
     NodeAdditiveExpression *add_exp = new NodeAdditiveExpression(mul_exp);
     while (NodeAdditiveOperator *add_op = parse_additive_operator()) {
-      NodeMultiplicativeExpression *new_mul_exp =
-          parse_multiplicative_expression();
-      add_exp = new NodeAdditiveExpression(add_exp, add_op, new_mul_exp);
+      if (NodeMultiplicativeExpression *new_mul_exp =
+              parse_multiplicative_expression()) {
+        add_exp = new NodeAdditiveExpression(add_exp, add_op, new_mul_exp);
+      } else {
+        return NULL;
+      }
     }
     return add_exp;
   }
@@ -137,11 +160,31 @@ NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {
         new NodeMultiplicativeExpression(exp);
     while (NodeMultiplicativeOperator *mul_op =
                parse_multiplicative_operator()) {
-      NodeExpression *new_exp = parse_expression();
-      mul_exp = new NodeMultiplicativeExpression(mul_exp, mul_op, new_exp);
+      if (NodeExpression *new_exp = parse_expression()) {
+        mul_exp = new NodeMultiplicativeExpression(mul_exp, mul_op, new_exp);
+      } else {
+        return NULL;
+      }
     }
     return mul_exp;
   }
+  return NULL;
+}
+
+NodeExpression *Parser::parse_expression() {
+  if (look_ahead().get_type() == INT_LIT) {
+    if (NodeINT *INT = parse_int()) {
+      return new NodeExpression(INT);
+    }
+    return NULL;
+  }
+  if (look_ahead().get_type() == IDENTIFIER) {
+    if (NodeIdentifier *identifier = parse_identifier()) {
+      return new NodeExpression(identifier);
+    }
+    return NULL;
+  }
+  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
   return NULL;
 }
 

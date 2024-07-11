@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class NodeStatementList;
+
 class NodeINT {
   friend class Parser;
   friend class Codegen;
@@ -119,23 +121,46 @@ public:
   static string print_debug(NodeDebug *debug, int indent);
 };
 
+class NodeIf {
+  friend class Parser;
+  friend class Codegen;
+
+  NodeAdditiveExpression *add_exp;
+  NodeStatementList *stmt_list;
+
+public:
+  NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list);
+  static string print_if(NodeIf *, int indent);
+};
+
 class NodeStatement {
   friend class Parser;
   friend class Codegen;
   NodeDebug *debug;
   NodeLet *let;
+  NodeIf *IF;
 
 public:
   NodeStatement(NodeDebug *debug);
   NodeStatement(NodeLet *let);
+  NodeStatement(NodeIf *IF);
 
   static string print_statement(NodeStatement *stmt, int indent);
+};
+
+class NodeStatementList {
+  friend class Parser;
+  friend class Codegen;
+
+public:
+  vector<NodeStatement *> stmts;
+  static string print_statement_list(NodeStatementList *stmt, int indent);
 };
 
 class NodeProgram {
   friend class Parser;
   friend class Codegen;
-  vector<NodeStatement *> stmts;
+  NodeStatementList *stmt_list;
 
 public:
   static string print_program(NodeProgram *program, int indent);

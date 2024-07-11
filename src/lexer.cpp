@@ -49,6 +49,7 @@ bool Lexical_Analyzer::is_identifier(string &token) {
   }
   return true;
 }
+
 bool Lexical_Analyzer::is_operator(char c) {
   if (c == '+' || c == '-' || c == '*' || c == '/')
     return true;
@@ -71,6 +72,10 @@ string Token::get_token_name(TOKEN_TYPES token) {
     return "EQUAL";
   case LET:
     return "LET";
+  case IF:
+    return "IF";
+  case ELSE:
+    return "ELSE";
   case ADD:
     return "ADD";
   case SUB:
@@ -79,6 +84,10 @@ string Token::get_token_name(TOKEN_TYPES token) {
     return "MUL";
   case DIV:
     return "DIV";
+  case BRACKET_OPEN_CURLY:
+    return "BRACKET_OPEN_CURLY";
+  case BRACKET_CLOSE_CURLY:
+    return "BRACKET_CLOSE_CURLY";
   default:
     return "INVALID";
   }
@@ -93,6 +102,10 @@ TOKEN_TYPES Lexical_Analyzer::analyse_buffer() {
     return EQUALS;
   } else if (buffer == "let") {
     return LET;
+  } else if (buffer == "if") {
+    return IF;
+  } else if (buffer == "else") {
+    return ELSE;
   } else if (buffer == "+") {
     return ADD;
   } else if (buffer == "-") {
@@ -101,6 +114,10 @@ TOKEN_TYPES Lexical_Analyzer::analyse_buffer() {
     return MUL;
   } else if (buffer == "/") {
     return DIV;
+  } else if (buffer == "{") {
+    return BRACKET_OPEN_CURLY;
+  } else if (buffer == "}") {
+    return BRACKET_CLOSE_CURLY;
   } else if (is_identifier(buffer)) {
     return IDENTIFIER;
   }
@@ -111,9 +128,9 @@ void Lexical_Analyzer::analyse(string stream) {
   reset();
   input_stream = stream;
   int ptr = 0;
-  while (ptr != input_stream.size()) {
-    if (isspace(input_stream[ptr]) || input_stream[ptr] == ';' ||
-        ptr == input_stream.size() - 1) {
+  while (ptr <= input_stream.size()) {
+    if (ptr == input_stream.size() || isspace(input_stream[ptr]) ||
+        input_stream[ptr] == ';') {
       if (buffer.size() > 0) {
         TOKEN_TYPES token = analyse_buffer();
         switch (token) {
@@ -143,6 +160,18 @@ void Lexical_Analyzer::analyse(string stream) {
           break;
         case DIV:
           token_stream.push_back(Token(DIV));
+          break;
+        case BRACKET_OPEN_CURLY:
+          token_stream.push_back(Token(BRACKET_OPEN_CURLY));
+          break;
+        case BRACKET_CLOSE_CURLY:
+          token_stream.push_back(Token(BRACKET_CLOSE_CURLY));
+          break;
+        case IF:
+          token_stream.push_back(Token(IF));
+          break;
+        case ELSE:
+          token_stream.push_back(Token(ELSE));
           break;
         default:
           token_stream.push_back(Token(INVALID_TOKEN));

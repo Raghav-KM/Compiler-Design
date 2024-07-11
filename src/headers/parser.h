@@ -10,9 +10,11 @@ private:
   vector<Token> token_stream;
   int ptr;
   SymbolTable *symbol_table;
+  NodeStatementList *parse_statement_list(TOKEN_TYPES END_TOKEN);
   NodeStatement *parse_statement();
   NodeDebug *parse_debug();
   NodeLet *parse_let();
+  NodeIf *parse_if();
   NodeINT *parse_int();
   NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
   NodeExpression *parse_expression();

@@ -1,2 +1,5 @@
-dbg 10;
-dbg variable_name;
+dbg
+let
+if
+else
+variable_name

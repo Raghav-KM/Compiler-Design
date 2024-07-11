@@ -2,54 +2,32 @@ section .data
 
 section .bss
     buffer resb 12
-    a resd 1
-    b resd 1
-    c resd 1
     t_1 resd 1
-    t_2 resd 1
 
 section .text
     global _start
 
 _start:
     mov eax, 1
-    mov [a], eax
-    mov eax, 2
-    mov [b], eax
-    mov eax, 3
-    mov [c], eax
-    mov eax, [a]
-    add eax, [b]
-    mov [t_2], eax
-    mov eax, [t_2]
-    add eax, [c]
+    add eax, 2
     mov [t_1], eax
     mov eax, [t_1]
     call print_integer
 
-    mov eax, [a]
-    sub eax, [b]
-    mov [t_2], eax
-    mov eax, [t_2]
-    sub eax, [c]
+    mov eax, 1
+    sub eax, 2
     mov [t_1], eax
     mov eax, [t_1]
     call print_integer
 
-    mov eax, [a]
-    imul eax, [b]
-    mov [t_2], eax
-    mov eax, [t_2]
-    imul eax, [c]
+    mov eax, 1
+    imul eax, 2
     mov [t_1], eax
     mov eax, [t_1]
     call print_integer
 
-    mov eax, [a]
-    imul eax, [b]
-    mov [t_2], eax
-    mov eax, [t_2]
-    imul eax, [c]
+    mov eax, 1
+    imul eax, 2
     mov [t_1], eax
     mov eax, [t_1]
     call print_integer
