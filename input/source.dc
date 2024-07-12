@@ -1,6 +1,8 @@
-if 1 + 2 * 3 {
+let conditionA = 0;
+let varA = 2;
+
+if conditionA {
     dbg 1;
-    if 1 + 2 + 3 {
-        dbg 2;
-    }
 }
+
+dbg varA;

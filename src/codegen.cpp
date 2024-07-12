@@ -7,8 +7,19 @@ Codegen::Codegen() {
   require_print_integer_subroutine = false;
 }
 
-int Codegen::count = 0;
+int Codegen::var_count = 0;
+int Codegen::if_count = 0;
+
 int Codegen::max_count = 0;
+
+string Codegen::get_new_temp_variable() {
+  var_count++;
+  return "[t_" + to_string(var_count) + "]";
+}
+int Codegen::get_if_count() {
+  if_count++;
+  return if_count;
+}
 
 void Codegen::push_eax() { text_section += "    push eax\n"; }
 
@@ -66,9 +77,20 @@ void Codegen::generate_let(string lval, string rval) {
   Codegen::reset_count();
 }
 
-string Codegen::get_new_temp_variable() {
-  count++;
-  return "[t_" + to_string(count) + "]";
+void Codegen::generate_if(string condition, NodeStatementList *if_stmt_list,
+                          int if_count) {
+  text_section += "    mov eax, " + condition + "\n";
+  text_section += "    cmp eax, 0\n";
+  text_section += "    jnz if_" + to_string(if_count) + "\n\n";
+
+  // Else Statments
+  text_section += "    jmp if_" + to_string(if_count) + "_end\n\n";
+
+  // If Statments
+  text_section += "if_" + to_string(if_count) + ":\n";
+  traverse_stmt_list(if_stmt_list);
+
+  text_section += "if_" + to_string(if_count) + "_end:\n";
 }
 
 void Codegen::export_asm() {
@@ -155,15 +177,22 @@ print_integer:
 }
 
 void Codegen::traverse_parse_tree(NodeProgram *program) {
-  for (auto stmt : program->stmts) {
+  traverse_stmt_list(program->stmt_list);
+}
+
+void Codegen::traverse_stmt_list(NodeStatementList *stmt_list) {
+  for (auto stmt : stmt_list->stmts) {
     traverse_stmt(stmt);
   }
 }
+
 void Codegen::traverse_stmt(NodeStatement *stmt) {
   if (stmt->debug) {
     traverse_debug(stmt->debug);
   } else if (stmt->let) {
     traverse_let(stmt->let);
+  } else if (stmt->IF) {
+    traverse_if(stmt->IF);
   }
 }
 
@@ -177,6 +206,11 @@ void Codegen::traverse_let(NodeLet *let) {
   string var = traverse_additive_expression(let->add_exp);
   declare_variable_bss_section(let->identifier->name);
   generate_let("[" + let->identifier->name + "]", var);
+}
+
+void Codegen::traverse_if(NodeIf *IF) {
+  string var = traverse_additive_expression(IF->add_exp);
+  generate_if(var, IF->stmt_list, Codegen::get_if_count());
 }
 
 string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
@@ -216,6 +250,6 @@ string Codegen::traverse_expression(NodeExpression *exp) {
 }
 
 void Codegen::reset_count() {
-  Codegen::max_count = max(max_count, count);
-  Codegen::count = 0;
+  Codegen::max_count = max(max_count, var_count);
+  Codegen::var_count = 0;
 }

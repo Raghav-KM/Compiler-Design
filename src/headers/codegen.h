@@ -12,7 +12,10 @@ using namespace std;
 class Codegen {
 private:
   static int max_count;
-  static int count;
+  static int var_count;
+
+  static int if_count;
+
   string data_section;
   string bss_section;
   string text_section;
@@ -22,6 +25,7 @@ public:
   Codegen();
 
   string get_new_temp_variable();
+  int get_if_count();
   static void reset_count();
 
   void push_eax();
@@ -32,13 +36,19 @@ public:
   void generate_debug(string variable_name);
   void generate_debug(int value);
   void generate_let(string lval, string rval);
+  void generate_if(string condition, NodeStatementList *if_stmt_list,
+                   int if_count);
+
   void generate_expressions(string, string, char, string);
   void export_asm();
 
   void traverse_parse_tree(NodeProgram *program);
+  void traverse_stmt_list(NodeStatementList *stmt_list);
+
   void traverse_stmt(NodeStatement *stmt);
   void traverse_debug(NodeDebug *debug);
   void traverse_let(NodeLet *let);
+  void traverse_if(NodeIf *IF);
 
   string traverse_additive_expression(NodeAdditiveExpression *add_exp);
   string

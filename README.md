@@ -72,10 +72,10 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Corrected the parser for expresssion
 
 # 11-07-2024
-- rewrite lexer
+- Implementation of IF-ELSE
 
 # 12-07-2024
-- Write IF-ELSE
+- Implementation of IF-ELSE
 
 # 13-07-2024
 - Determine grammar for functions 

@@ -2,34 +2,29 @@ section .data
 
 section .bss
     buffer resb 12
-    t_1 resd 1
+    conditionA resd 1
+    varA resd 1
 
 section .text
     global _start
 
 _start:
+    mov eax, 0
+    mov [conditionA], eax
+    mov eax, 2
+    mov [varA], eax
+    mov eax, [conditionA]
+    cmp eax, 0
+    jnz if_1
+
+    jmp if_1_end
+
+if_1:
     mov eax, 1
-    add eax, 2
-    mov [t_1], eax
-    mov eax, [t_1]
     call print_integer
 
-    mov eax, 1
-    sub eax, 2
-    mov [t_1], eax
-    mov eax, [t_1]
-    call print_integer
-
-    mov eax, 1
-    imul eax, 2
-    mov [t_1], eax
-    mov eax, [t_1]
-    call print_integer
-
-    mov eax, 1
-    imul eax, 2
-    mov [t_1], eax
-    mov eax, [t_1]
+if_1_end:
+    mov eax, [varA]
     call print_integer
 
 

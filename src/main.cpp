@@ -60,9 +60,9 @@ int main(int argc, char *argv[]) {
       cout << "Program Syntax Correct" << endl;
       cout << NodeProgram::print_program(program, 0) << endl;
 
-      // Codegen codegen;
-      // codegen.traverse_parse_tree(program);
-      // codegen.export_asm();
+      Codegen codegen;
+      codegen.traverse_parse_tree(program);
+      codegen.export_asm();
     } else {
       Error::print_error();
       return EXIT_FAILURE;

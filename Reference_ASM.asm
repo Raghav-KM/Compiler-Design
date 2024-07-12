@@ -1,7 +1,6 @@
 # ---- Print Integer ---- #
 
 # Move the value to print in eax #
-
 print_integer:
     push eax
     mov ecx, buffer + 10
@@ -26,3 +25,35 @@ print_integer:
     pop eax              
     ret
 
+
+# ---- IF Condition ---- #
+
+
+# if add_exp stmt_list
+# move the result of add_exp to eax reg
+# compare eax to 0
+# if yes -> jump to if_i label
+# if no 
+
+
+/*
+    mov eax, [add_exp_res]
+    cmp eax, 0
+    jz  if_i
+
+    ###### 
+    else statments 
+
+    jmp if_i_end
+    ######
+
+if_i:
+    #####
+    if statments
+    #####
+
+if_i_end:
+
+
+
+*/
