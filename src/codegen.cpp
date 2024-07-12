@@ -77,18 +77,19 @@ void Codegen::generate_let(string lval, string rval) {
   Codegen::reset_count();
 }
 
-void Codegen::generate_if(string condition, NodeStatementList *if_stmt_list,
-                          int if_count) {
+void Codegen::generate_if(string condition, NodeStatementList *stmt_list_if,
+                          NodeStatementList *stmt_list_else, int if_count) {
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 0\n";
   text_section += "    jnz if_" + to_string(if_count) + "\n\n";
 
   // Else Statments
+  traverse_stmt_list(stmt_list_else);
   text_section += "    jmp if_" + to_string(if_count) + "_end\n\n";
 
   // If Statments
   text_section += "if_" + to_string(if_count) + ":\n";
-  traverse_stmt_list(if_stmt_list);
+  traverse_stmt_list(stmt_list_if);
 
   text_section += "if_" + to_string(if_count) + "_end:\n";
 }
@@ -210,7 +211,8 @@ void Codegen::traverse_let(NodeLet *let) {
 
 void Codegen::traverse_if(NodeIf *IF) {
   string var = traverse_additive_expression(IF->add_exp);
-  generate_if(var, IF->stmt_list, Codegen::get_if_count());
+  generate_if(var, IF->stmt_list_if, IF->stmt_list_else,
+              Codegen::get_if_count());
 }
 
 string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {

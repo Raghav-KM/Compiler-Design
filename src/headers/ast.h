@@ -126,10 +126,12 @@ class NodeIf {
   friend class Codegen;
 
   NodeAdditiveExpression *add_exp;
-  NodeStatementList *stmt_list;
+  NodeStatementList *stmt_list_if;
+  NodeStatementList *stmt_list_else;
 
 public:
-  NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list);
+  NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list_if,
+         NodeStatementList *stmt_list_else);
   static string print_if(NodeIf *, int indent);
 };
 

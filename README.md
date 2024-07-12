@@ -75,16 +75,5 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 - Implementation of IF-ELSE
 
 # 12-07-2024
-- Implementation of IF-ELSE
-
-# 13-07-2024
-- Determine grammar for functions 
-
-# 14-07-2024
-- Implement Functions 
-
-# 15-07-2024
-- Determine grammar for function with parameters
-
-# 16-07-2024
-- Implement Functions
+- Implementation of IF-ELSE Done
+- Trying to implement a better lexer

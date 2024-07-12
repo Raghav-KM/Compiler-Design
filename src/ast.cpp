@@ -24,9 +24,11 @@ NodeLet::NodeLet(NodeIdentifier *identifier, NodeAdditiveExpression *add_exp) {
   this->identifier = identifier;
   this->add_exp = add_exp;
 }
-NodeIf::NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list) {
+NodeIf::NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list_if,
+               NodeStatementList *stmt_list_else) {
   this->add_exp = add_exp;
-  this->stmt_list = stmt_list;
+  this->stmt_list_if = stmt_list_if;
+  this->stmt_list_else = stmt_list_else;
 }
 
 NodeExpression::NodeExpression(NodeIdentifier *identifier) {
@@ -159,8 +161,12 @@ string NodeDebug::print_debug(NodeDebug *debug, int indent) {
 string NodeIf::print_if(NodeIf *IF, int indent) {
   return tab(indent) + "[ 'if': \n" +
          NodeAdditiveExpression::print(IF->add_exp, indent + 1) +
-         NodeStatementList::print_statement_list(IF->stmt_list, indent + 1) +
-         tab(indent) + "]\n";
+         tab(indent + 1) + "[ 'true' : \n" +
+         NodeStatementList::print_statement_list(IF->stmt_list_if, indent + 2) +
+         tab(indent + 1) + "]\n" + tab(indent + 1) + "[ 'false' : \n" +
+         NodeStatementList::print_statement_list(IF->stmt_list_else,
+                                                 indent + 2) +
+         tab(indent + 1) + "]\n" + tab(indent) + "]\n";
 }
 
 string NodeStatement::print_statement(NodeStatement *stmt, int indent) {

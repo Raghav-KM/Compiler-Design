@@ -1,8 +1,13 @@
 let conditionA = 0;
-let varA = 2;
 
 if conditionA {
     dbg 1;
+} else {
+    dbg 2;
 }
 
-dbg varA;
+if conditionA + 1 {
+    dbg 3;
+} else {
+    dbg 4;
+}

@@ -72,7 +72,7 @@ NodeStatement *Parser::parse_statement() {
   Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if'");
   return NULL;
 }
-
+/*
 NodeIf *Parser::parse_if() {
   consume();
   if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
@@ -90,6 +90,53 @@ NodeIf *Parser::parse_if() {
     }
     Error::invalid_syntax("Expected '{'");
   }
+  return NULL;
+}
+*/
+
+NodeIf *Parser::parse_if() {
+  consume();
+  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
+      consume();
+      if (NodeStatementList *stmt_list_if =
+              parse_statement_list(BRACKET_CLOSE_CURLY)) {
+        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+          consume();
+          if (NodeStatementList *stmt_list_else = parse_else()) {
+            return new NodeIf(add_exp, stmt_list_if, stmt_list_else);
+          }
+          return NULL;
+        }
+        Error::invalid_syntax("Expected '}'");
+        return NULL;
+      }
+    }
+    Error::invalid_syntax("Expected '{'");
+  }
+  return NULL;
+}
+
+NodeStatementList *Parser::parse_else() {
+  if (look_ahead().get_type() == ELSE) {
+    consume();
+    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
+      consume();
+      if (NodeStatementList *stmt_list_else =
+              parse_statement_list(BRACKET_CLOSE_CURLY)) {
+        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+          consume();
+          return stmt_list_else;
+        }
+        Error::invalid_syntax("Expected '}'");
+        return NULL;
+      }
+      return NULL;
+    }
+    Error::invalid_syntax("Expected '}'");
+    return NULL;
+  }
+  Error::invalid_syntax("Expected 'else'");
   return NULL;
 }
 

@@ -3,7 +3,7 @@ section .data
 section .bss
     buffer resb 12
     conditionA resd 1
-    varA resd 1
+    t_1 resd 1
 
 section .text
     global _start
@@ -11,11 +11,12 @@ section .text
 _start:
     mov eax, 0
     mov [conditionA], eax
-    mov eax, 2
-    mov [varA], eax
     mov eax, [conditionA]
     cmp eax, 0
     jnz if_1
+
+    mov eax, 2
+    call print_integer
 
     jmp if_1_end
 
@@ -24,9 +25,23 @@ if_1:
     call print_integer
 
 if_1_end:
-    mov eax, [varA]
+    mov eax, [conditionA]
+    add eax, 1
+    mov [t_1], eax
+    mov eax, [t_1]
+    cmp eax, 0
+    jnz if_2
+
+    mov eax, 4
     call print_integer
 
+    jmp if_2_end
+
+if_2:
+    mov eax, 3
+    call print_integer
+
+if_2_end:
 
     mov eax, 1
     xor ebx, ebx

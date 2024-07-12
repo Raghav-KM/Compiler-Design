@@ -15,6 +15,7 @@ private:
   NodeDebug *parse_debug();
   NodeLet *parse_let();
   NodeIf *parse_if();
+  NodeStatementList *parse_else();
   NodeINT *parse_int();
   NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
   NodeExpression *parse_expression();
