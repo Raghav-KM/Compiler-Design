@@ -11,6 +11,7 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 **TODO : Change lexer to be able to recognize operators even without space**
 
+**TODO : Write ASM for divide operation**
 
 # 22-06-2024
 - Read a file that is passed as an argument 
