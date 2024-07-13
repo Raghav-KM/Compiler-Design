@@ -2,8 +2,6 @@
 
 vector<pair<string, string>> Test_Lexical_Analyser::test_file_names = {
     {"./test/Lexer/input/1.ds", "./test/Lexer/output/1.txt"},
-    {"./test/Lexer/input/2.ds", "./test/Lexer/output/2.txt"},
-    {"./test/Lexer/input/3.ds", "./test/Lexer/output/3.txt"},
 };
 
 TestCompiler::TestCompiler() : lexer(), parser() {}
@@ -39,18 +37,22 @@ bool Test_Lexical_Analyser::run_test(string input_file_path,
   string input = input_buffer.str();
   string expected_output = output_buffer.str();
 
-  lexer.analyse(input);
   cout << "Testcase " + input_file_path.substr(19, 1) << " : ";
-  string output = lexer.to_string();
 
-  if (output == expected_output) {
-    cout << "PASS\n";
-    return true;
+  if (lexer.analyse(input)) {
+    string output = lexer.get_token_stream_string();
+    if (output == expected_output) {
+      cout << "PASS\n";
+      return true;
+    } else {
+      cout << "FAIL [Incorrect Output]\n";
+      cout << "Expected Output :\n" << expected_output << "\n";
+      cout << "Output          :\n" << output << "\n";
+      cout << "\n";
+      return false;
+    }
   } else {
-    cout << "FAIL\n";
-    cout << "Expected Output :\n" << expected_output << "\n";
-    cout << "Output          :\n" << output << "\n";
-    cout << "\n";
+    cout << "FAIL [Lexical Analysis Failed]\n";
     return false;
   }
 }

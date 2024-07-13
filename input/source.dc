@@ -1,13 +1,5 @@
-let conditionA = 0;
-
-if conditionA {
+if 10*10-101{
     dbg 1;
-} else {
+}else{
     dbg 2;
-}
-
-if conditionA + 1 {
-    dbg 3;
-} else {
-    dbg 4;
 }

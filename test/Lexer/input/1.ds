@@ -3,3 +3,11 @@ let
 if
 else
 variable_name
+=
++
+-
+*
+/
+;
+{
+}

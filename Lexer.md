@@ -7,7 +7,7 @@
     - dbg
     - if, else
 
-2. #### Identifiers
+2. #### Identers
     - Can only start with a letter [ a-z, A-Z ] 
     - Can only contain a Alphanumeric character [ a-z, A-Z, 0-9 ]
 
@@ -51,6 +51,7 @@ A list of TOKENS
         - while current_character is digit
             - buffer.append(current_character)
             - current_position++
+        - token_list.append(Token(INTEGET,buffer))
 
     - else if current_character is operator
         - token = get_operator_type(current_character)

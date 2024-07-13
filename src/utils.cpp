@@ -50,3 +50,5 @@ RESULT_TYPE SymbolTable::exists(string symbol_name) {
 int SymbolTable::get_value(string symbol_name) { return table[symbol_name]; }
 
 void SymbolTable::reset() { this->table.clear(); }
+
+// ---- General Fucntion ---- //

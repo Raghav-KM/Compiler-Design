@@ -20,7 +20,7 @@ void Parser::reset() {
 
 Token Parser::look_ahead() {
   if (ptr == token_stream.size())
-    return Token(END_FILE);
+    return Token(END_OF_FILE);
   return token_stream[ptr];
 }
 
@@ -29,7 +29,7 @@ void Parser::consume() { ptr++; }
 NodeProgram *Parser::parse_program(vector<Token> token_stream) {
   reset();
   this->token_stream = token_stream;
-  if (NodeStatementList *stmt_list = parse_statement_list(END_FILE)) {
+  if (NodeStatementList *stmt_list = parse_statement_list(END_OF_FILE)) {
     NodeProgram *program = new NodeProgram();
     program->stmt_list = stmt_list;
     return program;
@@ -40,7 +40,7 @@ NodeProgram *Parser::parse_program(vector<Token> token_stream) {
 NodeStatementList *Parser::parse_statement_list(TOKEN_TYPES END_TOKEN) {
   NodeStatementList *stmt_list = new NodeStatementList();
   while (look_ahead().get_type() != END_TOKEN &&
-         look_ahead().get_type() != END_FILE) {
+         look_ahead().get_type() != END_OF_FILE) {
     NodeStatement *stmt = parse_statement();
     if (!stmt)
       return NULL;
@@ -72,27 +72,6 @@ NodeStatement *Parser::parse_statement() {
   Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if'");
   return NULL;
 }
-/*
-NodeIf *Parser::parse_if() {
-  consume();
-  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
-    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
-      consume();
-      if (NodeStatementList *stmt_list =
-              parse_statement_list(BRACKET_CLOSE_CURLY)) {
-        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
-          consume();
-          return new NodeIf(add_exp, stmt_list);
-        }
-        Error::invalid_syntax("Expected '}'");
-        return NULL;
-      }
-    }
-    Error::invalid_syntax("Expected '{'");
-  }
-  return NULL;
-}
-*/
 
 NodeIf *Parser::parse_if() {
   consume();
@@ -248,7 +227,7 @@ NodeMultiplicativeOperator *Parser::parse_multiplicative_operator() {
 }
 
 NodeINT *Parser::parse_int() {
-  NodeINT *INT = new NodeINT(look_ahead().get_value());
+  NodeINT *INT = new NodeINT(stoi(look_ahead().get_body()));
   consume();
   return INT;
 }

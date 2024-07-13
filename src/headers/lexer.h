@@ -1,7 +1,9 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include "utils.h"
 #include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -10,66 +12,74 @@
 using namespace std;
 
 enum TOKEN_TYPES {
-  DEBUG,
-  INT_LIT,
-  IDENTIFIER,
+  // Keywords
   LET,
+  DEBUG,
   IF,
   ELSE,
+
+  // Identifiers
+  IDENTIFIER,
+
+  // Literals
+  INT_LIT,
+
+  // Symbols
+  SEMICOLON,
+  BRACKET_OPEN_CURLY,
+  BRACKET_CLOSE_CURLY,
+
+  // Operators
   EQUALS,
   ADD,
   SUB,
   MUL,
   DIV,
-  SEMICOLON,
-  BRACKET_OPEN_CURLY,
-  BRACKET_CLOSE_CURLY,
-  INVALID_TOKEN,
-  END_FILE,
+
+  // End of File
+  END_OF_FILE,
+
+  // Invalid Token
+  INVALID_TOKEN
 };
 
 class Token {
 private:
-  TOKEN_TYPES token_type;
-  int value;
+  TOKEN_TYPES type;
   string body;
+  string name;
+
+  static string get_token_name(TOKEN_TYPES type);
 
 public:
   Token(TOKEN_TYPES type);
-  Token(TOKEN_TYPES type, int value, string body);
-
-  void set_type(TOKEN_TYPES type);
+  Token(TOKEN_TYPES types, string body);
   TOKEN_TYPES get_type();
-  void set_value(int val);
-  int get_value();
-  void set_body(string body);
+  string get_name();
   string get_body();
-  static string get_token_name(TOKEN_TYPES token);
+
+  static vector<string> keywords;
+  static vector<char> symbols;
+  static vector<char> operators;
+
+  static bool is_keyword(string keyword);
+  static bool is_operator(char op);
+  static bool is_symbol(char symbol);
+
+  static TOKEN_TYPES get_keyword_type(string keyword);
+  static TOKEN_TYPES get_operator_type(char op);
+  static TOKEN_TYPES get_symbol_type(char symbol);
 };
 
-class Lexical_Analyzer {
-
-  friend class Parser;
-
+class Lexer {
 private:
-  string input_stream;
-  string buffer;
   vector<Token> token_stream;
 
-  void remove_endline();
-  void clear_buffer();
-  void push_to_buffer(char);
-  bool is_integer_literal(string &token);
-  bool is_identifier(string &token);
-  bool is_operator(char);
-  TOKEN_TYPES analyse_buffer();
-  void reset();
-
 public:
-  Lexical_Analyzer();
-  void analyse(string stream);
-  string to_string();
+  Lexer();
+  bool analyse(string input_stream);
   vector<Token> get_token_stream();
+  string get_token_stream_string();
 };
 
 #endif

@@ -14,7 +14,7 @@ using namespace std;
 
 class TestCompiler {
 protected:
-  Lexical_Analyzer lexer;
+  Lexer lexer;
   Parser parser;
 
 public:

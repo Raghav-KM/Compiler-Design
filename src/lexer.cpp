@@ -1,63 +1,9 @@
 #include "./headers/lexer.h"
 
 //--- Token ---//
-//--- Private Member Function ---//
 
-//--- Public Member Function ---//
-Token::Token(TOKEN_TYPES type) {
-  token_type = type;
-  value = 0;
-}
-Token::Token(TOKEN_TYPES type, int value, string body) {
-  token_type = type;
-  this->value = value;
-  this->body = body;
-}
-
-void Token::set_type(TOKEN_TYPES type) { token_type = type; }
-TOKEN_TYPES Token::get_type() { return token_type; }
-void Token::set_value(int val) { this->value = val; }
-int Token::get_value() { return value; }
-
-void Token::set_body(string body) { this->body = body; }
-string Token::get_body() { return body; }
-
-//--- Lexical Analyzer ---//
-
-//--- Private Member Function ---//
-
-void Lexical_Analyzer::remove_endline() {
-  for (int i = 0; i < input_stream.length(); i++) {
-    if (input_stream[i] == '\n') {
-      input_stream[i] = ' ';
-    }
-  }
-}
-
-void Lexical_Analyzer::clear_buffer() { buffer = ""; }
-
-void Lexical_Analyzer::push_to_buffer(char c) { buffer.push_back(c); }
-
-bool Lexical_Analyzer::is_integer_literal(string &token) {
-  return all_of(token.begin(), token.end(), ::isdigit);
-}
-
-bool Lexical_Analyzer::is_identifier(string &token) {
-  for (char c : token) {
-    if (c >= '0' && c <= '9')
-      return false;
-  }
-  return true;
-}
-
-bool Lexical_Analyzer::is_operator(char c) {
-  if (c == '+' || c == '-' || c == '*' || c == '/')
-    return true;
-  return false;
-}
-
-string Token::get_token_name(TOKEN_TYPES token) {
-  switch (token) {
+string Token::get_token_name(TOKEN_TYPES type) {
+  switch (type) {
   case DEBUG:
     return "DEBUG";
   case INT_LIT:
@@ -66,10 +12,8 @@ string Token::get_token_name(TOKEN_TYPES token) {
     return "SEMICOLON";
   case IDENTIFIER:
     return "IDENTIFIER";
-  case INVALID_TOKEN:
-    return "INVALID_TOKEN";
   case EQUALS:
-    return "EQUAL";
+    return "EQUALS";
   case LET:
     return "LET";
   case IF:
@@ -89,127 +33,155 @@ string Token::get_token_name(TOKEN_TYPES token) {
   case BRACKET_CLOSE_CURLY:
     return "BRACKET_CLOSE_CURLY";
   default:
-    return "INVALID";
+    return "INVALID_TOKEN";
   }
 }
 
-TOKEN_TYPES Lexical_Analyzer::analyse_buffer() {
-  if (buffer == "dbg") {
+vector<string> Token::keywords = {"dbg", "let", "if", "else"};
+vector<char> Token::symbols = {';', '{', '}'};
+vector<char> Token::operators = {'+', '-', '*', '/', '='};
+
+bool Token::is_keyword(string keyword) {
+  for (auto it : Token::keywords) {
+    if (it == keyword)
+      return true;
+  }
+  return false;
+}
+
+bool Token::is_operator(char op) {
+  for (auto it : Token::operators) {
+    if (it == op)
+      return true;
+  }
+  return false;
+}
+
+bool Token::is_symbol(char symbol) {
+  for (auto it : Token::symbols) {
+    if (it == symbol)
+      return true;
+  }
+  return false;
+}
+
+Token::Token(TOKEN_TYPES type) {
+  this->type = type;
+  this->body = "";
+  this->name = Token::get_token_name(type);
+}
+
+Token::Token(TOKEN_TYPES type, string body) {
+  this->type = type;
+  this->body = body;
+  this->name = Token::get_token_name(type);
+}
+
+TOKEN_TYPES Token::get_type() { return this->type; }
+string Token::get_name() { return this->name; }
+string Token::get_body() { return this->body; }
+
+TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
+  if (keyword == "dbg") {
     return DEBUG;
-  } else if (is_integer_literal(buffer)) {
-    return INT_LIT;
-  } else if (buffer == "=") {
-    return EQUALS;
-  } else if (buffer == "let") {
+  } else if (keyword == "let") {
     return LET;
-  } else if (buffer == "if") {
+  } else if (keyword == "if") {
     return IF;
-  } else if (buffer == "else") {
+  } else if (keyword == "else") {
     return ELSE;
-  } else if (buffer == "+") {
+  } else {
+    return INVALID_TOKEN;
+  }
+}
+
+TOKEN_TYPES Token::get_operator_type(char op) {
+  switch (op) {
+  case '+':
     return ADD;
-  } else if (buffer == "-") {
+  case '-':
     return SUB;
-  } else if (buffer == "*") {
+  case '*':
     return MUL;
-  } else if (buffer == "/") {
+  case '/':
     return DIV;
-  } else if (buffer == "{") {
+  case '=':
+    return EQUALS;
+  default:
+    return INVALID_TOKEN;
+  }
+}
+
+TOKEN_TYPES Token::get_symbol_type(char symbol) {
+  switch (symbol) {
+  case ';':
+    return SEMICOLON;
+  case '{':
     return BRACKET_OPEN_CURLY;
-  } else if (buffer == "}") {
+  case '}':
     return BRACKET_CLOSE_CURLY;
-  } else if (is_identifier(buffer)) {
-    return IDENTIFIER;
+  default:
+    return INVALID_TOKEN;
   }
-  return INVALID_TOKEN;
 }
 
-void Lexical_Analyzer::analyse(string stream) {
-  reset();
-  input_stream = stream;
-  int ptr = 0;
-  while (ptr <= input_stream.size()) {
-    if (ptr == input_stream.size() || isspace(input_stream[ptr]) ||
-        input_stream[ptr] == ';') {
-      if (buffer.size() > 0) {
-        TOKEN_TYPES token = analyse_buffer();
-        switch (token) {
-        case DEBUG:
-          token_stream.push_back(Token(DEBUG));
-          break;
-        case INT_LIT:
-          token_stream.push_back(Token(INT_LIT, stoi(buffer), ""));
-          break;
-        case LET:
-          token_stream.push_back(Token(LET));
-          break;
-        case EQUALS:
-          token_stream.push_back(Token(EQUALS));
-          break;
-        case IDENTIFIER:
-          token_stream.push_back(Token(IDENTIFIER, 0, buffer));
-          break;
-        case ADD:
-          token_stream.push_back(Token(ADD));
-          break;
-        case SUB:
-          token_stream.push_back(Token(SUB));
-          break;
-        case MUL:
-          token_stream.push_back(Token(MUL));
-          break;
-        case DIV:
-          token_stream.push_back(Token(DIV));
-          break;
-        case BRACKET_OPEN_CURLY:
-          token_stream.push_back(Token(BRACKET_OPEN_CURLY));
-          break;
-        case BRACKET_CLOSE_CURLY:
-          token_stream.push_back(Token(BRACKET_CLOSE_CURLY));
-          break;
-        case IF:
-          token_stream.push_back(Token(IF));
-          break;
-        case ELSE:
-          token_stream.push_back(Token(ELSE));
-          break;
-        default:
-          token_stream.push_back(Token(INVALID_TOKEN));
-          break;
-        }
+//--- Lexical Analyzer ---//
+
+Lexer::Lexer() { token_stream = vector<Token>(); }
+
+bool Lexer::analyse(string input_stream) {
+  token_stream.clear();
+
+  int current_pos = 0;
+
+  while (current_pos < input_stream.size()) {
+    if (isspace(input_stream[current_pos])) {
+      current_pos++;
+    } else if (isalpha(input_stream[current_pos])) {
+      string buffer = "";
+      while (current_pos < input_stream.size() &&
+             (isalpha(input_stream[current_pos]) ||
+              isdigit(input_stream[current_pos]) ||
+              input_stream[current_pos] == '_')) {
+        buffer.push_back(input_stream[current_pos]);
+        current_pos++;
       }
-      if (input_stream[ptr] == ';')
-        token_stream.push_back(Token(SEMICOLON));
-      clear_buffer();
+      if (Token::is_keyword(buffer)) {
+        token_stream.push_back(Token(Token::get_keyword_type(buffer)));
+      } else {
+        token_stream.push_back(Token(IDENTIFIER, buffer));
+      }
+    } else if (isdigit(input_stream[current_pos])) {
+      string buffer = "";
+      while (current_pos < input_stream.size() &&
+             isdigit(input_stream[current_pos])) {
+        buffer.push_back(input_stream[current_pos]);
+        current_pos++;
+      }
+      token_stream.push_back(Token(INT_LIT, buffer));
+    } else if (Token::is_operator(input_stream[current_pos])) {
+      token_stream.push_back(
+          Token(Token::get_operator_type(input_stream[current_pos])));
+      current_pos++;
+    } else if (Token::is_symbol(input_stream[current_pos])) {
+      token_stream.push_back(
+          Token(Token::get_symbol_type(input_stream[current_pos])));
+      current_pos++;
     } else {
-      push_to_buffer(input_stream[ptr]);
+      return false;
     }
-    ptr++;
   }
+  return true;
 }
 
-//--- Public Memeber Function ---//
+vector<Token> Lexer::get_token_stream() { return token_stream; }
 
-Lexical_Analyzer::Lexical_Analyzer() {
-  buffer = "";
-  token_stream = vector<Token>();
-}
-
-string Lexical_Analyzer::to_string() {
+string Lexer::get_token_stream_string() {
   string token_stream_str = "";
   for (int i = 0; i < token_stream.size(); i++) {
-    token_stream_str +=
-        "[" + Token::get_token_name(token_stream[i].get_type()) + "]";
+    token_stream_str += "[" + token_stream[i].get_name() + "]";
     if (i != token_stream.size() - 1)
       token_stream_str += " ";
   }
   return token_stream_str;
-}
-
-vector<Token> Lexical_Analyzer::get_token_stream() { return token_stream; }
-
-void Lexical_Analyzer::reset() {
-  input_stream = "";
-  buffer = "";
-  token_stream.clear();
 }

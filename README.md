@@ -3,14 +3,15 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 
 **TODO : Add regex to check the type tokens**
 **TODO : Add Support for negative integers**
-**TODO : Add Test-CASE support**
+**TODO : Add Test-CASES for Lexer**
+**TODO : Add Test-CASES for Parser**
+**TODO : Add Test-CASES for Codegen**
 **TODO : Create Destructors for all AST_NODE classes**
 <!-- **TODO : Create a Error Class** -->
 <!-- **TODO : Get DBG to compile to ASM** -->
 **TODO : Create destructor for singleton-SymbolTable class**
 **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
-**TODO : Change lexer to be able to recognize operators even without space**
-
+<!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 **TODO : Write ASM for divide operation**
 
 # 22-06-2024
@@ -78,3 +79,6 @@ g++ -o ../build/output main.cpp && ../build/output ../input/source.dc
 # 12-07-2024
 - Implementation of IF-ELSE Done
 - Trying to implement a better lexer
+
+# 13-07-2024
+- Rewrote the whole lexer

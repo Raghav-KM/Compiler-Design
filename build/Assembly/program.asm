@@ -2,16 +2,20 @@ section .data
 
 section .bss
     buffer resb 12
-    conditionA resd 1
     t_1 resd 1
+    t_2 resd 1
 
 section .text
     global _start
 
 _start:
-    mov eax, 0
-    mov [conditionA], eax
-    mov eax, [conditionA]
+    mov eax, 10
+    imul eax, 10
+    mov [t_2], eax
+    mov eax, [t_2]
+    sub eax, 101
+    mov [t_1], eax
+    mov eax, [t_1]
     cmp eax, 0
     jnz if_1
 
@@ -25,23 +29,6 @@ if_1:
     call print_integer
 
 if_1_end:
-    mov eax, [conditionA]
-    add eax, 1
-    mov [t_1], eax
-    mov eax, [t_1]
-    cmp eax, 0
-    jnz if_2
-
-    mov eax, 4
-    call print_integer
-
-    jmp if_2_end
-
-if_2:
-    mov eax, 3
-    call print_integer
-
-if_2_end:
 
     mov eax, 1
     xor ebx, ebx
