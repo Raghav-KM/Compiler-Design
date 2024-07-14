@@ -1,6 +1,19 @@
-```ebnf
-<expression> ::= <term> | <expression> "+" <term> | <expression> "-" <term>
-<term>       ::= <factor> | <term> "*" <factor> | <term> "/" <factor>
-<factor>     ::= <number> | "(" <expression> ")"
-<number>     ::= <digit> | <number> <digit>
-<digit>      ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+# Terminals 
+
+- `INT_LIT`, `IDENTIFIER`
+- `ADD`, `SUB`, `DIV`, `MUL`, `EQUALS`
+- `SEMICOLON`, `BRACKET_CLOSE_CURLY`, `BRACKET_CLOSE_CURLY` 
+- `DEBUG`, `LET`
+
+# Non-Terminals
+
+- `<PROGRAM>`
+- `<STMT>`, `<DEBUG_STMT>`, `<LET_STMT>`
+
+
+# Context-Free Grammar (CFG) for Arithmetic Expressions
+
+
+`<PROGRAM>` &rarr; `<STMT>*`
+ 
