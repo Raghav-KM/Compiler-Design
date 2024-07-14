@@ -14,6 +14,8 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "IDENTIFIER";
   case EQUALS:
     return "EQUALS";
+  case EQUAL_EQUALS:
+    return "EQUAL_EQUALS";
   case LET:
     return "LET";
   case IF:
@@ -38,8 +40,8 @@ string Token::get_token_name(TOKEN_TYPES type) {
 }
 
 vector<string> Token::keywords = {"dbg", "let", "if", "else"};
-vector<char> Token::symbols = {';', '{', '}'};
-vector<char> Token::operators = {'+', '-', '*', '/', '='};
+vector<char> Token::char_symbols = {';', '{', '}'};
+vector<char> Token::char_operators = {'+', '-', '*', '/', '='};
 
 bool Token::is_keyword(string keyword) {
   for (auto it : Token::keywords) {
@@ -50,7 +52,7 @@ bool Token::is_keyword(string keyword) {
 }
 
 bool Token::is_operator(char op) {
-  for (auto it : Token::operators) {
+  for (auto it : Token::char_operators) {
     if (it == op)
       return true;
   }
@@ -58,7 +60,7 @@ bool Token::is_operator(char op) {
 }
 
 bool Token::is_symbol(char symbol) {
-  for (auto it : Token::symbols) {
+  for (auto it : Token::char_symbols) {
     if (it == symbol)
       return true;
   }
@@ -95,19 +97,20 @@ TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
   }
 }
 
-TOKEN_TYPES Token::get_operator_type(char op) {
-  switch (op) {
-  case '+':
+TOKEN_TYPES Token::get_operator_type(string op) {
+  if (op == "+") {
     return ADD;
-  case '-':
+  } else if (op == "-") {
     return SUB;
-  case '*':
+  } else if (op == "*") {
     return MUL;
-  case '/':
+  } else if (op == "/") {
     return DIV;
-  case '=':
+  } else if (op == "=") {
     return EQUALS;
-  default:
+  } else if (op == "==") {
+    return EQUAL_EQUALS;
+  } else {
     return INVALID_TOKEN;
   }
 }
@@ -160,9 +163,13 @@ bool Lexer::analyse(string input_stream) {
       }
       token_stream.push_back(Token(INT_LIT, buffer));
     } else if (Token::is_operator(input_stream[current_pos])) {
-      token_stream.push_back(
-          Token(Token::get_operator_type(input_stream[current_pos])));
-      current_pos++;
+      string buffer = "";
+      while (current_pos < input_stream.size() &&
+             Token::is_operator(input_stream[current_pos])) {
+        buffer.push_back(input_stream[current_pos]);
+        current_pos++;
+      }
+      token_stream.push_back(Token(Token::get_operator_type(buffer)));
     } else if (Token::is_symbol(input_stream[current_pos])) {
       token_stream.push_back(
           Token(Token::get_symbol_type(input_stream[current_pos])));

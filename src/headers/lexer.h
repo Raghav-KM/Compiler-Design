@@ -36,6 +36,9 @@ enum TOKEN_TYPES {
   MUL,
   DIV,
 
+  // Comparison Operators
+  EQUAL_EQUALS,
+
   // End of File
   END_OF_FILE,
 
@@ -59,15 +62,15 @@ public:
   string get_body();
 
   static vector<string> keywords;
-  static vector<char> symbols;
-  static vector<char> operators;
+  static vector<char> char_symbols;
+  static vector<char> char_operators;
 
   static bool is_keyword(string keyword);
   static bool is_operator(char op);
   static bool is_symbol(char symbol);
 
   static TOKEN_TYPES get_keyword_type(string keyword);
-  static TOKEN_TYPES get_operator_type(char op);
+  static TOKEN_TYPES get_operator_type(string op);
   static TOKEN_TYPES get_symbol_type(char symbol);
 };
 

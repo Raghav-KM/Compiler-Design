@@ -2,6 +2,8 @@
 
 vector<pair<string, string>> Test_Lexical_Analyser::test_file_names = {
     {"./test/Lexer/input/1.ds", "./test/Lexer/output/1.txt"},
+    {"./test/Lexer/input/2.ds", "./test/Lexer/output/2.txt"},
+
 };
 
 TestCompiler::TestCompiler() : lexer(), parser() {}

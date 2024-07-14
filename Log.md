@@ -82,3 +82,8 @@
 
 # 13-07-2024
 - Rewrote the whole lexer
+
+# 14-07-2024
+- Wrote Grammar.md
+- Added "==" to the lexer
+- ~~Implement "==", ">" , "<", "<=", ">=" operators~~
