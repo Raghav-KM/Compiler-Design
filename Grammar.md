@@ -15,7 +15,7 @@
 
 # Language Grammar
 
-```
+```html
 <PROGRAM>    → <STMT_LIST>
 
 <STMT_LIST>  → <STMT>*

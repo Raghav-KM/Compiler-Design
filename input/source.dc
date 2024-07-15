@@ -1,5 +1,8 @@
-if 10*10-101{
+if 1+2 == 3-1{
     dbg 1;
 }else{
     dbg 2;
 }
+
+let variable_name = 10;
+let variable_name_2 = 10+2+variable_name;

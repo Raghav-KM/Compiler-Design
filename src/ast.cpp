@@ -16,17 +16,19 @@ NodeStatement::NodeStatement(NodeIf *IF) {
   this->IF = IF;
 }
 
-NodeDebug::NodeDebug(NodeAdditiveExpression *add_exp) {
-  this->add_exp = add_exp;
+NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
+  this->comp_exp = comp_exp;
 }
 
-NodeLet::NodeLet(NodeIdentifier *identifier, NodeAdditiveExpression *add_exp) {
+NodeLet::NodeLet(NodeIdentifier *identifier,
+                 NodeComparativeExpression *comp_exp) {
   this->identifier = identifier;
-  this->add_exp = add_exp;
+  this->comp_exp = comp_exp;
 }
-NodeIf::NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list_if,
+NodeIf::NodeIf(NodeComparativeExpression *comp_exp,
+               NodeStatementList *stmt_list_if,
                NodeStatementList *stmt_list_else) {
-  this->add_exp = add_exp;
+  this->comp_exp = comp_exp;
   this->stmt_list_if = stmt_list_if;
   this->stmt_list_else = stmt_list_else;
 }
@@ -38,6 +40,21 @@ NodeExpression::NodeExpression(NodeIdentifier *identifier) {
 NodeExpression::NodeExpression(NodeINT *INT) {
   this->INT = INT;
   this->identifier = NULL;
+}
+
+NodeComparativeExpression::NodeComparativeExpression(
+    NodeAdditiveExpression *add_exp) {
+  this->add_exp = add_exp;
+  this->comp_exp = NULL;
+  this->comp_operator = NULL;
+}
+
+NodeComparativeExpression::NodeComparativeExpression(
+    NodeComparativeExpression *comp_exp, NodeComparativeOperator *comp_operator,
+    NodeAdditiveExpression *add_exp) {
+  this->add_exp = add_exp;
+  this->comp_exp = comp_exp;
+  this->comp_operator = comp_operator;
 }
 
 NodeAdditiveExpression::NodeAdditiveExpression(
@@ -76,6 +93,8 @@ NodeINT::NodeINT(int value) { this->value = value; }
 
 NodeAdditiveOperator::NodeAdditiveOperator(char op) { this->op = op; }
 
+NodeComparativeOperator::NodeComparativeOperator(string op) { this->op = op; }
+
 NodeMultiplicativeOperator::NodeMultiplicativeOperator(char op) {
   this->op = op;
 }
@@ -103,6 +122,26 @@ string NodeExpression::print_expression(NodeExpression *expression,
            tab(indent) + "]\n";
   }
   return "";
+}
+
+string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,
+                                        int indent) {
+  if (comp_exp->comp_operator != NULL && comp_exp->add_exp != NULL) {
+    return tab(indent) + "[ 'comp_expression': \n" +
+           NodeComparativeExpression::print(comp_exp->comp_exp, indent + 1) +
+           NodeComparativeOperator::print(comp_exp->comp_operator, indent + 1) +
+           NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
+           tab(indent) + "]\n";
+  } else {
+    return tab(indent) + "[ 'comp_expression': \n" +
+           NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
+           tab(indent) + "]\n";
+  }
+}
+
+string NodeComparativeOperator::print(NodeComparativeOperator *comp_op,
+                                      int indent) {
+  return tab(indent) + "[ 'comp_operator': " + (comp_op->op) + " ]\n";
 }
 
 string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
@@ -148,19 +187,19 @@ string NodeMultiplicativeOperator::print(NodeMultiplicativeOperator *mul_op,
 string NodeLet::print_let(NodeLet *let, int indent) {
   return tab(indent) + "[ 'let': \n" +
          NodeIdentifier::print_identifier(let->identifier, indent + 1) + " " +
-         NodeAdditiveExpression::print(let->add_exp, indent + 1) + tab(indent) +
-         "]\n";
+         NodeComparativeExpression::print(let->comp_exp, indent + 1) +
+         tab(indent) + "]\n";
 }
 
 string NodeDebug::print_debug(NodeDebug *debug, int indent) {
   return tab(indent) + "[ 'debug': \n" +
-         NodeAdditiveExpression::print(debug->add_exp, indent + 1) +
+         NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
          tab(indent) + "]\n";
 }
 
 string NodeIf::print_if(NodeIf *IF, int indent) {
   return tab(indent) + "[ 'if': \n" +
-         NodeAdditiveExpression::print(IF->add_exp, indent + 1) +
+         NodeComparativeExpression::print(IF->comp_exp, indent + 1) +
          tab(indent + 1) + "[ 'true' : \n" +
          NodeStatementList::print_statement_list(IF->stmt_list_if, indent + 2) +
          tab(indent + 1) + "]\n" + tab(indent + 1) + "[ 'false' : \n" +

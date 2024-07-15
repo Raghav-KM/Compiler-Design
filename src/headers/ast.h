@@ -32,6 +32,16 @@ public:
   static string print_identifier(NodeIdentifier *identifier, int indent);
 };
 
+class NodeComparativeOperator {
+  friend class Parser;
+  friend class Codegen;
+  string op;
+
+public:
+  NodeComparativeOperator(string op);
+  static string print(NodeComparativeOperator *comp_op, int indent);
+};
+
 class NodeAdditiveOperator {
   friend class Parser;
   friend class Codegen;
@@ -100,24 +110,42 @@ public:
   static string print(NodeAdditiveExpression *add_exp, int indent);
 };
 
+class NodeComparativeExpression {
+  friend class Parser;
+  friend class Codegen;
+
+  NodeComparativeExpression *comp_exp;
+  NodeComparativeOperator *comp_operator;
+  NodeAdditiveExpression *add_exp;
+
+public:
+  NodeComparativeExpression(NodeComparativeExpression *comp_exp,
+                            NodeComparativeOperator *comp_operator,
+                            NodeAdditiveExpression *add_exp);
+
+  NodeComparativeExpression(NodeAdditiveExpression *add_exp);
+
+  static string print(NodeComparativeExpression *comp_exp, int indent);
+};
+
 class NodeLet {
   friend class Parser;
   friend class Codegen;
   NodeIdentifier *identifier;
-  NodeAdditiveExpression *add_exp;
+  NodeComparativeExpression *comp_exp;
 
 public:
-  NodeLet(NodeIdentifier *identifier, NodeAdditiveExpression *add_exp);
+  NodeLet(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
   static string print_let(NodeLet *let, int indent);
 };
 
 class NodeDebug {
   friend class Parser;
   friend class Codegen;
-  NodeAdditiveExpression *add_exp;
+  NodeComparativeExpression *comp_exp;
 
 public:
-  NodeDebug(NodeAdditiveExpression *add_exp);
+  NodeDebug(NodeComparativeExpression *comp_exp);
   static string print_debug(NodeDebug *debug, int indent);
 };
 
@@ -125,14 +153,14 @@ class NodeIf {
   friend class Parser;
   friend class Codegen;
 
-  NodeAdditiveExpression *add_exp;
+  NodeComparativeExpression *comp_exp;
   NodeStatementList *stmt_list_if;
   NodeStatementList *stmt_list_else;
 
 public:
-  NodeIf(NodeAdditiveExpression *add_exp, NodeStatementList *stmt_list_if,
+  NodeIf(NodeComparativeExpression *comp_exp, NodeStatementList *stmt_list_if,
          NodeStatementList *stmt_list_else);
-  static string print_if(NodeIf *, int indent);
+  static string print_if(NodeIf *If, int indent);
 };
 
 class NodeStatement {

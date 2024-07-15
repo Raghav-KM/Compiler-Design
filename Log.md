@@ -12,6 +12,7 @@
 10. **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 11. <!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 12. **TODO : Write ASM for divide operation**
+
 ----
 
 # 22-06-2024
@@ -86,4 +87,6 @@
 # 14-07-2024
 - Wrote Grammar.md
 - Added "==" to the lexer
-- ~~Implement "==", ">" , "<", "<=", ">=" operators~~
+
+# 15-07-2024
+- Completed Comparison Operator "==" implementation

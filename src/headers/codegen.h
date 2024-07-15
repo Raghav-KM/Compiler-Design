@@ -20,6 +20,7 @@ private:
   string bss_section;
   string text_section;
   bool require_print_integer_subroutine;
+  bool require_comparison_subroutine;
 
 public:
   Codegen();
@@ -39,7 +40,8 @@ public:
   void generate_if(string condition, NodeStatementList *stmt_list_if,
                    NodeStatementList *stmt_list_else, int if_count);
 
-  void generate_expressions(string, string, char, string);
+  void generate_arithemetic_expressions(string, string, char, string);
+  void generate_comparative_expression(string, string, string, string);
   void export_asm();
 
   void traverse_parse_tree(NodeProgram *program);
@@ -49,6 +51,8 @@ public:
   void traverse_debug(NodeDebug *debug);
   void traverse_let(NodeLet *let);
   void traverse_if(NodeIf *IF);
+
+  string traverse_comparative_expression(NodeComparativeExpression *comp_exp);
 
   string traverse_additive_expression(NodeAdditiveExpression *add_exp);
   string

@@ -5,6 +5,7 @@ Codegen::Codegen() {
   bss_section = "";
   text_section = "";
   require_print_integer_subroutine = false;
+  require_comparison_subroutine = false;
 }
 
 int Codegen::var_count = 0;
@@ -14,7 +15,7 @@ int Codegen::max_count = 0;
 
 string Codegen::get_new_temp_variable() {
   var_count++;
-  return "[t_" + to_string(var_count) + "]";
+  return "[_t" + to_string(var_count) + "]";
 }
 int Codegen::get_if_count() {
   if_count++;
@@ -34,25 +35,31 @@ void Codegen::declare_variable_bss_section(string variable_name) {
 }
 
 void Codegen::generate_debug(string variable_name) {
+  cout << "dbg " << variable_name << "\n";
+
   if (!require_print_integer_subroutine) {
     require_print_integer_subroutine = true;
   }
-  text_section +=
-      "    mov eax, " + variable_name + "\n    call print_integer\n\n";
+  text_section += "    mov eax, " + variable_name +
+                  "\n    call _print_integer_subroutine\n\n";
   Codegen::reset_count();
 }
 
 void Codegen::generate_debug(int value) {
+  cout << "dbg " << value << "\n";
+
   if (!require_print_integer_subroutine) {
     require_print_integer_subroutine = true;
   }
-  text_section +=
-      "    mov eax, " + to_string(value) + "\n    call print_integer\n";
+  text_section += "    mov eax, " + to_string(value) +
+                  "\n    call _print_integer_subroutine\n";
   Codegen::reset_count();
 }
 
-void Codegen::generate_expressions(string new_var_name, string opdA, char op,
-                                   string opdB) {
+void Codegen::generate_arithemetic_expressions(string new_var_name, string opdA,
+                                               char op, string opdB) {
+  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
+
   text_section += "    mov eax, " + opdA + "\n";
   if (op == '+') {
     text_section += "    add eax, " + opdB + "\n";
@@ -67,31 +74,52 @@ void Codegen::generate_expressions(string new_var_name, string opdA, char op,
     text_section += "    imul eax, " + opdB + "\n";
   }
   text_section += "    mov " + new_var_name + ", eax\n";
+}
+
+void Codegen::generate_comparative_expression(string new_var_name, string opdA,
+                                              string op, string opdB) {
+  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
+
+  if (!require_comparison_subroutine) {
+    require_comparison_subroutine = true;
+  }
+  text_section += "    mov eax, " + opdA + "\n";
+  text_section += "    mov ebx, " + opdB + "\n";
+  text_section += "    cmp eax, ebx\n";
+
+  if (op == "==") {
+    text_section += "    call _compare_equal_subroutine\n";
+  }
+  text_section += "    mov " + new_var_name + ", eax\n";
   cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
 }
 
 void Codegen::generate_let(string lval, string rval) {
   text_section += "    mov eax, " + rval + "\n";
   text_section += "    mov " + lval + ", eax\n";
-  cout << lval << " = " << rval << "\n\n";
+  cout << "let " << lval << " = " << rval << "\n\n";
   Codegen::reset_count();
 }
 
 void Codegen::generate_if(string condition, NodeStatementList *stmt_list_if,
                           NodeStatementList *stmt_list_else, int if_count) {
+
+  cout << "\nif " << condition << "\n";
+
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 0\n";
-  text_section += "    jnz if_" + to_string(if_count) + "\n\n";
-
+  text_section += "    jnz _if" + to_string(if_count) + "\n\n";
+  cout << "<--- false --->\n";
   // Else Statments
   traverse_stmt_list(stmt_list_else);
-  text_section += "    jmp if_" + to_string(if_count) + "_end\n\n";
-
+  text_section += "    jmp _if" + to_string(if_count) + "_end\n\n";
+  cout << "<--- true  --->\n";
   // If Statments
-  text_section += "if_" + to_string(if_count) + ":\n";
+  text_section += "_if" + to_string(if_count) + ":\n";
   traverse_stmt_list(stmt_list_if);
 
-  text_section += "if_" + to_string(if_count) + "_end:\n";
+  text_section += "_if" + to_string(if_count) + "_end:\n";
+  cout << "<--- ----- --->\n\n";
 }
 
 void Codegen::export_asm() {
@@ -107,7 +135,7 @@ void Codegen::export_asm() {
     program += "    buffer resb 12\n";
   }
   for (int i = 1; i <= Codegen::max_count; i++) {
-    declare_variable_bss_section("t_" + to_string(i));
+    declare_variable_bss_section("_t" + to_string(i));
   }
   program += bss_section;
   program += "\n";
@@ -126,7 +154,7 @@ void Codegen::export_asm() {
 
   if (require_print_integer_subroutine) {
     program += R"(
-print_integer:
+_print_integer_subroutine:
     push eax
     mov ecx, buffer + 10
     mov byte [ecx], 0xA
@@ -136,25 +164,25 @@ print_integer:
     mov ebx, 10
 
     cmp eax, 0
-    jge .convert_loop
+    jge ._convert_loop
     neg eax
 
-.convert_loop:
+._convert_loop:
     xor edx, edx
     div ebx
     add dl, '0'
     mov [ecx], dl
     dec ecx
     test eax, eax
-    jnz .convert_loop
+    jnz ._convert_loop
 
     pop eax
     cmp eax, 0
-    jge .print
+    jge ._print
     mov byte [ecx], '-'
     dec ecx
 
-.print:
+._print:
     inc ecx
     mov edx, buffer + 11
     sub edx, ecx
@@ -163,6 +191,46 @@ print_integer:
     int 0x80
     ret
 
+)";
+  }
+
+  if (require_comparison_subroutine) {
+    program += R"(
+_compare_equal_subroutine:
+    je _true
+    mov eax, 0 
+    ret
+
+_compare_less_subroutine:
+    jl _true
+    mov eax, 0
+    ret
+
+_compare_greater_subroutine:
+    jg _true
+    mov eax, 0
+    ret
+
+_compare_less_equal_subroutine:
+    jl _true
+    je _true
+    mov eax, 0
+    ret
+
+_compare_greater_equal_subroutine:
+    jg _true
+    je _true
+    mov eax, 0
+    ret
+
+_compare_not_equal_subroutine:
+    jne _true
+    mov eax, 0
+    ret
+
+_true:
+    mov eax, 1
+    ret
 )";
   }
 
@@ -178,7 +246,9 @@ print_integer:
 }
 
 void Codegen::traverse_parse_tree(NodeProgram *program) {
+  cout << "\n<--- PROGRAM START --->\n\n";
   traverse_stmt_list(program->stmt_list);
+  cout << "<--- PROGRAM END   --->\n\n";
 }
 
 void Codegen::traverse_stmt_list(NodeStatementList *stmt_list) {
@@ -198,21 +268,36 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
 }
 
 void Codegen::traverse_debug(NodeDebug *debug) {
-  string var = traverse_additive_expression(debug->add_exp);
-  // cout << "debug " << var << "\n";
+  string var = traverse_comparative_expression(debug->comp_exp);
   generate_debug(var);
 }
 
 void Codegen::traverse_let(NodeLet *let) {
-  string var = traverse_additive_expression(let->add_exp);
+  string var = traverse_comparative_expression(let->comp_exp);
   declare_variable_bss_section(let->identifier->name);
   generate_let("[" + let->identifier->name + "]", var);
 }
 
 void Codegen::traverse_if(NodeIf *IF) {
-  string var = traverse_additive_expression(IF->add_exp);
+  string var = traverse_comparative_expression(IF->comp_exp);
   generate_if(var, IF->stmt_list_if, IF->stmt_list_else,
               Codegen::get_if_count());
+}
+
+string
+Codegen::traverse_comparative_expression(NodeComparativeExpression *comp_exp) {
+  if (comp_exp->comp_operator == NULL && comp_exp->comp_exp == NULL) {
+    return traverse_additive_expression(comp_exp->add_exp);
+  } else {
+    string new_temp_var = get_new_temp_variable();
+
+    generate_comparative_expression(
+        new_temp_var, traverse_comparative_expression(comp_exp->comp_exp),
+        comp_exp->comp_operator->op,
+        traverse_additive_expression(comp_exp->add_exp));
+
+    return new_temp_var;
+  }
 }
 
 string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
@@ -221,10 +306,10 @@ string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
   } else {
     string new_temp_var = get_new_temp_variable();
 
-    generate_expressions(new_temp_var,
-                         traverse_additive_expression(add_exp->add_exp),
-                         add_exp->add_operator->op,
-                         traverse_multiplicative_expression(add_exp->mul_exp));
+    generate_arithemetic_expressions(
+        new_temp_var, traverse_additive_expression(add_exp->add_exp),
+        add_exp->add_operator->op,
+        traverse_multiplicative_expression(add_exp->mul_exp));
 
     return new_temp_var;
   }
@@ -236,7 +321,7 @@ string Codegen::traverse_multiplicative_expression(
     return traverse_expression(mul_exp->exp);
   } else {
     string new_temp_var = get_new_temp_variable();
-    generate_expressions(
+    generate_arithemetic_expressions(
         new_temp_var, traverse_multiplicative_expression(mul_exp->mul_exp),
         mul_exp->mul_operator->op, traverse_expression(mul_exp->exp));
     return new_temp_var;

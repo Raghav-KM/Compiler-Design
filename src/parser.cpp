@@ -75,7 +75,7 @@ NodeStatement *Parser::parse_statement() {
 
 NodeIf *Parser::parse_if() {
   consume();
-  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+  if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
     if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
       consume();
       if (NodeStatementList *stmt_list_if =
@@ -83,7 +83,7 @@ NodeIf *Parser::parse_if() {
         if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
           consume();
           if (NodeStatementList *stmt_list_else = parse_else()) {
-            return new NodeIf(add_exp, stmt_list_if, stmt_list_else);
+            return new NodeIf(comp_exp, stmt_list_if, stmt_list_else);
           }
           return NULL;
         }
@@ -121,10 +121,10 @@ NodeStatementList *Parser::parse_else() {
 
 NodeDebug *Parser::parse_debug() {
   consume();
-  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+  if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
-      return new NodeDebug(add_exp);
+      return new NodeDebug(comp_exp);
     }
     Error::invalid_syntax("Missing ';'");
   }
@@ -136,10 +136,11 @@ NodeLet *Parser::parse_let() {
   if (NodeIdentifier *identifier = parse_identifier(REDECLARATION)) {
     if (look_ahead().get_type() == EQUALS) {
       consume();
-      if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+      if (NodeComparativeExpression *comp_exp =
+              parse_comparative_expression()) {
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
-          return new NodeLet(identifier, add_exp);
+          return new NodeLet(identifier, comp_exp);
         }
         Error::invalid_syntax("Missing ';'");
         return NULL;
@@ -147,6 +148,23 @@ NodeLet *Parser::parse_let() {
     }
     Error::invalid_syntax("Invalid TOKEN - Expected '='");
     return NULL;
+  }
+  return NULL;
+}
+
+NodeComparativeExpression *Parser::parse_comparative_expression() {
+  if (NodeAdditiveExpression *add_exp = parse_additive_expression()) {
+    NodeComparativeExpression *comp_exp =
+        new NodeComparativeExpression(add_exp);
+    while (NodeComparativeOperator *comp_op = parse_comparative_operator()) {
+      if (NodeAdditiveExpression *new_add_exp = parse_additive_expression()) {
+        comp_exp =
+            new NodeComparativeExpression(comp_exp, comp_op, new_add_exp);
+      } else {
+        return NULL;
+      }
+    }
+    return comp_exp;
   }
   return NULL;
 }
@@ -164,6 +182,14 @@ NodeAdditiveExpression *Parser::parse_additive_expression() {
       }
     }
     return add_exp;
+  }
+  return NULL;
+}
+
+NodeComparativeOperator *Parser::parse_comparative_operator() {
+  if (look_ahead().get_type() == EQUAL_EQUALS) {
+    consume();
+    return new NodeComparativeOperator("==");
   }
   return NULL;
 }
