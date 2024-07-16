@@ -191,6 +191,26 @@ NodeComparativeOperator *Parser::parse_comparative_operator() {
     consume();
     return new NodeComparativeOperator("==");
   }
+  if (look_ahead().get_type() == GREATER) {
+    consume();
+    return new NodeComparativeOperator(">");
+  }
+  if (look_ahead().get_type() == LESS) {
+    consume();
+    return new NodeComparativeOperator("<");
+  }
+  if (look_ahead().get_type() == GREATER_EQUALS) {
+    consume();
+    return new NodeComparativeOperator(">=");
+  }
+  if (look_ahead().get_type() == LESS_EQUALS) {
+    consume();
+    return new NodeComparativeOperator("<=");
+  }
+  if (look_ahead().get_type() == NOT_EQUALS) {
+    consume();
+    return new NodeComparativeOperator("!=");
+  }
   return NULL;
 }
 

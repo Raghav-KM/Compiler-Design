@@ -89,7 +89,18 @@ void Codegen::generate_comparative_expression(string new_var_name, string opdA,
 
   if (op == "==") {
     text_section += "    call _compare_equal_subroutine\n";
+  } else if (op == ">") {
+    text_section += "    call _compare_greater_subroutine\n";
+  } else if (op == "<") {
+    text_section += "    call _compare_less_subroutine\n";
+  } else if (op == ">=") {
+    text_section += "    call _compare_greater_equal_subroutine\n";
+  } else if (op == "<=") {
+    text_section += "    call _compare_less_equal_subroutine\n";
+  } else if (op == "!=") {
+    text_section += "    call _compare_not_equal_subroutine\n";
   }
+
   text_section += "    mov " + new_var_name + ", eax\n";
   cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
 }

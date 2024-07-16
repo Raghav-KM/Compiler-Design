@@ -38,6 +38,11 @@ enum TOKEN_TYPES {
 
   // Comparison Operators
   EQUAL_EQUALS,
+  LESS,
+  GREATER,
+  GREATER_EQUALS,
+  LESS_EQUALS,
+  NOT_EQUALS,
 
   // End of File
   END_OF_FILE,

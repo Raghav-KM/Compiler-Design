@@ -2,26 +2,16 @@ section .data
 
 section .bss
     buffer resb 12
-    variable_name resd 1
-    variable_name_2 resd 1
     _t1 resd 1
-    _t2 resd 1
-    _t3 resd 1
 
 section .text
     global _start
 
 _start:
-    mov eax, 3
-    sub eax, 1
-    mov [_t2], eax
     mov eax, 1
-    add eax, 2
-    mov [_t3], eax
-    mov eax, [_t3]
-    mov ebx, [_t2]
+    mov ebx, 1
     cmp eax, ebx
-    call _compare_equal_subroutine
+    call _compare_not_equal_subroutine
     mov [_t1], eax
     mov eax, [_t1]
     cmp eax, 0
@@ -37,16 +27,25 @@ _if1:
     call _print_integer_subroutine
 
 _if1_end:
-    mov eax, 10
-    mov [variable_name], eax
-    mov eax, 10
-    add eax, 2
-    mov [_t2], eax
-    mov eax, [_t2]
-    add eax, [variable_name]
+    mov eax, 0
+    mov ebx, 1
+    cmp eax, ebx
+    call _compare_not_equal_subroutine
     mov [_t1], eax
     mov eax, [_t1]
-    mov [variable_name_2], eax
+    cmp eax, 0
+    jnz _if2
+
+    mov eax, 4
+    call _print_integer_subroutine
+
+    jmp _if2_end
+
+_if2:
+    mov eax, 3
+    call _print_integer_subroutine
+
+_if2_end:
 
     mov eax, 1
     xor ebx, ebx

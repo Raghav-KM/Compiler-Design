@@ -1,8 +1,11 @@
-if 1+2 == 3-1{
+if 1 != 1{
     dbg 1;
 }else{
     dbg 2;
 }
 
-let variable_name = 10;
-let variable_name_2 = 10+2+variable_name;
+if 0 != 1{
+    dbg 3;
+}else{
+    dbg 4;
+}

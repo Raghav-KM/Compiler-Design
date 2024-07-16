@@ -1,6 +1,6 @@
 # Compiler-Design
 ----
-1. **TODO : Add regex to check the type tokens**
+1. ~~**TODO : Add regex to check the type tokens**~~
 2. **TODO : Add Support for negative integers**
 3. **TODO : Add Test-CASES for Lexer**
 4. **TODO : Add Test-CASES for Parser**
@@ -90,3 +90,6 @@
 
 # 15-07-2024
 - Completed Comparison Operator "==" implementation
+
+# 16-07-2024
+- Added all Comparison Operators ie '>' '<' '>=', '<=' , '!='

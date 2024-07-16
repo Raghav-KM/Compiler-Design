@@ -23,7 +23,7 @@
     - Equals  `=` 
     - Additive  `+` , `-` 
     - Multiplicative `*` , `/`
-    - Comparison  `==`
+    - Comparison  `==` , `>` , `<`, `>=` , `<=`, `!=`
 
 ## Input 
 Contents of **input_file** (as a string) to compile 

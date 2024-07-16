@@ -16,6 +16,16 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "EQUALS";
   case EQUAL_EQUALS:
     return "EQUAL_EQUALS";
+  case GREATER:
+    return "GREATER";
+  case LESS:
+    return "LESS";
+  case GREATER_EQUALS:
+    return "GREATER_EQUALS";
+  case LESS_EQUALS:
+    return "LESS_EQUALS";
+  case NOT_EQUALS:
+    return "NOT_EQUALS";
   case LET:
     return "LET";
   case IF:
@@ -41,7 +51,7 @@ string Token::get_token_name(TOKEN_TYPES type) {
 
 vector<string> Token::keywords = {"dbg", "let", "if", "else"};
 vector<char> Token::char_symbols = {';', '{', '}'};
-vector<char> Token::char_operators = {'+', '-', '*', '/', '='};
+vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
 bool Token::is_keyword(string keyword) {
   for (auto it : Token::keywords) {
@@ -110,6 +120,16 @@ TOKEN_TYPES Token::get_operator_type(string op) {
     return EQUALS;
   } else if (op == "==") {
     return EQUAL_EQUALS;
+  } else if (op == ">") {
+    return GREATER;
+  } else if (op == "<") {
+    return LESS;
+  } else if (op == "<=") {
+    return LESS_EQUALS;
+  } else if (op == ">=") {
+    return GREATER_EQUALS;
+  } else if (op == "!=") {
+    return NOT_EQUALS;
   } else {
     return INVALID_TOKEN;
   }
