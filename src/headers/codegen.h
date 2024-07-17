@@ -39,6 +39,7 @@ public:
   void generate_let(string lval, string rval);
   void generate_if(string condition, NodeStatementList *stmt_list_if,
                    NodeStatementList *stmt_list_else, int if_count);
+  void generate_assign(string lval, string rval);
 
   void generate_arithemetic_expressions(string, string, char, string);
   void generate_comparative_expression(string, string, string, string);
@@ -51,6 +52,7 @@ public:
   void traverse_debug(NodeDebug *debug);
   void traverse_let(NodeLet *let);
   void traverse_if(NodeIf *IF);
+  void traverse_assign(NodeAssign *assign);
 
   string traverse_comparative_expression(NodeComparativeExpression *comp_exp);
 

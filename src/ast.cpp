@@ -4,16 +4,25 @@ NodeStatement::NodeStatement(NodeDebug *debug) {
   this->let = NULL;
   this->debug = debug;
   this->IF = NULL;
+  this->assign = NULL;
 }
 NodeStatement::NodeStatement(NodeLet *let) {
   this->let = let;
   this->debug = NULL;
   this->IF = NULL;
+  this->assign = NULL;
 }
 NodeStatement::NodeStatement(NodeIf *IF) {
   this->let = NULL;
   this->debug = NULL;
   this->IF = IF;
+  this->assign = NULL;
+}
+NodeStatement::NodeStatement(NodeAssign *assign) {
+  this->let = NULL;
+  this->debug = NULL;
+  this->IF = NULL;
+  this->assign = assign;
 }
 
 NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
@@ -25,6 +34,13 @@ NodeLet::NodeLet(NodeIdentifier *identifier,
   this->identifier = identifier;
   this->comp_exp = comp_exp;
 }
+
+NodeAssign::NodeAssign(NodeIdentifier *identifier,
+                       NodeComparativeExpression *comp_exp) {
+  this->identifier = identifier;
+  this->comp_exp = comp_exp;
+}
+
 NodeIf::NodeIf(NodeComparativeExpression *comp_exp,
                NodeStatementList *stmt_list_if,
                NodeStatementList *stmt_list_else) {
@@ -190,6 +206,12 @@ string NodeLet::print_let(NodeLet *let, int indent) {
          NodeComparativeExpression::print(let->comp_exp, indent + 1) +
          tab(indent) + "]\n";
 }
+string NodeAssign::print(NodeAssign *assign, int indent) {
+  return tab(indent) + "[ 'assign': \n" +
+         NodeIdentifier::print_identifier(assign->identifier, indent + 1) +
+         " " + NodeComparativeExpression::print(assign->comp_exp, indent + 1) +
+         tab(indent) + "]\n";
+}
 
 string NodeDebug::print_debug(NodeDebug *debug, int indent) {
   return tab(indent) + "[ 'debug': \n" +
@@ -222,6 +244,10 @@ string NodeStatement::print_statement(NodeStatement *stmt, int indent) {
   if (stmt->IF) {
     return tab(indent) + "[ 'statment': \n" +
            NodeIf::print_if(stmt->IF, indent + 1) + tab(indent) + "]\n";
+  }
+  if (stmt->assign) {
+    return tab(indent) + "[ 'statment': \n" +
+           NodeAssign::print(stmt->assign, indent + 1) + tab(indent) + "]\n";
   }
   return "";
 }

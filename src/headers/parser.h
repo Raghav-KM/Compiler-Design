@@ -16,6 +16,7 @@ private:
 
   NodeDebug *parse_debug();
   NodeLet *parse_let();
+  NodeAssign *parse_assign();
 
   NodeIf *parse_if();
   NodeStatementList *parse_else();

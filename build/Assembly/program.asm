@@ -2,50 +2,23 @@ section .data
 
 section .bss
     buffer resb 12
+    variable_name resd 1
     _t1 resd 1
 
 section .text
     global _start
 
 _start:
-    mov eax, 1
-    mov ebx, 1
-    cmp eax, ebx
-    call _compare_not_equal_subroutine
+    mov eax, 10
+    mov [variable_name], eax
+    mov eax, 11
+    add eax, [variable_name]
     mov [_t1], eax
     mov eax, [_t1]
-    cmp eax, 0
-    jnz _if1
-
-    mov eax, 2
+    mov [variable_name], eax
+    mov eax, [variable_name]
     call _print_integer_subroutine
 
-    jmp _if1_end
-
-_if1:
-    mov eax, 1
-    call _print_integer_subroutine
-
-_if1_end:
-    mov eax, 0
-    mov ebx, 1
-    cmp eax, ebx
-    call _compare_not_equal_subroutine
-    mov [_t1], eax
-    mov eax, [_t1]
-    cmp eax, 0
-    jnz _if2
-
-    mov eax, 4
-    call _print_integer_subroutine
-
-    jmp _if2_end
-
-_if2:
-    mov eax, 3
-    call _print_integer_subroutine
-
-_if2_end:
 
     mov eax, 1
     xor ebx, ebx
@@ -88,39 +61,3 @@ _print_integer_subroutine:
     int 0x80
     ret
 
-
-_compare_equal_subroutine:
-    je _true
-    mov eax, 0 
-    ret
-
-_compare_less_subroutine:
-    jl _true
-    mov eax, 0
-    ret
-
-_compare_greater_subroutine:
-    jg _true
-    mov eax, 0
-    ret
-
-_compare_less_equal_subroutine:
-    jl _true
-    je _true
-    mov eax, 0
-    ret
-
-_compare_greater_equal_subroutine:
-    jg _true
-    je _true
-    mov eax, 0
-    ret
-
-_compare_not_equal_subroutine:
-    jne _true
-    mov eax, 0
-    ret
-
-_true:
-    mov eax, 1
-    ret

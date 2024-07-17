@@ -128,6 +128,18 @@ public:
   static string print(NodeComparativeExpression *comp_exp, int indent);
 };
 
+class NodeAssign {
+  friend class Parser;
+  friend class Codegen;
+
+  NodeIdentifier *identifier;
+  NodeComparativeExpression *comp_exp;
+
+public:
+  NodeAssign(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
+  static string print(NodeAssign *assign, int indent);
+};
+
 class NodeLet {
   friend class Parser;
   friend class Codegen;
@@ -169,11 +181,13 @@ class NodeStatement {
   NodeDebug *debug;
   NodeLet *let;
   NodeIf *IF;
+  NodeAssign *assign;
 
 public:
   NodeStatement(NodeDebug *debug);
   NodeStatement(NodeLet *let);
   NodeStatement(NodeIf *IF);
+  NodeStatement(NodeAssign *assign);
 
   static string print_statement(NodeStatement *stmt, int indent);
 };

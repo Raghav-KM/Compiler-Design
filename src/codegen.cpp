@@ -133,6 +133,13 @@ void Codegen::generate_if(string condition, NodeStatementList *stmt_list_if,
   cout << "<--- ----- --->\n\n";
 }
 
+void Codegen::generate_assign(string lval, string rval) {
+  text_section += "    mov eax, " + rval + "\n";
+  text_section += "    mov " + lval + ", eax\n";
+  cout << lval << " = " << rval << "\n\n";
+  Codegen::reset_count();
+}
+
 void Codegen::export_asm() {
   string program = "";
 
@@ -275,6 +282,8 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
     traverse_let(stmt->let);
   } else if (stmt->IF) {
     traverse_if(stmt->IF);
+  } else if (stmt->assign) {
+    traverse_assign(stmt->assign);
   }
 }
 
@@ -293,6 +302,11 @@ void Codegen::traverse_if(NodeIf *IF) {
   string var = traverse_comparative_expression(IF->comp_exp);
   generate_if(var, IF->stmt_list_if, IF->stmt_list_else,
               Codegen::get_if_count());
+}
+
+void Codegen::traverse_assign(NodeAssign *assign) {
+  string var = traverse_comparative_expression(assign->comp_exp);
+  generate_assign("[" + assign->identifier->name + "]", var);
 }
 
 string

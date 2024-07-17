@@ -68,8 +68,14 @@ NodeStatement *Parser::parse_statement() {
     }
     return NULL;
   }
-  cout << look_ahead().get_type() << " ";
-  Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if'");
+  if (look_ahead().get_type() == IDENTIFIER) {
+    if (NodeAssign *assign = parse_assign()) {
+      return new NodeStatement(assign);
+    }
+    return NULL;
+  }
+  Error::invalid_syntax(
+      "Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or 'IDENTIFIER'");
   return NULL;
 }
 
@@ -141,6 +147,26 @@ NodeLet *Parser::parse_let() {
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
           return new NodeLet(identifier, comp_exp);
+        }
+        Error::invalid_syntax("Missing ';'");
+        return NULL;
+      }
+    }
+    Error::invalid_syntax("Invalid TOKEN - Expected '='");
+    return NULL;
+  }
+  return NULL;
+}
+
+NodeAssign *Parser::parse_assign() {
+  if (NodeIdentifier *identifier = parse_identifier(UNDECLARED)) {
+    if (look_ahead().get_type() == EQUALS) {
+      consume();
+      if (NodeComparativeExpression *comp_exp =
+              parse_comparative_expression()) {
+        if (look_ahead().get_type() == SEMICOLON) {
+          consume();
+          return new NodeAssign(identifier, comp_exp);
         }
         Error::invalid_syntax("Missing ';'");
         return NULL;
