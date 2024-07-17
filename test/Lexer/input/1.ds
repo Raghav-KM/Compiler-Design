@@ -2,6 +2,7 @@ dbg
 let
 if
 else
+for
 variable_name
 =
 +
@@ -17,3 +18,5 @@ variable_name
 >=
 <=
 !=
+(
+)

@@ -74,6 +74,13 @@ NodeStatement *Parser::parse_statement() {
     }
     return NULL;
   }
+  if (look_ahead().get_type() == FOR) {
+    if (NodeFor *FOR = parse_for()) {
+      return new NodeStatement(FOR);
+    }
+    return NULL;
+  }
+
   Error::invalid_syntax(
       "Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or 'IDENTIFIER'");
   return NULL;
@@ -125,6 +132,49 @@ NodeStatementList *Parser::parse_else() {
   return NULL;
 }
 
+NodeFor *Parser::parse_for() {
+  consume();
+  if (look_ahead().get_type() == BRACKET_OPEN) {
+    consume();
+    if (NodeLet *let = parse_let()) {
+      if (NodeComparativeExpression *comp_exp =
+              parse_comparative_expression()) {
+        if (look_ahead().get_type() == SEMICOLON) {
+          consume();
+          if (NodeAssign *assign = parse_assign(false)) {
+            if (look_ahead().get_type() == BRACKET_CLOSE) {
+              consume();
+              if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
+                consume();
+                if (NodeStatementList *stmt_list =
+                        parse_statement_list(BRACKET_CLOSE_CURLY)) {
+                  if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+                    consume();
+                    return new NodeFor(let, comp_exp, assign, stmt_list);
+                  }
+                  Error::invalid_syntax("Missing '}'");
+                  return NULL;
+                }
+                return NULL;
+              }
+              Error::invalid_syntax("Missing '{'");
+              return NULL;
+            }
+            Error::invalid_syntax("Missing '*)'");
+            return NULL;
+          }
+        }
+        Error::invalid_syntax("Missing ';'");
+        return NULL;
+      }
+      return NULL;
+    }
+    return NULL;
+  }
+  Error::invalid_syntax("Missing '('");
+  return NULL;
+}
+
 NodeDebug *Parser::parse_debug() {
   consume();
   if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
@@ -158,12 +208,15 @@ NodeLet *Parser::parse_let() {
   return NULL;
 }
 
-NodeAssign *Parser::parse_assign() {
+NodeAssign *Parser::parse_assign(bool check_semicolon) {
   if (NodeIdentifier *identifier = parse_identifier(UNDECLARED)) {
     if (look_ahead().get_type() == EQUALS) {
       consume();
       if (NodeComparativeExpression *comp_exp =
               parse_comparative_expression()) {
+        if (!check_semicolon) {
+          return new NodeAssign(identifier, comp_exp);
+        }
         if (look_ahead().get_type() == SEMICOLON) {
           consume();
           return new NodeAssign(identifier, comp_exp);

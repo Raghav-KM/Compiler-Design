@@ -15,6 +15,7 @@ private:
   static int var_count;
 
   static int if_count;
+  static int for_count;
 
   string data_section;
   string bss_section;
@@ -27,6 +28,7 @@ public:
 
   string get_new_temp_variable();
   int get_if_count();
+  int get_for_count();
   static void reset_count();
 
   void push_eax();
@@ -53,6 +55,7 @@ public:
   void traverse_let(NodeLet *let);
   void traverse_if(NodeIf *IF);
   void traverse_assign(NodeAssign *assign);
+  void traverse_for(NodeFor *FOR);
 
   string traverse_comparative_expression(NodeComparativeExpression *comp_exp);
 

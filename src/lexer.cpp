@@ -32,6 +32,8 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "IF";
   case ELSE:
     return "ELSE";
+  case FOR:
+    return "FOR";
   case ADD:
     return "ADD";
   case SUB:
@@ -44,13 +46,17 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "BRACKET_OPEN_CURLY";
   case BRACKET_CLOSE_CURLY:
     return "BRACKET_CLOSE_CURLY";
+  case BRACKET_OPEN:
+    return "BRACKET_OPEN";
+  case BRACKET_CLOSE:
+    return "BRACKET_CLOSE";
   default:
     return "INVALID_TOKEN";
   }
 }
 
-vector<string> Token::keywords = {"dbg", "let", "if", "else"};
-vector<char> Token::char_symbols = {';', '{', '}'};
+vector<string> Token::keywords = {"dbg", "let", "if", "else", "for"};
+vector<char> Token::char_symbols = {';', '{', '}', '(', ')'};
 vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
 bool Token::is_keyword(string keyword) {
@@ -102,6 +108,8 @@ TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
     return IF;
   } else if (keyword == "else") {
     return ELSE;
+  } else if (keyword == "for") {
+    return FOR;
   } else {
     return INVALID_TOKEN;
   }
@@ -143,6 +151,10 @@ TOKEN_TYPES Token::get_symbol_type(char symbol) {
     return BRACKET_OPEN_CURLY;
   case '}':
     return BRACKET_CLOSE_CURLY;
+  case '(':
+    return BRACKET_OPEN;
+  case ')':
+    return BRACKET_CLOSE;
   default:
     return INVALID_TOKEN;
   }

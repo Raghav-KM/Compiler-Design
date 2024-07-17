@@ -17,6 +17,7 @@ enum TOKEN_TYPES {
   DEBUG,
   IF,
   ELSE,
+  FOR,
 
   // Identifiers
   IDENTIFIER,
@@ -28,6 +29,8 @@ enum TOKEN_TYPES {
   SEMICOLON,
   BRACKET_OPEN_CURLY,
   BRACKET_CLOSE_CURLY,
+  BRACKET_OPEN,
+  BRACKET_CLOSE,
 
   // Operators
   EQUALS,

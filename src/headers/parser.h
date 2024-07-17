@@ -16,10 +16,12 @@ private:
 
   NodeDebug *parse_debug();
   NodeLet *parse_let();
-  NodeAssign *parse_assign();
+  NodeAssign *parse_assign(bool check_semicolon = true);
 
   NodeIf *parse_if();
   NodeStatementList *parse_else();
+
+  NodeFor *parse_for();
 
   NodeINT *parse_int();
   NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);

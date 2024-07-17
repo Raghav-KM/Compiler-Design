@@ -12,6 +12,7 @@
 10. **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 11. <!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 12. **TODO : Write ASM for divide operation**
+13. **TODO : Make a ENDLINE**
 
 ----
 
@@ -95,4 +96,5 @@
 - Added all Comparison Operators ie '>' '<' '>=', '<=' , '!='
 
 # 17-07-2024
-- Add Assignment Statment
+- Added Assignment Statment
+- Added For loops

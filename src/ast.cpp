@@ -11,22 +11,40 @@ NodeStatement::NodeStatement(NodeLet *let) {
   this->debug = NULL;
   this->IF = NULL;
   this->assign = NULL;
+  this->FOR = NULL;
 }
 NodeStatement::NodeStatement(NodeIf *IF) {
   this->let = NULL;
   this->debug = NULL;
   this->IF = IF;
   this->assign = NULL;
+  this->FOR = NULL;
 }
 NodeStatement::NodeStatement(NodeAssign *assign) {
   this->let = NULL;
   this->debug = NULL;
   this->IF = NULL;
   this->assign = assign;
+  this->FOR = NULL;
+}
+NodeStatement::NodeStatement(NodeFor *FOR) {
+  this->let = NULL;
+  this->debug = NULL;
+  this->IF = NULL;
+  this->assign = NULL;
+  this->FOR = FOR;
 }
 
 NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
   this->comp_exp = comp_exp;
+}
+
+NodeFor::NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp,
+                 NodeAssign *assign, NodeStatementList *stmt_list) {
+  this->let = let;
+  this->comp_exp = comp_exp;
+  this->assign = assign;
+  this->stmt_list = stmt_list;
 }
 
 NodeLet::NodeLet(NodeIdentifier *identifier,
@@ -213,6 +231,16 @@ string NodeAssign::print(NodeAssign *assign, int indent) {
          tab(indent) + "]\n";
 }
 
+string NodeFor::print(NodeFor *FOR, int indent) {
+  return tab(indent) + "[ 'for': \n" +
+         NodeLet::print_let(FOR->let, indent + 1) +
+         NodeComparativeExpression::print(FOR->comp_exp, indent + 1) +
+         NodeAssign::print(FOR->assign, indent + 1) + tab(indent + 1) +
+         "[ 'statment_list' : \n" +
+         NodeStatementList::print_statement_list(FOR->stmt_list, indent + 2) +
+         tab(indent + 1) + "]\n" + tab(indent) + "]\n";
+}
+
 string NodeDebug::print_debug(NodeDebug *debug, int indent) {
   return tab(indent) + "[ 'debug': \n" +
          NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
@@ -248,6 +276,10 @@ string NodeStatement::print_statement(NodeStatement *stmt, int indent) {
   if (stmt->assign) {
     return tab(indent) + "[ 'statment': \n" +
            NodeAssign::print(stmt->assign, indent + 1) + tab(indent) + "]\n";
+  }
+  if (stmt->FOR) {
+    return tab(indent) + "[ 'statment': \n" +
+           NodeFor::print(stmt->FOR, indent + 1) + tab(indent) + "]\n";
   }
   return "";
 }

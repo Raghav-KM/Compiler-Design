@@ -6,6 +6,7 @@
     - `let`
     - `dbg`
     - `if`, `else`
+    - `for`
 
 2. #### Identifiers
     - Can only start with a letter ie `a-z`, `A-Z` 
@@ -18,6 +19,8 @@
     - Semicolon `;` 
     - Open Brackets Curly `{`
     - Close Brackets Curly `}`
+    - Open Brackets `(`
+    - Close Brackets `)`
 
 6. #### Operators
     - Equals  `=` 

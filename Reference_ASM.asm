@@ -26,7 +26,7 @@ print_integer:
     ret
 
 
-# ---- IF Condition ---- #
+# ---- IF-ELSE ---- #
 
 
 # if add_exp stmt_list
@@ -35,25 +35,44 @@ print_integer:
 # if yes -> jump to if_i label
 # if no 
 
-
-/*
-    mov eax, [add_exp_res]
+    mov eax, [comp_exp_res]
     cmp eax, 0
     jz  if_i
 
-    ###### 
-    else statments 
-
+    ; else statments 
     jmp if_i_end
-    ######
 
 if_i:
-    #####
-    if statments
-    #####
+    ; if statments
 
 if_i_end:
 
 
 
-*/
+# ---- FOR ---- #
+
+# let_stmt
+# check condition
+# label : for_i_start
+## condition false 
+#### jmp for_i_end
+## statments 
+## update statments
+## jmp for_i_start 
+## label : for_i_end
+
+    ;let_statement
+for_i:
+    ;comp_exp_statement
+    mov eax, [comp_exp_res]
+    cmp eax, 0
+    jz for_i_end
+
+    ;for_statments
+
+    ;assign_statments
+    jmp for_i
+
+for_i_end:
+    
+

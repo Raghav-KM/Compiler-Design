@@ -10,6 +10,7 @@ Codegen::Codegen() {
 
 int Codegen::var_count = 0;
 int Codegen::if_count = 0;
+int Codegen::for_count = 0;
 
 int Codegen::max_count = 0;
 
@@ -20,6 +21,10 @@ string Codegen::get_new_temp_variable() {
 int Codegen::get_if_count() {
   if_count++;
   return if_count;
+}
+int Codegen::get_for_count() {
+  for_count++;
+  return for_count;
 }
 
 void Codegen::push_eax() { text_section += "    push eax\n"; }
@@ -284,6 +289,8 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
     traverse_if(stmt->IF);
   } else if (stmt->assign) {
     traverse_assign(stmt->assign);
+  } else if (stmt->FOR) {
+    traverse_for(stmt->FOR);
   }
 }
 
@@ -307,6 +314,20 @@ void Codegen::traverse_if(NodeIf *IF) {
 void Codegen::traverse_assign(NodeAssign *assign) {
   string var = traverse_comparative_expression(assign->comp_exp);
   generate_assign("[" + assign->identifier->name + "]", var);
+}
+
+void Codegen::traverse_for(NodeFor *FOR) {
+  int for_count = Codegen::get_for_count();
+  traverse_let(FOR->let);
+  text_section += "_for" + to_string(for_count) + ":\n";
+  string condition = traverse_comparative_expression(FOR->comp_exp);
+  text_section += "    mov eax, " + condition + "\n";
+  text_section += "    cmp eax, 0\n";
+  text_section += "    jz _for" + to_string(for_count) + "_end\n\n";
+  traverse_stmt_list(FOR->stmt_list);
+  traverse_assign(FOR->assign);
+  text_section += "    jmp _for" + to_string(for_count) + "\n\n";
+  text_section += "_for" + to_string(for_count) + "_end:\n\n";
 }
 
 string
