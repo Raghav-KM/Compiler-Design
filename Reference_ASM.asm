@@ -25,15 +25,10 @@ print_integer:
     pop eax              
     ret
 
+# Print new_line
+
 
 # ---- IF-ELSE ---- #
-
-
-# if add_exp stmt_list
-# move the result of add_exp to eax reg
-# compare eax to 0
-# if yes -> jump to if_i label
-# if no 
 
     mov eax, [comp_exp_res]
     cmp eax, 0
@@ -50,16 +45,6 @@ if_i_end:
 
 
 # ---- FOR ---- #
-
-# let_stmt
-# check condition
-# label : for_i_start
-## condition false 
-#### jmp for_i_end
-## statments 
-## update statments
-## jmp for_i_start 
-## label : for_i_end
 
     ;let_statement
 for_i:

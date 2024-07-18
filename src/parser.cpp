@@ -88,24 +88,36 @@ NodeStatement *Parser::parse_statement() {
 
 NodeIf *Parser::parse_if() {
   consume();
-  if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
-    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
-      consume();
-      if (NodeStatementList *stmt_list_if =
-              parse_statement_list(BRACKET_CLOSE_CURLY)) {
-        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+  if (look_ahead().get_type() == BRACKET_OPEN) {
+    consume();
+
+    if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
+      if (look_ahead().get_type() == BRACKET_CLOSE) {
+        consume();
+        if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
           consume();
-          if (NodeStatementList *stmt_list_else = parse_else()) {
-            return new NodeIf(comp_exp, stmt_list_if, stmt_list_else);
+          if (NodeStatementList *stmt_list_if =
+                  parse_statement_list(BRACKET_CLOSE_CURLY)) {
+            if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
+              consume();
+              if (NodeStatementList *stmt_list_else = parse_else()) {
+                return new NodeIf(comp_exp, stmt_list_if, stmt_list_else);
+              }
+              return NULL;
+            }
+            Error::invalid_syntax("Expected '}'");
+            return NULL;
           }
-          return NULL;
         }
-        Error::invalid_syntax("Expected '}'");
+        Error::invalid_syntax("Expected '{'");
         return NULL;
       }
+      Error::invalid_syntax("Expected ')'");
+      return NULL;
     }
-    Error::invalid_syntax("Expected '{'");
+    return NULL;
   }
+  Error::invalid_syntax("Expected '('");
   return NULL;
 }
 

@@ -1,19 +1,28 @@
 # Compiler-Design
 ----
-1. ~~**TODO : Add regex to check the type tokens**~~
-2. **TODO : Add Support for negative integers**
-3. **TODO : Add Test-CASES for Lexer**
-4. **TODO : Add Test-CASES for Parser**
-5. **TODO : Add Test-CASES for Codegen**
-6. **TODO : Create Destructors for all AST_NODE classes**
-7. <!-- **TODO : Create a Error Class** -->
-8. <!-- **TODO : Get DBG to compile to ASM** -->
-9. **TODO : Create destructor for singleton-SymbolTable class**
+1.  ~~**TODO : Add regex to check the type tokens**~~
+2.  **TODO : Add Support for negative integers**
+3.  **TODO : Add Test-CASES for Lexer**
+4.  **TODO : Add Test-CASES for Parser**
+5.  **TODO : Add Test-CASES for Codegen**
+6.  **TODO : Create Destructors for all AST_NODE classes**
+7.  <!-- **TODO : Create a Error Class** -->
+8.  <!-- **TODO : Get DBG to compile to ASM** -->
+9.  **TODO : Create destructor for singleton-SymbolTable class**
 10. **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 11. <!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 12. **TODO : Write ASM for divide operation**
 13. **TODO : Make a ENDLINE**
-
+14. **TODO : Add Better Error Handling**
+15. **TODO : Add Character support**
+16. **TODO : Add String support**
+17. **TODO : Add Function support (without arguments)**
+18. **Todo : Add Function support (with arguments)**
+19. **Todo : Add Function support (with return types)**
+19. **Todo : Start execution from the main function**
+20. **Todo : Type Casting from INT->CHAR and CHAR->INT**
+21. **Todo : Re-Write Parser**
+22. **Todo : Re-Write Codegen**
 ----
 
 # 22-06-2024
@@ -98,3 +107,6 @@
 # 17-07-2024
 - Added Assignment Statment
 - Added For loops
+
+# 18-07-2024
+- Modified IF-ElSE statements
