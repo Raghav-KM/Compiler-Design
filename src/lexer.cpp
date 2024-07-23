@@ -8,6 +8,8 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "DEBUG";
   case INT_LIT:
     return "INT_LIT";
+  case CHAR_LIT:
+    return "CHAR_LIT";
   case SEMICOLON:
     return "SEMICOLON";
   case IDENTIFIER:
@@ -56,7 +58,7 @@ string Token::get_token_name(TOKEN_TYPES type) {
 }
 
 vector<string> Token::keywords = {"dbg", "let", "if", "else", "for"};
-vector<char> Token::char_symbols = {';', '{', '}', '(', ')'};
+vector<char> Token::char_symbols = {';', '{', '}', '(', ')', '\''};
 vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
 bool Token::is_keyword(string keyword) {
@@ -203,8 +205,24 @@ bool Lexer::analyse(string input_stream) {
       }
       token_stream.push_back(Token(Token::get_operator_type(buffer)));
     } else if (Token::is_symbol(input_stream[current_pos])) {
-      token_stream.push_back(
-          Token(Token::get_symbol_type(input_stream[current_pos])));
+      if (input_stream[current_pos] == '\'') {
+        current_pos++;
+        string buffer = "";
+        while (current_pos < input_stream.size() &&
+               input_stream[current_pos] != '\'') {
+          buffer.push_back(input_stream[current_pos]);
+          current_pos++;
+        }
+        if (buffer.size() > 1) {
+          token_stream.push_back(Token(INVALID_TOKEN));
+          return false;
+        }
+        token_stream.push_back(Token(CHAR_LIT, buffer));
+
+      } else {
+        token_stream.push_back(
+            Token(Token::get_symbol_type(input_stream[current_pos])));
+      }
       current_pos++;
     } else {
       return false;

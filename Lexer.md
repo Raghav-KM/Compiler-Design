@@ -14,6 +14,7 @@
 
 3. #### Literals
     - Can only be positive `32 Bit Integers`
+    - Character Literals `ASCII`
 
 4. #### Symbols
     - Semicolon `;` 
@@ -21,6 +22,7 @@
     - Close Brackets Curly `}`
     - Open Brackets `(`
     - Close Brackets `)`
+    - Single Quotes `'`
 
 6. #### Operators
     - Equals  `=` 
@@ -56,7 +58,7 @@ while current_position != end_of_file:
         while current_character is digit
             buffer.append(current_character)
             current_position++
-        token_list.append(Token(INTEGET,buffer))
+        token_list.append(Token(INTEGER,buffer))
 
     else if current_character is operator
         while current_character is operator
@@ -66,7 +68,14 @@ while current_position != end_of_file:
         token_list.append(token)
 
     else if current_character is symbol
-        token = get_symbol_type(current_character)
+        if current_character is SINGLE_QUOTES
+            current_position++
+            while current_character != SINGLE_QUOTES
+                buffer.append(current_character)
+                current_position++
+            token = TOKEN(CHARACTER,buffer)
+        else
+            token = get_symbol_type(current_character)
         token_list.append(token)
 
     current_position++

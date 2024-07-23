@@ -1,9 +1,1 @@
-for(let i=1;i<=10;i=i+1){
-	for(let j=i;j<=10;j=j+1){
-		if (i+j == 10) {
-			dbg i;
-			dbg j;
-		}else{
-		}
-	}
-}
+dbg 'aa';

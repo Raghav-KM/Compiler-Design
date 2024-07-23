@@ -24,6 +24,7 @@ enum TOKEN_TYPES {
 
   // Literals
   INT_LIT,
+  CHAR_LIT,
 
   // Symbols
   SEMICOLON,
@@ -31,6 +32,7 @@ enum TOKEN_TYPES {
   BRACKET_CLOSE_CURLY,
   BRACKET_OPEN,
   BRACKET_CLOSE,
+  SINGLE_QUOTE,
 
   // Operators
   EQUALS,
