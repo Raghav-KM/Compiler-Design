@@ -6,6 +6,7 @@ Codegen::Codegen() {
   text_section = "";
   require_print_integer_subroutine = false;
   require_comparison_subroutine = false;
+  require_print_character_subroutine = false;
 }
 
 int Codegen::var_count = 0;
@@ -47,6 +48,16 @@ void Codegen::generate_debug(string variable_name) {
   }
   text_section += "    mov eax, " + variable_name +
                   "\n    call _print_integer_subroutine\n\n";
+  Codegen::reset_count();
+}
+void Codegen::generate_debug_char(string variable_name) {
+  cout << "dbg " << variable_name << "\n";
+
+  if (!require_print_character_subroutine) {
+    require_print_character_subroutine = true;
+  }
+  text_section += "    mov al, " + variable_name +
+                  "\n    call _print_character_subroutine\n\n";
   Codegen::reset_count();
 }
 
@@ -157,6 +168,9 @@ void Codegen::export_asm() {
   if (require_print_integer_subroutine) {
     program += "    buffer  resb 12\n";
   }
+  if (require_print_character_subroutine) {
+    program += "    char_buffer resb 1\n";
+  }
   program += "    newline resb 1\n";
 
   for (int i = 1; i <= Codegen::max_count; i++) {
@@ -214,6 +228,19 @@ _print_integer_subroutine:
     mov ebx, 1
     int 0x80
     ret
+
+)";
+  }
+  if (require_print_character_subroutine) {
+    program += R"(
+_print_character_subroutine:
+    mov ecx, char_buffer 
+    mov [ecx], al
+    mov edx, 1 
+    mov eax, 4 
+    mov ebx, 1 
+    int 0x80 
+    ret 
 
 )";
   }
@@ -308,8 +335,16 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
 }
 
 void Codegen::traverse_debug(NodeDebug *debug) {
-  string var = traverse_comparative_expression(debug->comp_exp);
-  generate_debug(var);
+  string var = "";
+  if (debug->comp_exp) {
+    var = traverse_comparative_expression(debug->comp_exp);
+    generate_debug(var);
+  } else if (debug->CHAR) {
+    var.push_back('\'');
+    var.push_back(debug->CHAR->value);
+    var.push_back('\'');
+    generate_debug_char(var);
+  }
 }
 
 void Codegen::traverse_let(NodeLet *let) {

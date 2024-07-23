@@ -113,3 +113,4 @@
 
 # 23-07-2024
 - Added newline subroutine
+- Added dbg support for characters

@@ -1,1 +1,4 @@
-dbg 'aa';
+for(let i=0;i<=9;i=i+1){
+    dbg 'i';
+    dbg ' ';
+}

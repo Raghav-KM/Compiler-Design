@@ -22,6 +22,16 @@ public:
   static string print_INT(NodeINT *INT, int indent);
 };
 
+class NodeCHAR {
+  friend class Parser;
+  friend class Codegen;
+  char value;
+
+public:
+  NodeCHAR(char value);
+  static string print(NodeCHAR *CHAR, int indent);
+};
+
 class NodeIdentifier {
   friend class Parser;
   friend class Codegen;
@@ -170,9 +180,12 @@ class NodeDebug {
   friend class Parser;
   friend class Codegen;
   NodeComparativeExpression *comp_exp;
+  NodeCHAR *CHAR;
 
 public:
   NodeDebug(NodeComparativeExpression *comp_exp);
+  NodeDebug(NodeCHAR *CHAR);
+
   static string print_debug(NodeDebug *debug, int indent);
 };
 

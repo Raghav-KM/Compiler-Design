@@ -195,6 +195,12 @@ NodeDebug *Parser::parse_debug() {
       return new NodeDebug(comp_exp);
     }
     Error::invalid_syntax("Missing ';'");
+  } else if (NodeCHAR *CHAR = parse_char()) {
+    if (look_ahead().get_type() == SEMICOLON) {
+      consume();
+      return new NodeDebug(CHAR);
+    }
+    Error::invalid_syntax("Missing ';'");
   }
   return NULL;
 }
@@ -367,6 +373,12 @@ NodeINT *Parser::parse_int() {
   NodeINT *INT = new NodeINT(stoi(look_ahead().get_body()));
   consume();
   return INT;
+}
+
+NodeCHAR *Parser::parse_char() {
+  NodeCHAR *CHAR = new NodeCHAR(look_ahead().get_body()[0]);
+  consume();
+  return CHAR;
 }
 
 NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {

@@ -24,6 +24,7 @@ private:
   NodeFor *parse_for();
 
   NodeINT *parse_int();
+  NodeCHAR *parse_char();
   NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
 
   NodeComparativeExpression *parse_comparative_expression();

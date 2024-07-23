@@ -37,6 +37,11 @@ NodeStatement::NodeStatement(NodeFor *FOR) {
 
 NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
   this->comp_exp = comp_exp;
+  this->CHAR = NULL;
+}
+NodeDebug::NodeDebug(NodeCHAR *CHAR) {
+  this->comp_exp = NULL;
+  this->CHAR = CHAR;
 }
 
 NodeFor::NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp,
@@ -125,6 +130,8 @@ NodeIdentifier::NodeIdentifier(string value) { name = value; }
 
 NodeINT::NodeINT(int value) { this->value = value; }
 
+NodeCHAR::NodeCHAR(char value) { this->value = value; }
+
 NodeAdditiveOperator::NodeAdditiveOperator(char op) { this->op = op; }
 
 NodeComparativeOperator::NodeComparativeOperator(string op) { this->op = op; }
@@ -135,6 +142,10 @@ NodeMultiplicativeOperator::NodeMultiplicativeOperator(char op) {
 
 string NodeINT::print_INT(NodeINT *INT, int indent) {
   return tab(indent) + "[ 'int_lit': " + to_string(INT->value) + " ]\n";
+}
+
+string NodeCHAR::print(NodeCHAR *CHAR, int indent) {
+  return tab(indent) + "[ 'char_lit': " + CHAR->value + " ]\n";
 }
 
 string NodeIdentifier::print_identifier(NodeIdentifier *identifier,
@@ -242,9 +253,15 @@ string NodeFor::print(NodeFor *FOR, int indent) {
 }
 
 string NodeDebug::print_debug(NodeDebug *debug, int indent) {
-  return tab(indent) + "[ 'debug': \n" +
-         NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
-         tab(indent) + "]\n";
+  if (debug->comp_exp) {
+    return tab(indent) + "[ 'debug': \n" +
+           NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
+           tab(indent) + "]\n";
+  } else if (debug->CHAR) {
+    return tab(indent) + "[ 'debug': \n" +
+           NodeCHAR::print(debug->CHAR, indent + 1) + tab(indent) + "]\n";
+  }
+  return "";
 }
 
 string NodeIf::print_if(NodeIf *IF, int indent) {
