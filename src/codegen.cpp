@@ -155,8 +155,10 @@ void Codegen::export_asm() {
   // --- Bss Section --- //
   program += "section .bss\n";
   if (require_print_integer_subroutine) {
-    program += "    buffer resb 12\n";
+    program += "    buffer  resb 12\n";
   }
+  program += "    newline resb 1\n";
+
   for (int i = 1; i <= Codegen::max_count; i++) {
     declare_variable_bss_section("_t" + to_string(i));
   }
@@ -170,6 +172,7 @@ void Codegen::export_asm() {
 
   // --- Program Termination --- //
   program += R"(
+    call _print_newline_subroutine
     mov eax, 1
     xor ebx, ebx
     int 0x80
@@ -180,8 +183,6 @@ void Codegen::export_asm() {
 _print_integer_subroutine:
     push eax
     mov ecx, buffer + 10
-    mov byte [ecx], 0xA
-    dec ecx
 
     xor edx, edx
     mov ebx, 10
@@ -207,7 +208,7 @@ _print_integer_subroutine:
 
 ._print:
     inc ecx
-    mov edx, buffer + 11
+    mov edx, buffer + 12
     sub edx, ecx
     mov eax, 4
     mov ebx, 1
@@ -216,6 +217,18 @@ _print_integer_subroutine:
 
 )";
   }
+
+  program += R"(
+_print_newline_subroutine:
+    mov ecx, newline
+    mov byte [ecx], 0xA
+    mov edx, 1
+    mov eax, 4
+    mov ebx, 1
+    int 0x80
+    ret
+
+)";
 
   if (require_comparison_subroutine) {
     program += R"(
