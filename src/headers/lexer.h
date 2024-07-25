@@ -18,6 +18,7 @@ enum TOKEN_TYPES {
   IF,
   ELSE,
   FOR,
+  ENDL,
 
   // Identifiers
   IDENTIFIER,

@@ -52,12 +52,14 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "BRACKET_OPEN";
   case BRACKET_CLOSE:
     return "BRACKET_CLOSE";
+  case ENDL:
+    return "ENDL";
   default:
     return "INVALID_TOKEN";
   }
 }
 
-vector<string> Token::keywords = {"dbg", "let", "if", "else", "for"};
+vector<string> Token::keywords = {"dbg", "let", "if", "else", "for", "endl"};
 vector<char> Token::char_symbols = {';', '{', '}', '(', ')', '\''};
 vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
@@ -112,6 +114,8 @@ TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
     return ELSE;
   } else if (keyword == "for") {
     return FOR;
+  } else if (keyword == "endl") {
+    return ENDL;
   } else {
     return INVALID_TOKEN;
   }
@@ -184,7 +188,12 @@ bool Lexer::analyse(string input_stream) {
         current_pos++;
       }
       if (Token::is_keyword(buffer)) {
-        token_stream.push_back(Token(Token::get_keyword_type(buffer)));
+        TOKEN_TYPES token_type = Token::get_keyword_type(buffer);
+        if (token_type == ENDL) {
+          token_stream.push_back(Token(CHAR_LIT, "\n"));
+        } else {
+          token_stream.push_back(Token(Token::get_keyword_type(buffer)));
+        }
       } else {
         token_stream.push_back(Token(IDENTIFIER, buffer));
       }

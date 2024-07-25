@@ -130,7 +130,7 @@ NodeIdentifier::NodeIdentifier(string value) { name = value; }
 
 NodeINT::NodeINT(int value) { this->value = value; }
 
-NodeCHAR::NodeCHAR(char value) { this->value = value; }
+NodeCHAR::NodeCHAR(int value) { this->value = value; }
 
 NodeAdditiveOperator::NodeAdditiveOperator(char op) { this->op = op; }
 
@@ -145,7 +145,7 @@ string NodeINT::print_INT(NodeINT *INT, int indent) {
 }
 
 string NodeCHAR::print(NodeCHAR *CHAR, int indent) {
-  return tab(indent) + "[ 'char_lit': " + CHAR->value + " ]\n";
+  return tab(indent) + "[ 'char_lit': " + to_string(CHAR->value) + " ]\n";
 }
 
 string NodeIdentifier::print_identifier(NodeIdentifier *identifier,

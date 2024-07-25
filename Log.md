@@ -12,9 +12,9 @@
 10. **TODO : Add FLAGS to allow compiler till [LEXER, PARSER, CODEGEN]**
 11. <!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 12. **TODO : Write ASM for divide operation**
-13. **TODO : Make a ENDLINE**
+13. <!-- **TODO : Make a ENDLINE** --!>
 14. **TODO : Add Better Error Handling**
-15. **TODO : Add Character support**
+15. <!-- **TODO : Add Character support** --!>
 16. **TODO : Add String support**
 17. **TODO : Add Function support (without arguments)**
 18. **Todo : Add Function support (with arguments)**
@@ -23,6 +23,7 @@
 20. **Todo : Type Casting from INT->CHAR and CHAR->INT**
 21. **Todo : Re-Write Parser**
 22. **Todo : Re-Write Codegen**
+23. **Todo : Allow IF without ELSE**
 ----
 
 # 22-06-2024
@@ -114,3 +115,6 @@
 # 23-07-2024
 - Added newline subroutine
 - Added dbg support for characters
+
+# 25-07-2024
+- Working endline

@@ -7,6 +7,7 @@
     - `dbg`
     - `if`, `else`
     - `for`
+    - `endl`
 
 2. #### Identifiers
     - Can only start with a letter ie `a-z`, `A-Z` 

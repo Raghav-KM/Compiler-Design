@@ -3,33 +3,94 @@ section .data
 section .bss
     char_buffer resb 1
     newline resb 1
+    n resd 1
     i resd 1
+    j resd 1
     _t1 resd 1
+    _t2 resd 1
 
 section .text
     global _start
 
 _start:
-    mov eax, 0
+    mov eax, 10
+    mov [n], eax
+    mov eax, [n]
     mov [i], eax
 _for1:
     mov eax, [i]
-    mov ebx, 9
+    mov ebx, 0
     cmp eax, ebx
-    call _compare_less_equal_subroutine
+    call _compare_greater_subroutine
     mov [_t1], eax
     mov eax, [_t1]
     cmp eax, 0
     jz _for1_end
 
-    mov al, 'i'
+    mov eax, 1
+    mov [j], eax
+_for2:
+    mov eax, [j]
+    mov ebx, [n]
+    cmp eax, ebx
+    call _compare_less_equal_subroutine
+    mov [_t1], eax
+    mov eax, [_t1]
+    cmp eax, 0
+    jz _for2_end
+
+    mov eax, [j]
+    mov ebx, [i]
+    cmp eax, ebx
+    call _compare_greater_equal_subroutine
+    mov [_t2], eax
+    mov eax, [_t2]
+    cmp eax, 0
+    jnz _if1
+
+    mov al, 32
     call _print_character_subroutine
 
-    mov al, ' '
+    mov al, 32
     call _print_character_subroutine
+
+    jmp _if1_end
+
+_if1:
+    mov al, 42
+    call _print_character_subroutine
+
+    mov al, 32
+    call _print_character_subroutine
+
+_if1_end:
+    mov eax, [j]
+    add eax, 1
+    mov [_t1], eax
+    mov eax, [_t1]
+    mov [j], eax
+    jmp _for2
+
+_for2_end:
 
     mov eax, [i]
-    add eax, 1
+    mov ebx, 1
+    cmp eax, ebx
+    call _compare_not_equal_subroutine
+    mov [_t1], eax
+    mov eax, [_t1]
+    cmp eax, 0
+    jnz _if2
+
+    jmp _if2_end
+
+_if2:
+    mov al, 10
+    call _print_character_subroutine
+
+_if2_end:
+    mov eax, [i]
+    sub eax, 1
     mov [_t1], eax
     mov eax, [_t1]
     mov [i], eax

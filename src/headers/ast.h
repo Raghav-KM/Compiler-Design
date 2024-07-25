@@ -25,10 +25,10 @@ public:
 class NodeCHAR {
   friend class Parser;
   friend class Codegen;
-  char value;
+  int value;
 
 public:
-  NodeCHAR(char value);
+  NodeCHAR(int value);
   static string print(NodeCHAR *CHAR, int indent);
 };
 

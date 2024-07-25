@@ -376,7 +376,7 @@ NodeINT *Parser::parse_int() {
 }
 
 NodeCHAR *Parser::parse_char() {
-  NodeCHAR *CHAR = new NodeCHAR(look_ahead().get_body()[0]);
+  NodeCHAR *CHAR = new NodeCHAR((int)look_ahead().get_body()[0]);
   consume();
   return CHAR;
 }

@@ -12,7 +12,6 @@ Codegen::Codegen() {
 int Codegen::var_count = 0;
 int Codegen::if_count = 0;
 int Codegen::for_count = 0;
-
 int Codegen::max_count = 0;
 
 string Codegen::get_new_temp_variable() {
@@ -56,8 +55,10 @@ void Codegen::generate_debug_char(string variable_name) {
   if (!require_print_character_subroutine) {
     require_print_character_subroutine = true;
   }
+  cout << "{" << variable_name << "}\n";
   text_section += "    mov al, " + variable_name +
                   "\n    call _print_character_subroutine\n\n";
+
   Codegen::reset_count();
 }
 
@@ -340,9 +341,7 @@ void Codegen::traverse_debug(NodeDebug *debug) {
     var = traverse_comparative_expression(debug->comp_exp);
     generate_debug(var);
   } else if (debug->CHAR) {
-    var.push_back('\'');
-    var.push_back(debug->CHAR->value);
-    var.push_back('\'');
+    var = to_string(debug->CHAR->value);
     generate_debug_char(var);
   }
 }

@@ -1,4 +1,19 @@
-for(let i=0;i<=9;i=i+1){
-    dbg 'i';
-    dbg ' ';
+let n = 10;
+for (let i = n; i > 0; i = i-1) {
+    for (let j = 1; j <= n; j=j+1) 
+    {
+        if (j >= i) {
+            dbg '*';
+            dbg ' ';
+        }
+        else {
+            dbg ' ';
+            dbg ' ';
+        }
+    }
+    if(i!=1){
+        dbg endl;
+    }else {
+        
+    }
 }
