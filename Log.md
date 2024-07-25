@@ -23,7 +23,7 @@
 20. **Todo : Type Casting from INT->CHAR and CHAR->INT**
 21. **Todo : Re-Write Parser**
 22. **Todo : Re-Write Codegen**
-23. **Todo : Allow IF without ELSE**
+23. <!-- **Todo : Allow IF without ELSE** --!>
 ----
 
 # 22-06-2024
@@ -118,3 +118,5 @@
 
 # 25-07-2024
 - Working endline
+- If working without else
+- Partially re-wrote parser

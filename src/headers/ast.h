@@ -10,125 +10,120 @@
 
 using namespace std;
 
+class NodeProgram;
+
 class NodeStatementList;
+class NodeStatement;
 
-class NodeINT {
-  friend class Parser;
-  friend class Codegen;
-  int value;
+class NodeDebug;
+class NodeLet;
+class NodeIf;
+class NodeAssign;
+class NodeFor;
 
+class NodeComparativeExpression;
+class NodeAdditiveExpression;
+class NodeMultiplicativeExpression;
+class NodeExpression;
+
+class NodeComparativeOperator;
+class NodeAdditiveOperator;
+class NodeMultiplicativeOperator;
+
+class NodeIdentifier;
+class NodeINT;
+class NodeCHAR;
+
+class NodeProgram {
 public:
-  NodeINT(int value);
-  static string print_INT(NodeINT *INT, int indent);
+  NodeStatementList *stmt_list;
+
+  NodeProgram(NodeStatementList *stmt_list);
+  static string print(NodeProgram *program, int indent);
 };
 
-class NodeCHAR {
-  friend class Parser;
-  friend class Codegen;
-  int value;
-
+class NodeStatementList {
 public:
-  NodeCHAR(int value);
-  static string print(NodeCHAR *CHAR, int indent);
+  vector<NodeStatement *> stmts;
+
+  NodeStatementList(vector<NodeStatement *> stmts);
+  static string print(NodeStatementList *stmt, int indent);
 };
 
-class NodeIdentifier {
-  friend class Parser;
-  friend class Codegen;
-  string name;
-
+class NodeStatement {
 public:
-  NodeIdentifier(string name);
-  static string print_identifier(NodeIdentifier *identifier, int indent);
+  NodeDebug *debug;
+  NodeLet *let;
+  NodeIf *IF;
+  NodeAssign *assign;
+  NodeFor *FOR;
+
+  NodeStatement(NodeDebug *debug);
+  NodeStatement(NodeLet *let);
+  NodeStatement(NodeIf *IF);
+  NodeStatement(NodeAssign *assign);
+  NodeStatement(NodeFor *FOR);
+
+  static string print(NodeStatement *stmt, int indent);
 };
 
-class NodeComparativeOperator {
-  friend class Parser;
-  friend class Codegen;
-  string op;
-
+class NodeDebug {
 public:
-  NodeComparativeOperator(string op);
-  static string print(NodeComparativeOperator *comp_op, int indent);
+  NodeComparativeExpression *comp_exp;
+  NodeCHAR *CHAR;
+
+  NodeDebug(NodeComparativeExpression *comp_exp);
+  NodeDebug(NodeCHAR *CHAR);
+
+  static string print(NodeDebug *debug, int indent);
 };
 
-class NodeAdditiveOperator {
-  friend class Parser;
-  friend class Codegen;
-  char op;
-
+class NodeLet {
 public:
-  NodeAdditiveOperator(char op);
-  static string print(NodeAdditiveOperator *add_op, int indent);
-};
-
-class NodeMultiplicativeOperator {
-  friend class Parser;
-  friend class Codegen;
-  char op;
-
-public:
-  NodeMultiplicativeOperator(char op);
-  static string print(NodeMultiplicativeOperator *mul_op, int indent);
-};
-
-class NodeExpression {
-  friend class Parser;
-  friend class Codegen;
-
-  NodeINT *INT;
   NodeIdentifier *identifier;
+  NodeComparativeExpression *comp_exp;
 
-public:
-  NodeExpression(NodeIdentifier *identifier);
-  NodeExpression(NodeINT *INT);
-  static string print_expression(NodeExpression *expression, int indent);
+  NodeLet(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
+  static string print(NodeLet *let, int indent);
 };
 
-class NodeMultiplicativeExpression {
-  friend class Parser;
-  friend class Codegen;
-
-  NodeMultiplicativeExpression *mul_exp;
-  NodeMultiplicativeOperator *mul_operator;
-  NodeExpression *exp;
-
+class NodeIf {
 public:
-  NodeMultiplicativeExpression(NodeMultiplicativeExpression *mul_exp,
-                               NodeMultiplicativeOperator *mul_operators,
-                               NodeExpression *exp);
+  NodeComparativeExpression *comp_exp;
+  NodeStatementList *stmt_list_if;
+  NodeStatementList *stmt_list_else;
 
-  NodeMultiplicativeExpression(NodeExpression *exp);
-  static string print(NodeMultiplicativeExpression *mul_exp, int indent);
+  NodeIf(NodeComparativeExpression *comp_exp, NodeStatementList *stmt_list_if,
+         NodeStatementList *stmt_list_else);
+  static string print(NodeIf *If, int indent);
 };
 
-class NodeAdditiveExpression {
-  friend class Parser;
-  friend class Codegen;
-
-  NodeAdditiveExpression *add_exp;
-  NodeAdditiveOperator *add_operator;
-  NodeMultiplicativeExpression *mul_exp;
-
+class NodeAssign {
 public:
-  NodeAdditiveExpression(NodeAdditiveExpression *add_exp,
-                         NodeAdditiveOperator *add_operator,
-                         NodeMultiplicativeExpression *mul_exp);
+  NodeIdentifier *identifier;
+  NodeComparativeExpression *comp_exp;
 
-  NodeAdditiveExpression(NodeMultiplicativeExpression *mul_exp);
+  NodeAssign(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
+  static string print(NodeAssign *assign, int indent);
+};
 
-  static string print(NodeAdditiveExpression *add_exp, int indent);
+class NodeFor {
+public:
+  NodeLet *let;
+  NodeComparativeExpression *comp_exp;
+  NodeAssign *assign;
+  NodeStatementList *stmt_list;
+
+  NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp, NodeAssign *assign,
+          NodeStatementList *stmt_list);
+  static string print(NodeFor *FOR, int indent);
 };
 
 class NodeComparativeExpression {
-  friend class Parser;
-  friend class Codegen;
-
+public:
   NodeComparativeExpression *comp_exp;
   NodeComparativeOperator *comp_operator;
   NodeAdditiveExpression *add_exp;
-
-public:
   NodeComparativeExpression(NodeComparativeExpression *comp_exp,
                             NodeComparativeOperator *comp_operator,
                             NodeAdditiveExpression *add_exp);
@@ -138,106 +133,85 @@ public:
   static string print(NodeComparativeExpression *comp_exp, int indent);
 };
 
-class NodeAssign {
-  friend class Parser;
-  friend class Codegen;
+class NodeAdditiveExpression {
+public:
+  NodeAdditiveExpression *add_exp;
+  NodeAdditiveOperator *add_operator;
+  NodeMultiplicativeExpression *mul_exp;
+  NodeAdditiveExpression(NodeAdditiveExpression *add_exp,
+                         NodeAdditiveOperator *add_operator,
+                         NodeMultiplicativeExpression *mul_exp);
 
+  NodeAdditiveExpression(NodeMultiplicativeExpression *mul_exp);
+
+  static string print(NodeAdditiveExpression *add_exp, int indent);
+};
+
+class NodeMultiplicativeExpression {
+public:
+  NodeMultiplicativeExpression *mul_exp;
+  NodeMultiplicativeOperator *mul_operator;
+  NodeExpression *exp;
+
+  NodeMultiplicativeExpression(NodeMultiplicativeExpression *mul_exp,
+                               NodeMultiplicativeOperator *mul_operators,
+                               NodeExpression *exp);
+
+  NodeMultiplicativeExpression(NodeExpression *exp);
+  static string print(NodeMultiplicativeExpression *mul_exp, int indent);
+};
+
+class NodeExpression {
+public:
+  NodeINT *INT;
   NodeIdentifier *identifier;
-  NodeComparativeExpression *comp_exp;
 
-public:
-  NodeAssign(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
-  static string print(NodeAssign *assign, int indent);
+  NodeExpression(NodeIdentifier *identifier);
+  NodeExpression(NodeINT *INT);
+  static string print(NodeExpression *expression, int indent);
 };
 
-class NodeLet {
-  friend class Parser;
-  friend class Codegen;
-  NodeIdentifier *identifier;
-  NodeComparativeExpression *comp_exp;
-
+class NodeComparativeOperator {
 public:
-  NodeLet(NodeIdentifier *identifier, NodeComparativeExpression *comp_exp);
-  static string print_let(NodeLet *let, int indent);
+  string op;
+  NodeComparativeOperator(string op);
+  static string print(NodeComparativeOperator *comp_op, int indent);
 };
 
-class NodeFor {
-  friend class Parser;
-  friend class Codegen;
-
-  NodeLet *let;
-  NodeComparativeExpression *comp_exp;
-  NodeAssign *assign;
-  NodeStatementList *stmt_list;
-
+class NodeAdditiveOperator {
 public:
-  NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp, NodeAssign *assign,
-          NodeStatementList *stmt_list);
-  static string print(NodeFor *FOR, int indent);
+  char op;
+  NodeAdditiveOperator(char op);
+  static string print(NodeAdditiveOperator *add_op, int indent);
 };
 
-class NodeDebug {
-  friend class Parser;
-  friend class Codegen;
-  NodeComparativeExpression *comp_exp;
-  NodeCHAR *CHAR;
-
+class NodeMultiplicativeOperator {
 public:
-  NodeDebug(NodeComparativeExpression *comp_exp);
-  NodeDebug(NodeCHAR *CHAR);
-
-  static string print_debug(NodeDebug *debug, int indent);
+  char op;
+  NodeMultiplicativeOperator(char op);
+  static string print(NodeMultiplicativeOperator *mul_op, int indent);
 };
 
-class NodeIf {
-  friend class Parser;
-  friend class Codegen;
-
-  NodeComparativeExpression *comp_exp;
-  NodeStatementList *stmt_list_if;
-  NodeStatementList *stmt_list_else;
-
+class NodeIdentifier {
 public:
-  NodeIf(NodeComparativeExpression *comp_exp, NodeStatementList *stmt_list_if,
-         NodeStatementList *stmt_list_else);
-  static string print_if(NodeIf *If, int indent);
+  string name;
+
+  NodeIdentifier(string name);
+  static string print(NodeIdentifier *identifier, int indent);
 };
 
-class NodeStatement {
-  friend class Parser;
-  friend class Codegen;
-  NodeDebug *debug;
-  NodeLet *let;
-  NodeIf *IF;
-  NodeAssign *assign;
-  NodeFor *FOR;
-
+class NodeINT {
 public:
-  NodeStatement(NodeDebug *debug);
-  NodeStatement(NodeLet *let);
-  NodeStatement(NodeIf *IF);
-  NodeStatement(NodeAssign *assign);
-  NodeStatement(NodeFor *FOR);
-
-  static string print_statement(NodeStatement *stmt, int indent);
+  int value;
+  NodeINT(int value);
+  static string print(NodeINT *INT, int indent);
 };
 
-class NodeStatementList {
-  friend class Parser;
-  friend class Codegen;
-
+class NodeCHAR {
 public:
-  vector<NodeStatement *> stmts;
-  static string print_statement_list(NodeStatementList *stmt, int indent);
-};
-
-class NodeProgram {
-  friend class Parser;
-  friend class Codegen;
-  NodeStatementList *stmt_list;
-
-public:
-  static string print_program(NodeProgram *program, int indent);
+  int value;
+  NodeCHAR(int value);
+  static string print(NodeCHAR *CHAR, int indent);
 };
 
 string tab(int n);

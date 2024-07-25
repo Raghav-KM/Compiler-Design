@@ -1,9 +1,11 @@
 section .data
 
 section .bss
+    buffer  resb 12
     char_buffer resb 1
     newline resb 1
     n resd 1
+    temp_var resd 1
     i resd 1
     j resd 1
     _t1 resd 1
@@ -13,8 +15,10 @@ section .text
     global _start
 
 _start:
-    mov eax, 10
+    mov eax, 5
     mov [n], eax
+    mov eax, 0
+    mov [temp_var], eax
     mov eax, [n]
     mov [i], eax
 _for1:
@@ -57,8 +61,16 @@ _for2:
     jmp _if1_end
 
 _if1:
-    mov al, 42
-    call _print_character_subroutine
+    mov eax, [n]
+    sub eax, [i]
+    mov [_t1], eax
+    mov eax, [_t1]
+    mov [temp_var], eax
+    mov eax, [temp_var]
+    imul eax, 2
+    mov [_t1], eax
+    mov eax, [_t1]
+    call _print_integer_subroutine
 
     mov al, 32
     call _print_character_subroutine
@@ -104,6 +116,42 @@ _for1_end:
     xor ebx, ebx
     int 0x80
   
+_print_integer_subroutine:
+    push eax
+    mov ecx, buffer + 10
+
+    xor edx, edx
+    mov ebx, 10
+
+    cmp eax, 0
+    jge ._convert_loop
+    neg eax
+
+._convert_loop:
+    xor edx, edx
+    div ebx
+    add dl, '0'
+    mov [ecx], dl
+    dec ecx
+    test eax, eax
+    jnz ._convert_loop
+
+    pop eax
+    cmp eax, 0
+    jge ._print
+    mov byte [ecx], '-'
+    dec ecx
+
+._print:
+    inc ecx
+    mov edx, buffer + 12
+    sub edx, ecx
+    mov eax, 4
+    mov ebx, 1
+    int 0x80
+    ret
+
+
 _print_character_subroutine:
     mov ecx, char_buffer 
     mov [ecx], al

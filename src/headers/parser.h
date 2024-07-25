@@ -19,13 +19,8 @@ private:
   NodeAssign *parse_assign(bool check_semicolon = true);
 
   NodeIf *parse_if();
-  NodeStatementList *parse_else();
 
   NodeFor *parse_for();
-
-  NodeINT *parse_int();
-  NodeCHAR *parse_char();
-  NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
 
   NodeComparativeExpression *parse_comparative_expression();
   NodeAdditiveExpression *parse_additive_expression();
@@ -35,6 +30,10 @@ private:
   NodeAdditiveOperator *parse_additive_operator();
   NodeMultiplicativeOperator *parse_multiplicative_operator();
   NodeComparativeOperator *parse_comparative_operator();
+
+  NodeINT *parse_int();
+  NodeCHAR *parse_char();
+  NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
 
   void reset();
 

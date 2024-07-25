@@ -99,7 +99,7 @@ bool Test_Parser::run_test(string input_file_path, string output_file_path) {
 
   cout << "Testcase " + input_file_path.substr(20, 1) << " : ";
   if (NodeProgram *program = parser.parse_program(lexer.get_token_stream())) {
-    string output = NodeProgram::print_program(program, 0);
+    string output = NodeProgram::print(program, 0);
     if (output == expected_output) {
       cout << "PASS\n";
       return true;

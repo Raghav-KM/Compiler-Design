@@ -137,9 +137,11 @@ void Codegen::generate_if(string condition, NodeStatementList *stmt_list_if,
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 0\n";
   text_section += "    jnz _if" + to_string(if_count) + "\n\n";
-  cout << "<--- false --->\n";
-  // Else Statments
-  traverse_stmt_list(stmt_list_else);
+  if (stmt_list_else) {
+    cout << "<--- false --->\n";
+    // Else Statments
+    traverse_stmt_list(stmt_list_else);
+  }
   text_section += "    jmp _if" + to_string(if_count) + "_end\n\n";
   cout << "<--- true  --->\n";
   // If Statments

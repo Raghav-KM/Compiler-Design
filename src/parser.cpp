@@ -29,24 +29,24 @@ void Parser::consume() { ptr++; }
 NodeProgram *Parser::parse_program(vector<Token> token_stream) {
   reset();
   this->token_stream = token_stream;
-  if (NodeStatementList *stmt_list = parse_statement_list(END_OF_FILE)) {
-    NodeProgram *program = new NodeProgram();
-    program->stmt_list = stmt_list;
-    return program;
-  }
-  return NULL;
+
+  NodeStatementList *stmt_list = parse_statement_list(END_OF_FILE);
+  if (stmt_list == NULL)
+    return NULL;
+
+  return new NodeProgram(stmt_list);
 }
 
 NodeStatementList *Parser::parse_statement_list(TOKEN_TYPES END_TOKEN) {
-  NodeStatementList *stmt_list = new NodeStatementList();
+  vector<NodeStatement *> stmt_list;
   while (look_ahead().get_type() != END_TOKEN &&
          look_ahead().get_type() != END_OF_FILE) {
     NodeStatement *stmt = parse_statement();
     if (!stmt)
       return NULL;
-    stmt_list->stmts.push_back(stmt);
+    stmt_list.push_back(stmt);
   }
-  return stmt_list;
+  return new NodeStatementList(stmt_list);
 }
 
 NodeStatement *Parser::parse_statement() {
@@ -55,92 +55,130 @@ NodeStatement *Parser::parse_statement() {
       return new NodeStatement(debug);
     }
     return NULL;
-  }
-  if (look_ahead().get_type() == LET) {
+  } else if (look_ahead().get_type() == LET) {
     if (NodeLet *let = parse_let()) {
       return new NodeStatement(let);
     }
     return NULL;
-  }
-  if (look_ahead().get_type() == IF) {
+  } else if (look_ahead().get_type() == IF) {
     if (NodeIf *IF = parse_if()) {
       return new NodeStatement(IF);
     }
     return NULL;
-  }
-  if (look_ahead().get_type() == IDENTIFIER) {
+  } else if (look_ahead().get_type() == IDENTIFIER) {
     if (NodeAssign *assign = parse_assign()) {
       return new NodeStatement(assign);
     }
     return NULL;
-  }
-  if (look_ahead().get_type() == FOR) {
+  } else if (look_ahead().get_type() == FOR) {
     if (NodeFor *FOR = parse_for()) {
       return new NodeStatement(FOR);
     }
     return NULL;
   }
 
-  Error::invalid_syntax(
-      "Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or 'IDENTIFIER'");
+  Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or "
+                        "'for' or 'IDENTIFIER'");
+  return NULL;
+}
+
+NodeDebug *Parser::parse_debug() {
+  consume();
+  if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
+    if (look_ahead().get_type() == SEMICOLON) {
+      consume();
+      return new NodeDebug(comp_exp);
+    }
+    Error::invalid_syntax("Missing ';'");
+  } else if (NodeCHAR *CHAR = parse_char()) {
+    if (look_ahead().get_type() == SEMICOLON) {
+      consume();
+      return new NodeDebug(CHAR);
+    }
+    Error::invalid_syntax("Missing ';'");
+  }
   return NULL;
 }
 
 NodeIf *Parser::parse_if() {
   consume();
-  if (look_ahead().get_type() == BRACKET_OPEN) {
-    consume();
-
-    if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
-      if (look_ahead().get_type() == BRACKET_CLOSE) {
-        consume();
-        if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
-          consume();
-          if (NodeStatementList *stmt_list_if =
-                  parse_statement_list(BRACKET_CLOSE_CURLY)) {
-            if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
-              consume();
-              if (NodeStatementList *stmt_list_else = parse_else()) {
-                return new NodeIf(comp_exp, stmt_list_if, stmt_list_else);
-              }
-              return NULL;
-            }
-            Error::invalid_syntax("Expected '}'");
-            return NULL;
-          }
-        }
-        Error::invalid_syntax("Expected '{'");
-        return NULL;
-      }
-      Error::invalid_syntax("Expected ')'");
-      return NULL;
-    }
+  if (look_ahead().get_type() != BRACKET_OPEN) {
+    Error::invalid_syntax("Expected '('");
     return NULL;
   }
-  Error::invalid_syntax("Expected '('");
-  return NULL;
-}
+  consume();
 
-NodeStatementList *Parser::parse_else() {
-  if (look_ahead().get_type() == ELSE) {
-    consume();
-    if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
-      consume();
-      if (NodeStatementList *stmt_list_else =
-              parse_statement_list(BRACKET_CLOSE_CURLY)) {
-        if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
-          consume();
-          return stmt_list_else;
-        }
-        Error::invalid_syntax("Expected '}'");
-        return NULL;
-      }
-      return NULL;
-    }
+  NodeComparativeExpression *comp_exp = parse_comparative_expression();
+  if (comp_exp == NULL) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != BRACKET_CLOSE) {
+    Error::invalid_syntax("Expected ')'");
+    return NULL;
+  }
+  consume();
+
+  if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
+    Error::invalid_syntax("Expected '{'");
+    return NULL;
+  }
+  consume();
+
+  NodeStatementList *stmt_list_if = parse_statement_list(BRACKET_CLOSE_CURLY);
+  if (stmt_list_if == NULL) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
     Error::invalid_syntax("Expected '}'");
     return NULL;
   }
-  Error::invalid_syntax("Expected 'else'");
+  consume();
+
+  if (look_ahead().get_type() != ELSE) {
+    return new NodeIf(comp_exp, stmt_list_if, NULL);
+  }
+  consume();
+
+  if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
+    Error::invalid_syntax("Expected '{'");
+    return NULL;
+  }
+  consume();
+
+  NodeStatementList *stmt_list_else = parse_statement_list(BRACKET_CLOSE_CURLY);
+  if (stmt_list_else == NULL) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
+    Error::invalid_syntax("Expected '}'");
+    return NULL;
+  }
+  consume();
+
+  return new NodeIf(comp_exp, stmt_list_if, stmt_list_else);
+}
+
+NodeLet *Parser::parse_let() {
+  consume();
+  if (NodeIdentifier *identifier = parse_identifier(REDECLARATION)) {
+    if (look_ahead().get_type() == EQUALS) {
+      consume();
+      if (NodeComparativeExpression *comp_exp =
+              parse_comparative_expression()) {
+        if (look_ahead().get_type() == SEMICOLON) {
+          consume();
+          return new NodeLet(identifier, comp_exp);
+        }
+        Error::invalid_syntax("Missing ';'");
+        return NULL;
+      }
+    }
+    Error::invalid_syntax("Invalid TOKEN - Expected '='");
+    return NULL;
+  }
   return NULL;
 }
 
@@ -184,45 +222,6 @@ NodeFor *Parser::parse_for() {
     return NULL;
   }
   Error::invalid_syntax("Missing '('");
-  return NULL;
-}
-
-NodeDebug *Parser::parse_debug() {
-  consume();
-  if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
-    if (look_ahead().get_type() == SEMICOLON) {
-      consume();
-      return new NodeDebug(comp_exp);
-    }
-    Error::invalid_syntax("Missing ';'");
-  } else if (NodeCHAR *CHAR = parse_char()) {
-    if (look_ahead().get_type() == SEMICOLON) {
-      consume();
-      return new NodeDebug(CHAR);
-    }
-    Error::invalid_syntax("Missing ';'");
-  }
-  return NULL;
-}
-
-NodeLet *Parser::parse_let() {
-  consume();
-  if (NodeIdentifier *identifier = parse_identifier(REDECLARATION)) {
-    if (look_ahead().get_type() == EQUALS) {
-      consume();
-      if (NodeComparativeExpression *comp_exp =
-              parse_comparative_expression()) {
-        if (look_ahead().get_type() == SEMICOLON) {
-          consume();
-          return new NodeLet(identifier, comp_exp);
-        }
-        Error::invalid_syntax("Missing ';'");
-        return NULL;
-      }
-    }
-    Error::invalid_syntax("Invalid TOKEN - Expected '='");
-    return NULL;
-  }
   return NULL;
 }
 
