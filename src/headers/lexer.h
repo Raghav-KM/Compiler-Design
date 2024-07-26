@@ -11,6 +11,10 @@
 
 using namespace std;
 
+enum DATA_TYPES { UNDEFINED, CHAR, INT };
+
+DATA_TYPES max_datatype(DATA_TYPES d1, DATA_TYPES d2);
+
 enum TOKEN_TYPES {
   // Keywords
   LET,
@@ -19,6 +23,8 @@ enum TOKEN_TYPES {
   ELSE,
   FOR,
   ENDL,
+  DT_INT,
+  DT_CHAR,
 
   // Identifiers
   IDENTIFIER,
@@ -29,6 +35,7 @@ enum TOKEN_TYPES {
 
   // Symbols
   SEMICOLON,
+  COLON,
   BRACKET_OPEN_CURLY,
   BRACKET_CLOSE_CURLY,
   BRACKET_OPEN,

@@ -1,19 +1,13 @@
-let n = 5;
-let temp_var = 0;
-for (let i = n; i > 0; i = i-1) {
-    for (let j = 1; j <= n; j=j+1) 
-    {
-        if (j >= i) {
-            temp_var = n-i;
-            dbg temp_var*2;
-            dbg ' ';
-        }
-        else {
-            dbg ' ';
-            dbg ' ';
-        }
-    }
-    if(i!=1){
-        dbg endl ;
-    }
+for(let i:char = 'a';i<='z';i=i+1){
+    let c1:char = i;
+    dbg c1;
+    dbg ' ';
+}
+
+dbg endl;
+
+for(let j:char = 'A';j<='Z';j=j+1){
+    let c2:char = j;
+    dbg c2;
+    dbg ' ';
 }

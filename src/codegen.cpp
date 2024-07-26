@@ -49,27 +49,25 @@ void Codegen::generate_debug(string variable_name) {
                   "\n    call _print_integer_subroutine\n\n";
   Codegen::reset_count();
 }
-void Codegen::generate_debug_char(string variable_name) {
-  cout << "dbg " << variable_name << "\n";
 
-  if (!require_print_character_subroutine) {
-    require_print_character_subroutine = true;
-  }
-  cout << "{" << variable_name << "}\n";
-  text_section += "    mov al, " + variable_name +
-                  "\n    call _print_character_subroutine\n\n";
-
-  Codegen::reset_count();
-}
-
-void Codegen::generate_debug(int value) {
+void Codegen::generate_debug(string value, DATA_TYPES type) {
   cout << "dbg " << value << "\n";
 
-  if (!require_print_integer_subroutine) {
-    require_print_integer_subroutine = true;
+  if (type == INT) {
+
+    if (!require_print_integer_subroutine) {
+      require_print_integer_subroutine = true;
+    }
+    text_section +=
+        "    mov eax, " + value + "\n    call _print_integer_subroutine\n";
+  } else if (type == CHAR) {
+
+    if (!require_print_character_subroutine) {
+      require_print_character_subroutine = true;
+    }
+    text_section +=
+        "    mov al, " + value + "\n    call _print_character_subroutine\n\n";
   }
-  text_section += "    mov eax, " + to_string(value) +
-                  "\n    call _print_integer_subroutine\n";
   Codegen::reset_count();
 }
 
@@ -341,10 +339,7 @@ void Codegen::traverse_debug(NodeDebug *debug) {
   string var = "";
   if (debug->comp_exp) {
     var = traverse_comparative_expression(debug->comp_exp);
-    generate_debug(var);
-  } else if (debug->CHAR) {
-    var = to_string(debug->CHAR->value);
-    generate_debug_char(var);
+    generate_debug(var, debug->comp_exp->type);
   }
 }
 
@@ -427,7 +422,7 @@ string Codegen::traverse_expression(NodeExpression *exp) {
   if (exp->identifier != NULL) {
     return "[" + exp->identifier->name + "]";
   } else {
-    return to_string(exp->INT->value);
+    return to_string(exp->literal->value);
   }
 }
 

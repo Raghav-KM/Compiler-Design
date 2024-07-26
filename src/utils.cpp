@@ -33,7 +33,7 @@ SymbolTable *SymbolTable::get_instance() {
 
 RESULT_TYPE SymbolTable::declare(string symbol_name) {
   if (table.find(symbol_name) == table.end()) {
-    table[symbol_name] = true;
+    table[symbol_name] = UNDEFINED;
   } else {
     return REDECLARATION;
   }
@@ -47,7 +47,13 @@ RESULT_TYPE SymbolTable::exists(string symbol_name) {
   return SUCCESS;
 }
 
-int SymbolTable::get_value(string symbol_name) { return table[symbol_name]; }
+DATA_TYPES SymbolTable::get_datatype(string symbol_name) {
+  return table[symbol_name];
+}
+
+void SymbolTable::set_datatype(string symbol_name, DATA_TYPES datatye) {
+  table[symbol_name] = datatye;
+}
 
 void SymbolTable::reset() { this->table.clear(); }
 

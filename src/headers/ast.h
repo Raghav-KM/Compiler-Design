@@ -31,8 +31,7 @@ class NodeAdditiveOperator;
 class NodeMultiplicativeOperator;
 
 class NodeIdentifier;
-class NodeINT;
-class NodeCHAR;
+class NodeLiteral;
 
 class NodeProgram {
 public:
@@ -70,11 +69,7 @@ public:
 class NodeDebug {
 public:
   NodeComparativeExpression *comp_exp;
-  NodeCHAR *CHAR;
-
   NodeDebug(NodeComparativeExpression *comp_exp);
-  NodeDebug(NodeCHAR *CHAR);
-
   static string print(NodeDebug *debug, int indent);
 };
 
@@ -124,6 +119,8 @@ public:
   NodeComparativeExpression *comp_exp;
   NodeComparativeOperator *comp_operator;
   NodeAdditiveExpression *add_exp;
+  DATA_TYPES type;
+
   NodeComparativeExpression(NodeComparativeExpression *comp_exp,
                             NodeComparativeOperator *comp_operator,
                             NodeAdditiveExpression *add_exp);
@@ -138,6 +135,8 @@ public:
   NodeAdditiveExpression *add_exp;
   NodeAdditiveOperator *add_operator;
   NodeMultiplicativeExpression *mul_exp;
+  DATA_TYPES type;
+
   NodeAdditiveExpression(NodeAdditiveExpression *add_exp,
                          NodeAdditiveOperator *add_operator,
                          NodeMultiplicativeExpression *mul_exp);
@@ -152,6 +151,7 @@ public:
   NodeMultiplicativeExpression *mul_exp;
   NodeMultiplicativeOperator *mul_operator;
   NodeExpression *exp;
+  DATA_TYPES type;
 
   NodeMultiplicativeExpression(NodeMultiplicativeExpression *mul_exp,
                                NodeMultiplicativeOperator *mul_operators,
@@ -163,11 +163,12 @@ public:
 
 class NodeExpression {
 public:
-  NodeINT *INT;
+  NodeLiteral *literal;
   NodeIdentifier *identifier;
+  DATA_TYPES type;
 
   NodeExpression(NodeIdentifier *identifier);
-  NodeExpression(NodeINT *INT);
+  NodeExpression(NodeLiteral *literal);
   static string print(NodeExpression *expression, int indent);
 };
 
@@ -195,23 +196,19 @@ public:
 class NodeIdentifier {
 public:
   string name;
+  DATA_TYPES type;
 
   NodeIdentifier(string name);
   static string print(NodeIdentifier *identifier, int indent);
 };
 
-class NodeINT {
+class NodeLiteral {
 public:
   int value;
-  NodeINT(int value);
-  static string print(NodeINT *INT, int indent);
-};
+  DATA_TYPES type;
 
-class NodeCHAR {
-public:
-  int value;
-  NodeCHAR(int value);
-  static string print(NodeCHAR *CHAR, int indent);
+  NodeLiteral(int value, DATA_TYPES type);
+  static string print(NodeLiteral *literal, int indent);
 };
 
 string tab(int n);

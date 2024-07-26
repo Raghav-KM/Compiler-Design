@@ -55,22 +55,26 @@ NodeStatement *Parser::parse_statement() {
       return new NodeStatement(debug);
     }
     return NULL;
-  } else if (look_ahead().get_type() == LET) {
+  }
+  if (look_ahead().get_type() == LET) {
     if (NodeLet *let = parse_let()) {
       return new NodeStatement(let);
     }
     return NULL;
-  } else if (look_ahead().get_type() == IF) {
+  }
+  if (look_ahead().get_type() == IF) {
     if (NodeIf *IF = parse_if()) {
       return new NodeStatement(IF);
     }
     return NULL;
-  } else if (look_ahead().get_type() == IDENTIFIER) {
+  }
+  if (look_ahead().get_type() == IDENTIFIER) {
     if (NodeAssign *assign = parse_assign()) {
       return new NodeStatement(assign);
     }
     return NULL;
-  } else if (look_ahead().get_type() == FOR) {
+  }
+  if (look_ahead().get_type() == FOR) {
     if (NodeFor *FOR = parse_for()) {
       return new NodeStatement(FOR);
     }
@@ -88,12 +92,6 @@ NodeDebug *Parser::parse_debug() {
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
       return new NodeDebug(comp_exp);
-    }
-    Error::invalid_syntax("Missing ';'");
-  } else if (NodeCHAR *CHAR = parse_char()) {
-    if (look_ahead().get_type() == SEMICOLON) {
-      consume();
-      return new NodeDebug(CHAR);
     }
     Error::invalid_syntax("Missing ';'");
   }
@@ -163,89 +161,130 @@ NodeIf *Parser::parse_if() {
 
 NodeLet *Parser::parse_let() {
   consume();
-  if (NodeIdentifier *identifier = parse_identifier(REDECLARATION)) {
-    if (look_ahead().get_type() == EQUALS) {
-      consume();
-      if (NodeComparativeExpression *comp_exp =
-              parse_comparative_expression()) {
-        if (look_ahead().get_type() == SEMICOLON) {
-          consume();
-          return new NodeLet(identifier, comp_exp);
-        }
-        Error::invalid_syntax("Missing ';'");
-        return NULL;
-      }
+  NodeIdentifier *identifier = parse_identifier(REDECLARATION);
+  if (identifier == NULL) {
+    return NULL;
+  }
+  if (look_ahead().get_type() != COLON) {
+    Error::invalid_syntax("Expected ':'");
+    return NULL;
+  }
+  consume();
+  if (look_ahead().get_type() == DT_CHAR || look_ahead().get_type() == DT_INT) {
+    if (look_ahead().get_type() == DT_CHAR) {
+      identifier->type = (DATA_TYPES)CHAR;
     }
+    if (look_ahead().get_type() == DT_INT) {
+      identifier->type = (DATA_TYPES)INT;
+    }
+    symbol_table->set_datatype(identifier->name, identifier->type);
+  } else {
+    Error::invalid_syntax("Expected a valid DATATYPE");
+    return NULL;
+  }
+  consume();
+
+  if (look_ahead().get_type() != EQUALS) {
     Error::invalid_syntax("Invalid TOKEN - Expected '='");
     return NULL;
   }
-  return NULL;
+  consume();
+  NodeComparativeExpression *comp_exp = parse_comparative_expression();
+  if (comp_exp == NULL) {
+    return NULL;
+  }
+  if (look_ahead().get_type() != SEMICOLON) {
+    Error::invalid_syntax("Missing ';'");
+    return NULL;
+  }
+  consume();
+  return new NodeLet(identifier, comp_exp);
 }
 
 NodeFor *Parser::parse_for() {
+
   consume();
-  if (look_ahead().get_type() == BRACKET_OPEN) {
-    consume();
-    if (NodeLet *let = parse_let()) {
-      if (NodeComparativeExpression *comp_exp =
-              parse_comparative_expression()) {
-        if (look_ahead().get_type() == SEMICOLON) {
-          consume();
-          if (NodeAssign *assign = parse_assign(false)) {
-            if (look_ahead().get_type() == BRACKET_CLOSE) {
-              consume();
-              if (look_ahead().get_type() == BRACKET_OPEN_CURLY) {
-                consume();
-                if (NodeStatementList *stmt_list =
-                        parse_statement_list(BRACKET_CLOSE_CURLY)) {
-                  if (look_ahead().get_type() == BRACKET_CLOSE_CURLY) {
-                    consume();
-                    return new NodeFor(let, comp_exp, assign, stmt_list);
-                  }
-                  Error::invalid_syntax("Missing '}'");
-                  return NULL;
-                }
-                return NULL;
-              }
-              Error::invalid_syntax("Missing '{'");
-              return NULL;
-            }
-            Error::invalid_syntax("Missing '*)'");
-            return NULL;
-          }
-        }
-        Error::invalid_syntax("Missing ';'");
-        return NULL;
-      }
-      return NULL;
-    }
+  if (look_ahead().get_type() != BRACKET_OPEN) {
+    Error::invalid_syntax("Missing '('");
     return NULL;
   }
-  Error::invalid_syntax("Missing '('");
-  return NULL;
+
+  consume();
+  NodeLet *let = parse_let();
+  if (!let) {
+    return NULL;
+  }
+
+  NodeComparativeExpression *comp_exp = parse_comparative_expression();
+  if (!comp_exp) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != SEMICOLON) {
+    Error::invalid_syntax("Missing ';'");
+    return NULL;
+  }
+
+  consume();
+  NodeAssign *assign = parse_assign(false);
+  if (!assign) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != BRACKET_CLOSE) {
+    Error::invalid_syntax("Missing ')'");
+    return NULL;
+  }
+
+  consume();
+  if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
+    Error::invalid_syntax("Missing '{'");
+    return NULL;
+  }
+
+  consume();
+  NodeStatementList *stmt_list = parse_statement_list(BRACKET_CLOSE_CURLY);
+  if (!stmt_list) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
+    Error::invalid_syntax("Missing '}'");
+    return NULL;
+  }
+
+  consume();
+  return new NodeFor(let, comp_exp, assign, stmt_list);
 }
 
 NodeAssign *Parser::parse_assign(bool check_semicolon) {
-  if (NodeIdentifier *identifier = parse_identifier(UNDECLARED)) {
-    if (look_ahead().get_type() == EQUALS) {
-      consume();
-      if (NodeComparativeExpression *comp_exp =
-              parse_comparative_expression()) {
-        if (!check_semicolon) {
-          return new NodeAssign(identifier, comp_exp);
-        }
-        if (look_ahead().get_type() == SEMICOLON) {
-          consume();
-          return new NodeAssign(identifier, comp_exp);
-        }
-        Error::invalid_syntax("Missing ';'");
-        return NULL;
-      }
-    }
+  NodeIdentifier *identifier = parse_identifier(UNDECLARED);
+  if (!identifier) {
+    return NULL;
+  }
+
+  if (look_ahead().get_type() != EQUALS) {
     Error::invalid_syntax("Invalid TOKEN - Expected '='");
     return NULL;
   }
-  return NULL;
+
+  consume();
+  NodeComparativeExpression *comp_exp = parse_comparative_expression();
+  if (!comp_exp) {
+    return NULL;
+  }
+
+  if (!check_semicolon) {
+    return new NodeAssign(identifier, comp_exp);
+  }
+
+  if (look_ahead().get_type() != SEMICOLON) {
+    Error::invalid_syntax("Missing ';'");
+    return NULL;
+  }
+
+  consume();
+  return new NodeAssign(identifier, comp_exp);
 }
 
 NodeComparativeExpression *Parser::parse_comparative_expression() {
@@ -279,6 +318,42 @@ NodeAdditiveExpression *Parser::parse_additive_expression() {
     }
     return add_exp;
   }
+  return NULL;
+}
+
+NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {
+  if (NodeExpression *exp = parse_expression()) {
+    NodeMultiplicativeExpression *mul_exp =
+        new NodeMultiplicativeExpression(exp);
+    while (NodeMultiplicativeOperator *mul_op =
+               parse_multiplicative_operator()) {
+      if (NodeExpression *new_exp = parse_expression()) {
+        mul_exp = new NodeMultiplicativeExpression(mul_exp, mul_op, new_exp);
+      } else {
+        return NULL;
+      }
+    }
+    return mul_exp;
+  }
+  return NULL;
+}
+
+NodeExpression *Parser::parse_expression() {
+  if (look_ahead().get_type() == INT_LIT ||
+      look_ahead().get_type() == CHAR_LIT) {
+
+    if (NodeLiteral *literal = parse_literal()) {
+      return new NodeExpression(literal);
+    }
+    return NULL;
+  }
+  if (look_ahead().get_type() == IDENTIFIER) {
+    if (NodeIdentifier *identifier = parse_identifier()) {
+      return new NodeExpression(identifier);
+    }
+    return NULL;
+  }
+  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
   return NULL;
 }
 
@@ -322,40 +397,6 @@ NodeAdditiveOperator *Parser::parse_additive_operator() {
   return NULL;
 }
 
-NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {
-  if (NodeExpression *exp = parse_expression()) {
-    NodeMultiplicativeExpression *mul_exp =
-        new NodeMultiplicativeExpression(exp);
-    while (NodeMultiplicativeOperator *mul_op =
-               parse_multiplicative_operator()) {
-      if (NodeExpression *new_exp = parse_expression()) {
-        mul_exp = new NodeMultiplicativeExpression(mul_exp, mul_op, new_exp);
-      } else {
-        return NULL;
-      }
-    }
-    return mul_exp;
-  }
-  return NULL;
-}
-
-NodeExpression *Parser::parse_expression() {
-  if (look_ahead().get_type() == INT_LIT) {
-    if (NodeINT *INT = parse_int()) {
-      return new NodeExpression(INT);
-    }
-    return NULL;
-  }
-  if (look_ahead().get_type() == IDENTIFIER) {
-    if (NodeIdentifier *identifier = parse_identifier()) {
-      return new NodeExpression(identifier);
-    }
-    return NULL;
-  }
-  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
-  return NULL;
-}
-
 NodeMultiplicativeOperator *Parser::parse_multiplicative_operator() {
   if (look_ahead().get_type() == MUL) {
     consume();
@@ -366,18 +407,6 @@ NodeMultiplicativeOperator *Parser::parse_multiplicative_operator() {
     return new NodeMultiplicativeOperator('/');
   }
   return NULL;
-}
-
-NodeINT *Parser::parse_int() {
-  NodeINT *INT = new NodeINT(stoi(look_ahead().get_body()));
-  consume();
-  return INT;
-}
-
-NodeCHAR *Parser::parse_char() {
-  NodeCHAR *CHAR = new NodeCHAR((int)look_ahead().get_body()[0]);
-  consume();
-  return CHAR;
 }
 
 NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
@@ -395,6 +424,23 @@ NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
   }
 
   NodeIdentifier *identifier = new NodeIdentifier(symbol_name);
+  if (check_type == UNDECLARED) {
+    identifier->type = symbol_table->get_datatype(symbol_name);
+  }
   consume();
   return identifier;
+}
+
+NodeLiteral *Parser::parse_literal() {
+  if (look_ahead().get_type() == INT_LIT) {
+    int value = stoi(look_ahead().get_body());
+    consume();
+    return new NodeLiteral(value, INT);
+  }
+  if (look_ahead().get_type() == CHAR_LIT) {
+    int value = look_ahead().get_body()[0];
+    consume();
+    return new NodeLiteral(value, CHAR);
+  }
+  return NULL;
 }

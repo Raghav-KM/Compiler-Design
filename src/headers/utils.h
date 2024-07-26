@@ -27,7 +27,7 @@ class SymbolTable {
 
 private:
   static SymbolTable *instance;
-  map<string, bool> table;
+  map<string, DATA_TYPES> table;
   SymbolTable();
 
 public:
@@ -35,8 +35,9 @@ public:
 
   RESULT_TYPE declare(string symbol_name);
   RESULT_TYPE exists(string symbol_name);
+  void set_datatype(string symbol_name, DATA_TYPES type);
+  DATA_TYPES get_datatype(string symbol_name);
 
-  int get_value(string symbol_name);
   void reset();
 };
 

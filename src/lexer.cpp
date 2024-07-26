@@ -1,5 +1,13 @@
 #include "./headers/lexer.h"
 
+DATA_TYPES max_datatype(DATA_TYPES d1, DATA_TYPES d2) {
+  if ((int)d1 >= (int)d2) {
+    return d1;
+  } else {
+    return d2;
+  }
+}
+
 //--- Token ---//
 
 string Token::get_token_name(TOKEN_TYPES type) {
@@ -52,6 +60,12 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "BRACKET_OPEN";
   case BRACKET_CLOSE:
     return "BRACKET_CLOSE";
+  case COLON:
+    return "COLON";
+  case DT_INT:
+    return "DT_INT";
+  case DT_CHAR:
+    return "DT_CHAR";
   case ENDL:
     return "ENDL";
   default:
@@ -59,8 +73,9 @@ string Token::get_token_name(TOKEN_TYPES type) {
   }
 }
 
-vector<string> Token::keywords = {"dbg", "let", "if", "else", "for", "endl"};
-vector<char> Token::char_symbols = {';', '{', '}', '(', ')', '\''};
+vector<string> Token::keywords = {"dbg", "let",  "if",  "else",
+                                  "for", "endl", "int", "char"};
+vector<char> Token::char_symbols = {';', '{', '}', '(', ')', '\'', ':'};
 vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
 bool Token::is_keyword(string keyword) {
@@ -116,6 +131,10 @@ TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
     return FOR;
   } else if (keyword == "endl") {
     return ENDL;
+  } else if (keyword == "int") {
+    return DT_INT;
+  } else if (keyword == "char") {
+    return DT_CHAR;
   } else {
     return INVALID_TOKEN;
   }
@@ -161,6 +180,8 @@ TOKEN_TYPES Token::get_symbol_type(char symbol) {
     return BRACKET_OPEN;
   case ')':
     return BRACKET_CLOSE;
+  case ':':
+    return COLON;
   default:
     return INVALID_TOKEN;
   }

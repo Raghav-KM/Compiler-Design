@@ -120,3 +120,8 @@
 - Working endline
 - If working without else
 - Partially re-wrote parser
+
+# 26-07-2024
+- Working automatic typecasting from int->char->int
+- Working arithematic operations on characters
+- re-wrote whole parser

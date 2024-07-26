@@ -8,6 +8,8 @@
     - `if`, `else`
     - `for`
     - `endl`
+    - `int`
+    - `char`
 
 2. #### Identifiers
     - Can only start with a letter ie `a-z`, `A-Z` 
@@ -19,6 +21,7 @@
 
 4. #### Symbols
     - Semicolon `;` 
+    - Colon `:`
     - Open Brackets Curly `{`
     - Close Brackets Curly `}`
     - Open Brackets `(`

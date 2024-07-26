@@ -31,9 +31,8 @@ private:
   NodeMultiplicativeOperator *parse_multiplicative_operator();
   NodeComparativeOperator *parse_comparative_operator();
 
-  NodeINT *parse_int();
-  NodeCHAR *parse_char();
   NodeIdentifier *parse_identifier(RESULT_TYPE check_type = UNDECLARED);
+  NodeLiteral *parse_literal();
 
   void reset();
 

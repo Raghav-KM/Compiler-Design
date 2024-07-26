@@ -38,9 +38,8 @@ public:
   void declare_variable_bss_section(string variable_name);
 
   void generate_debug(string variable_name);
-  void generate_debug_char(string variable_name);
 
-  void generate_debug(int value);
+  void generate_debug(string value, DATA_TYPES type);
   void generate_let(string lval, string rval);
   void generate_if(string condition, NodeStatementList *stmt_list_if,
                    NodeStatementList *stmt_list_else, int if_count);

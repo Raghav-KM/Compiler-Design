@@ -49,12 +49,6 @@ NodeStatement::NodeStatement(NodeFor *FOR) {
 
 NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
   this->comp_exp = comp_exp;
-  this->CHAR = NULL;
-}
-
-NodeDebug::NodeDebug(NodeCHAR *CHAR) {
-  this->comp_exp = NULL;
-  this->CHAR = CHAR;
 }
 
 NodeLet::NodeLet(NodeIdentifier *identifier,
@@ -90,6 +84,7 @@ NodeComparativeExpression::NodeComparativeExpression(
   this->add_exp = add_exp;
   this->comp_exp = NULL;
   this->comp_operator = NULL;
+  this->type = add_exp->type;
 }
 
 NodeComparativeExpression::NodeComparativeExpression(
@@ -98,6 +93,7 @@ NodeComparativeExpression::NodeComparativeExpression(
   this->add_exp = add_exp;
   this->comp_exp = comp_exp;
   this->comp_operator = comp_operator;
+  this->type = max_datatype(comp_exp->type, add_exp->type);
 }
 
 NodeAdditiveExpression::NodeAdditiveExpression(
@@ -106,6 +102,7 @@ NodeAdditiveExpression::NodeAdditiveExpression(
   this->add_exp = add_exp;
   this->add_operator = add_operator;
   this->mul_exp = mul_exp;
+  this->type = max_datatype(add_exp->type, mul_exp->type);
 }
 
 NodeAdditiveExpression::NodeAdditiveExpression(
@@ -113,6 +110,7 @@ NodeAdditiveExpression::NodeAdditiveExpression(
   this->mul_exp = mul_exp;
   this->add_exp = NULL;
   this->add_operator = NULL;
+  this->type = mul_exp->type;
 }
 
 NodeMultiplicativeExpression::NodeMultiplicativeExpression(
@@ -121,6 +119,7 @@ NodeMultiplicativeExpression::NodeMultiplicativeExpression(
   this->mul_exp = mul_exp;
   this->mul_operator = mul_operator;
   this->exp = exp;
+  this->type = max_datatype(mul_exp->type, exp->type);
 }
 
 NodeMultiplicativeExpression::NodeMultiplicativeExpression(
@@ -128,15 +127,18 @@ NodeMultiplicativeExpression::NodeMultiplicativeExpression(
   this->exp = exp;
   this->mul_exp = NULL;
   this->mul_operator = NULL;
+  this->type = exp->type;
 }
 
 NodeExpression::NodeExpression(NodeIdentifier *identifier) {
-  this->INT = NULL;
+  this->literal = NULL;
   this->identifier = identifier;
+  this->type = identifier->type;
 }
 
-NodeExpression::NodeExpression(NodeINT *INT) {
-  this->INT = INT;
+NodeExpression::NodeExpression(NodeLiteral *literal) {
+  this->literal = literal;
+  this->type = literal->type;
   this->identifier = NULL;
 }
 
@@ -150,9 +152,10 @@ NodeMultiplicativeOperator::NodeMultiplicativeOperator(char op) {
 
 NodeIdentifier::NodeIdentifier(string value) { name = value; }
 
-NodeINT::NodeINT(int value) { this->value = value; }
-
-NodeCHAR::NodeCHAR(int value) { this->value = value; }
+NodeLiteral::NodeLiteral(int value, DATA_TYPES type) {
+  this->value = value;
+  this->type = type;
+}
 
 string NodeProgram::print(NodeProgram *program, int indent) {
   string res = "[ 'program': \n";
@@ -199,7 +202,7 @@ string NodeStatement::print(NodeStatement *stmt, int indent) {
 
 string NodeLet::print(NodeLet *let, int indent) {
   return tab(indent) + "[ 'let': \n" +
-         NodeIdentifier::print(let->identifier, indent + 1) + " " +
+         NodeIdentifier::print(let->identifier, indent + 1) +
          NodeComparativeExpression::print(let->comp_exp, indent + 1) +
          tab(indent) + "]\n";
 }
@@ -236,14 +239,23 @@ string NodeFor::print(NodeFor *FOR, int indent) {
 
 string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,
                                         int indent) {
+  string type = "undefined";
+  if (comp_exp->type == INT) {
+    type = "integer";
+  } else if (comp_exp->type == CHAR) {
+    type = "character";
+  } else if (comp_exp->type == UNDEFINED) {
+    type = "undefined";
+  }
+
   if (comp_exp->comp_operator != NULL && comp_exp->add_exp != NULL) {
-    return tab(indent) + "[ 'comp_expression': \n" +
+    return tab(indent) + "[ 'comp_expression': " + type + "\n" +
            NodeComparativeExpression::print(comp_exp->comp_exp, indent + 1) +
            NodeComparativeOperator::print(comp_exp->comp_operator, indent + 1) +
            NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
            tab(indent) + "]\n";
   } else {
-    return tab(indent) + "[ 'comp_expression': \n" +
+    return tab(indent) + "[ 'comp_expression': " + type + "\n" +
            NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
            tab(indent) + "]\n";
   }
@@ -251,14 +263,24 @@ string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,
 
 string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
                                      int indent) {
+
+  string type = "";
+  if (add_exp->type == INT) {
+    type = "integer";
+  } else if (add_exp->type == CHAR) {
+    type = "character";
+  } else if (add_exp->type == UNDEFINED) {
+    type = "undefined";
+  }
+
   if (add_exp->add_operator != NULL && add_exp->add_exp != NULL) {
-    return tab(indent) + "[ 'add_expression': \n" +
+    return tab(indent) + "[ 'add_expression': " + type + "\n" +
            NodeAdditiveExpression::print(add_exp->add_exp, indent + 1) +
            NodeAdditiveOperator::print(add_exp->add_operator, indent + 1) +
            NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
            tab(indent) + "]\n";
   } else {
-    return tab(indent) + "[ 'add_expression': \n" +
+    return tab(indent) + "[ 'add_expression': " + type + "\n" +
            NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
            tab(indent) + "]\n";
   }
@@ -267,27 +289,46 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
 string
 NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
                                     int indent) {
+  string type = "";
+  if (mul_exp->type == INT) {
+    type = "integer";
+  } else if (mul_exp->type == CHAR) {
+    type = "character";
+  } else if (mul_exp->type == UNDEFINED) {
+    type = "undefined";
+  }
+
   if (mul_exp->mul_operator != NULL && mul_exp->mul_exp != NULL) {
-    return tab(indent) + "[ 'mul_expression': \n" +
+    return tab(indent) + "[ 'mul_expression': " + type + "\n" +
            NodeMultiplicativeExpression::print(mul_exp->mul_exp, indent + 1) +
            NodeMultiplicativeOperator::print(mul_exp->mul_operator,
                                              indent + 1) +
            NodeExpression::print(mul_exp->exp, indent + 1) + tab(indent) +
            "]\n";
   } else {
-    return tab(indent) + "[ 'mul_expression': \n" +
+    return tab(indent) + "[ 'mul_expression': " + type + "\n" +
            NodeExpression::print(mul_exp->exp, indent + 1) + tab(indent) +
            "]\n";
   }
 }
 
 string NodeExpression::print(NodeExpression *expression, int indent) {
-  if (expression->INT) {
-    return tab(indent) + "[ 'expression': \n" +
-           NodeINT::print(expression->INT, indent + 1) + tab(indent) + "]\n";
+  string type = "";
+  if (expression->type == INT) {
+    type = "integer";
+  } else if (expression->type == CHAR) {
+    type = "character";
+  } else if (expression->type == UNDEFINED) {
+    type = "undefined";
+  }
+
+  if (expression->literal) {
+    return tab(indent) + "[ 'expression': " + type + "\n" +
+           NodeLiteral::print(expression->literal, indent + 1) + tab(indent) +
+           "]\n";
   }
   if (expression->identifier) {
-    return tab(indent) + "[ 'expression': \n" +
+    return tab(indent) + "[ 'expression': " + type + "\n" +
            NodeIdentifier::print(expression->identifier, indent + 1) +
            tab(indent) + "]\n";
   }
@@ -309,15 +350,28 @@ string NodeMultiplicativeOperator::print(NodeMultiplicativeOperator *mul_op,
 }
 
 string NodeIdentifier::print(NodeIdentifier *identifier, int indent) {
-  return tab(indent) + "[ 'identifier': " + identifier->name + " ]\n";
+  string str = tab(indent) + "[ 'identifier': " + identifier->name;
+  if (identifier->type == CHAR) {
+    str += " (character)";
+  }
+  if (identifier->type == INT) {
+    str += " (integer)";
+  }
+
+  str += " ]\n";
+  return str;
 }
 
-string NodeINT::print(NodeINT *INT, int indent) {
-  return tab(indent) + "[ 'int_lit': " + to_string(INT->value) + " ]\n";
-}
-
-string NodeCHAR::print(NodeCHAR *CHAR, int indent) {
-  return tab(indent) + "[ 'char_lit': " + to_string(CHAR->value) + " ]\n";
+string NodeLiteral::print(NodeLiteral *literal, int indent) {
+  if (literal->type == CHAR) {
+    return tab(indent) + "[ 'char_literal': " + to_string(literal->value) +
+           " ]\n";
+  }
+  if (literal->type == INT) {
+    return tab(indent) + "[ 'int_literal': " + to_string(literal->value) +
+           " ]\n";
+  }
+  return "";
 }
 
 string NodeDebug::print(NodeDebug *debug, int indent) {
@@ -325,9 +379,6 @@ string NodeDebug::print(NodeDebug *debug, int indent) {
     return tab(indent) + "[ 'debug': \n" +
            NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
            tab(indent) + "]\n";
-  } else if (debug->CHAR) {
-    return tab(indent) + "[ 'debug': \n" +
-           NodeCHAR::print(debug->CHAR, indent + 1) + tab(indent) + "]\n";
   }
   return "";
 }
