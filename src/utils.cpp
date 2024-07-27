@@ -4,16 +4,25 @@
 
 string Error::err_buffer = "";
 
-void Error::invalid_syntax() { err_buffer += "Error: Invalid Syntax\n"; }
-
-void Error::invalid_syntax(string msg) { err_buffer += "Error: " + msg + "\n"; }
-
-void Error::undefined_variable(string symbol_name) {
-  err_buffer += "Error: Undefined Variable [ " + symbol_name + " ]\n";
+void Error::invalid_syntax(int line_no, int token_no) {
+  err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
+                " - Invalid Syntax\n";
 }
 
-void Error::redeclaration_variable(string symbol_name) {
-  err_buffer += "Error: Redefination of Variable [ " + symbol_name + " ]\n";
+void Error::invalid_syntax(string msg, int line_no, int token_no) {
+  err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
+                " - " + msg + "\n ";
+}
+
+void Error::undefined_variable(string symbol_name, int line_no, int token_no) {
+  err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
+                " - Undefined Variable [ " + symbol_name + " ]\n";
+}
+
+void Error::redeclaration_variable(string symbol_name, int line_no,
+                                   int token_no) {
+  err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
+                " - Redefination of Variable [ " + symbol_name + " ]\n";
 }
 
 void Error::print_error() { cerr << err_buffer; }

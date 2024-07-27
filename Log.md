@@ -1,6 +1,6 @@
 # Compiler-Design
 ----
-1.  ~~**TODO : Add regex to check the type tokens**~~
+1.  
 2.  **TODO : Add Support for negative integers**
 3.  **TODO : Add Test-CASES for Lexer**
 4.  **TODO : Add Test-CASES for Parser**
@@ -13,7 +13,7 @@
 11. <!-- **TODO : Change lexer to be able to recognize operators even without space** -->
 12. **TODO : Write ASM for divide operation**
 13. <!-- **TODO : Make a ENDLINE** --!>
-14. **TODO : Add Better Error Handling**
+14. <!-- **TODO : Add Better Error Handling** --!>
 15. <!-- **TODO : Add Character support** --!>
 16. **TODO : Add String support**
 17. **TODO : Add Function support (without arguments)**
@@ -125,3 +125,6 @@
 - Working automatic typecasting from int->char->int
 - Working arithematic operations on characters
 - re-wrote whole parser
+
+# 27-07-2024
+- Improved Error handling

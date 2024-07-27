@@ -82,7 +82,8 @@ NodeStatement *Parser::parse_statement() {
   }
 
   Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or "
-                        "'for' or 'IDENTIFIER'");
+                        "'for' or 'IDENTIFIER'",
+                        look_ahead().line_no, look_ahead().token_no);
   return NULL;
 }
 
@@ -93,7 +94,8 @@ NodeDebug *Parser::parse_debug() {
       consume();
       return new NodeDebug(comp_exp);
     }
-    Error::invalid_syntax("Missing ';'");
+    Error::invalid_syntax("Missing ';'", look_ahead().line_no,
+                          look_ahead().token_no);
   }
   return NULL;
 }
@@ -101,7 +103,8 @@ NodeDebug *Parser::parse_debug() {
 NodeIf *Parser::parse_if() {
   consume();
   if (look_ahead().get_type() != BRACKET_OPEN) {
-    Error::invalid_syntax("Expected '('");
+    Error::invalid_syntax("Expected '('", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -112,13 +115,15 @@ NodeIf *Parser::parse_if() {
   }
 
   if (look_ahead().get_type() != BRACKET_CLOSE) {
-    Error::invalid_syntax("Expected ')'");
+    Error::invalid_syntax("Expected ')'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
 
   if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
-    Error::invalid_syntax("Expected '{'");
+    Error::invalid_syntax("Expected '{'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -129,7 +134,8 @@ NodeIf *Parser::parse_if() {
   }
 
   if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
-    Error::invalid_syntax("Expected '}'");
+    Error::invalid_syntax("Expected '}'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -140,7 +146,8 @@ NodeIf *Parser::parse_if() {
   consume();
 
   if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
-    Error::invalid_syntax("Expected '{'");
+    Error::invalid_syntax("Expected '{'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -151,7 +158,8 @@ NodeIf *Parser::parse_if() {
   }
 
   if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
-    Error::invalid_syntax("Expected '}'");
+    Error::invalid_syntax("Expected '}'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -166,7 +174,8 @@ NodeLet *Parser::parse_let() {
     return NULL;
   }
   if (look_ahead().get_type() != COLON) {
-    Error::invalid_syntax("Expected ':'");
+    Error::invalid_syntax("Expected ':'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -179,13 +188,15 @@ NodeLet *Parser::parse_let() {
     }
     symbol_table->set_datatype(identifier->name, identifier->type);
   } else {
-    Error::invalid_syntax("Expected a valid DATATYPE");
+    Error::invalid_syntax("Expected a valid DATATYPE", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
 
   if (look_ahead().get_type() != EQUALS) {
-    Error::invalid_syntax("Invalid TOKEN - Expected '='");
+    Error::invalid_syntax("Invalid TOKEN - Expected '='", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -194,7 +205,8 @@ NodeLet *Parser::parse_let() {
     return NULL;
   }
   if (look_ahead().get_type() != SEMICOLON) {
-    Error::invalid_syntax("Missing ';'");
+    Error::invalid_syntax("Missing ';'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
   consume();
@@ -205,7 +217,8 @@ NodeFor *Parser::parse_for() {
 
   consume();
   if (look_ahead().get_type() != BRACKET_OPEN) {
-    Error::invalid_syntax("Missing '('");
+    Error::invalid_syntax("Missing '('", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -221,7 +234,8 @@ NodeFor *Parser::parse_for() {
   }
 
   if (look_ahead().get_type() != SEMICOLON) {
-    Error::invalid_syntax("Missing ';'");
+    Error::invalid_syntax("Missing ';'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -232,13 +246,15 @@ NodeFor *Parser::parse_for() {
   }
 
   if (look_ahead().get_type() != BRACKET_CLOSE) {
-    Error::invalid_syntax("Missing ')'");
+    Error::invalid_syntax("Missing ')'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
   consume();
   if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
-    Error::invalid_syntax("Missing '{'");
+    Error::invalid_syntax("Missing '{'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -249,7 +265,8 @@ NodeFor *Parser::parse_for() {
   }
 
   if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
-    Error::invalid_syntax("Missing '}'");
+    Error::invalid_syntax("Missing '}'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -264,7 +281,8 @@ NodeAssign *Parser::parse_assign(bool check_semicolon) {
   }
 
   if (look_ahead().get_type() != EQUALS) {
-    Error::invalid_syntax("Invalid TOKEN - Expected '='");
+    Error::invalid_syntax("Invalid TOKEN - Expected '='", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -279,7 +297,8 @@ NodeAssign *Parser::parse_assign(bool check_semicolon) {
   }
 
   if (look_ahead().get_type() != SEMICOLON) {
-    Error::invalid_syntax("Missing ';'");
+    Error::invalid_syntax("Missing ';'", look_ahead().line_no,
+                          look_ahead().token_no);
     return NULL;
   }
 
@@ -353,7 +372,8 @@ NodeExpression *Parser::parse_expression() {
     }
     return NULL;
   }
-  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'");
+  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'",
+                        look_ahead().line_no, look_ahead().token_no);
   return NULL;
 }
 
@@ -414,12 +434,14 @@ NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
   string symbol_name = look_ahead().get_body();
   if (symbol_table->exists(symbol_name) == UNDECLARED &&
       check_type == UNDECLARED) {
-    Error::undefined_variable(symbol_name);
+    Error::undefined_variable(symbol_name, look_ahead().line_no,
+                              look_ahead().token_no);
     return NULL;
   }
   if (symbol_table->declare(symbol_name) == REDECLARATION &&
       check_type == REDECLARATION) {
-    Error::redeclaration_variable(symbol_name);
+    Error::redeclaration_variable(symbol_name, look_ahead().line_no,
+                                  look_ahead().token_no);
     return NULL;
   }
 

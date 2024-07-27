@@ -11,8 +11,6 @@
 
 using namespace std;
 
-enum DATA_TYPES { UNDEFINED, CHAR, INT };
-
 DATA_TYPES max_datatype(DATA_TYPES d1, DATA_TYPES d2);
 
 enum TOKEN_TYPES {
@@ -73,6 +71,9 @@ private:
   static string get_token_name(TOKEN_TYPES type);
 
 public:
+  int line_no;
+  int token_no;
+
   Token(TOKEN_TYPES type);
   Token(TOKEN_TYPES types, string body);
   TOKEN_TYPES get_type();
@@ -93,10 +94,14 @@ public:
 };
 
 class Lexer {
+
 private:
   vector<Token> token_stream;
 
 public:
+  static int global_line_no;
+  static int global_token_no;
+
   Lexer();
   bool analyse(string input_stream);
   vector<Token> get_token_stream();

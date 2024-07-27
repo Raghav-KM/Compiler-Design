@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "lexer.h"
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -9,16 +8,19 @@
 
 using namespace std;
 
+enum DATA_TYPES { UNDEFINED, CHAR, INT };
+
 enum RESULT_TYPE { UNDECLARED, REDECLARATION, SUCCESS };
 
 class Error {
   static string err_buffer;
 
 public:
-  static void invalid_syntax();
-  static void invalid_syntax(string msg);
-  static void undefined_variable(string symbol_name);
-  static void redeclaration_variable(string symbol_name);
+  static void invalid_syntax(int line_no, int token_no);
+  static void invalid_syntax(string msg, int line_no, int token_no);
+  static void undefined_variable(string symbol_name, int line_no, int token_no);
+  static void redeclaration_variable(string symbol_name, int line_no,
+                                     int token_no);
   static void print_error();
 };
 

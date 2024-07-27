@@ -1,4 +1,6 @@
-for(let i:char = 'a';i<='z';i=i+1){
+
+dbg n;
+for(let i = 'a';i<='z';i=i+1){
     let c1:char = i;
     dbg c1;
     dbg ' ';

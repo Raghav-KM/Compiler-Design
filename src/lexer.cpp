@@ -106,12 +106,16 @@ Token::Token(TOKEN_TYPES type) {
   this->type = type;
   this->body = "";
   this->name = Token::get_token_name(type);
+  this->line_no = Lexer::global_line_no;
+  this->token_no = Lexer::global_token_no;
 }
 
 Token::Token(TOKEN_TYPES type, string body) {
   this->type = type;
   this->body = body;
   this->name = Token::get_token_name(type);
+  this->line_no = Lexer::global_line_no;
+  this->token_no = Lexer::global_token_no;
 }
 
 TOKEN_TYPES Token::get_type() { return this->type; }
@@ -189,6 +193,9 @@ TOKEN_TYPES Token::get_symbol_type(char symbol) {
 
 //--- Lexical Analyzer ---//
 
+int Lexer::global_line_no = 1;
+int Lexer::global_token_no = 0;
+
 Lexer::Lexer() { token_stream = vector<Token>(); }
 
 bool Lexer::analyse(string input_stream) {
@@ -198,6 +205,10 @@ bool Lexer::analyse(string input_stream) {
 
   while (current_pos < input_stream.size()) {
     if (isspace(input_stream[current_pos])) {
+      if (input_stream[current_pos] == '\n') {
+        Lexer::global_line_no++;
+        Lexer::global_token_no = 0;
+      }
       current_pos++;
     } else if (isalpha(input_stream[current_pos])) {
       string buffer = "";
@@ -211,11 +222,14 @@ bool Lexer::analyse(string input_stream) {
       if (Token::is_keyword(buffer)) {
         TOKEN_TYPES token_type = Token::get_keyword_type(buffer);
         if (token_type == ENDL) {
+          Lexer::global_token_no++;
           token_stream.push_back(Token(CHAR_LIT, "\n"));
         } else {
+          Lexer::global_token_no++;
           token_stream.push_back(Token(Token::get_keyword_type(buffer)));
         }
       } else {
+        Lexer::global_token_no++;
         token_stream.push_back(Token(IDENTIFIER, buffer));
       }
     } else if (isdigit(input_stream[current_pos])) {
@@ -225,14 +239,17 @@ bool Lexer::analyse(string input_stream) {
         buffer.push_back(input_stream[current_pos]);
         current_pos++;
       }
+      Lexer::global_token_no++;
       token_stream.push_back(Token(INT_LIT, buffer));
     } else if (Token::is_operator(input_stream[current_pos])) {
       string buffer = "";
       while (current_pos < input_stream.size() &&
              Token::is_operator(input_stream[current_pos])) {
+
         buffer.push_back(input_stream[current_pos]);
         current_pos++;
       }
+      Lexer::global_token_no++;
       token_stream.push_back(Token(Token::get_operator_type(buffer)));
     } else if (Token::is_symbol(input_stream[current_pos])) {
       if (input_stream[current_pos] == '\'') {
@@ -244,12 +261,15 @@ bool Lexer::analyse(string input_stream) {
           current_pos++;
         }
         if (buffer.size() > 1) {
+          Lexer::global_token_no++;
           token_stream.push_back(Token(INVALID_TOKEN));
           return false;
         }
+        Lexer::global_token_no++;
         token_stream.push_back(Token(CHAR_LIT, buffer));
 
       } else {
+        Lexer::global_token_no++;
         token_stream.push_back(
             Token(Token::get_symbol_type(input_stream[current_pos])));
       }
@@ -267,6 +287,11 @@ string Lexer::get_token_stream_string() {
   string token_stream_str = "";
   for (int i = 0; i < token_stream.size(); i++) {
     token_stream_str += "[" + token_stream[i].get_name() + "]";
+
+    // token_stream_str += "[" + token_stream[i].get_name() + " " +
+    //                     to_string(token_stream[i].line_no) + ":" +
+    //                     to_string(token_stream[i].token_no) + "]";
+
     if (i != token_stream.size() - 1)
       token_stream_str += " ";
   }
