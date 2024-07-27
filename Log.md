@@ -128,3 +128,4 @@
 
 # 27-07-2024
 - Improved Error handling
+- Working Parser for function and function call (without arguments and return type)
