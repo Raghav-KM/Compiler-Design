@@ -19,8 +19,10 @@ private:
   NodeAssign *parse_assign(bool check_semicolon = true);
 
   NodeIf *parse_if();
-
   NodeFor *parse_for();
+
+  NodeFunction *parse_function();
+  NodeFunctionCall *parse_function_call();
 
   NodeComparativeExpression *parse_comparative_expression();
   NodeAdditiveExpression *parse_additive_expression();

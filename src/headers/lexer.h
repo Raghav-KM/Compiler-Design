@@ -23,6 +23,8 @@ enum TOKEN_TYPES {
   ENDL,
   DT_INT,
   DT_CHAR,
+  FUNCTION,
+  CALL,
 
   // Identifiers
   IDENTIFIER,

@@ -25,3 +25,5 @@ variable_name
 :
 int
 char
+function
+call

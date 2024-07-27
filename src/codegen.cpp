@@ -4,6 +4,7 @@ Codegen::Codegen() {
   data_section = "";
   bss_section = "";
   text_section = "";
+  function_definations = "";
   require_print_integer_subroutine = false;
   require_comparison_subroutine = false;
   require_print_character_subroutine = false;
@@ -373,6 +374,10 @@ void Codegen::traverse_for(NodeFor *FOR) {
   text_section += "    jmp _for" + to_string(for_count) + "\n\n";
   text_section += "_for" + to_string(for_count) + "_end:\n\n";
 }
+
+void Codegen::traverse_function(NodeFunction *function) {}
+
+void Codegen::traverse_function_call(NodeFunctionCall *function_call) {}
 
 string
 Codegen::traverse_comparative_expression(NodeComparativeExpression *comp_exp) {

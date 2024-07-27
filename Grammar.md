@@ -6,15 +6,18 @@
 - `SEMICOLON`, `BRACKET_OPEN_CURLY`, `BRACKET_CLOSE_CURLY` , `BRACKET_OPEN`, `BRACKET_CLOSE` 
 - `DEBUG`, `LET`, `FOR`
 - `INT`, `CHAR`
+- `FUNCTION`
+- `CALL`
 
 
 # Non-Terminals
 
 - `<PROGRAM>`
 - `<STMT_LIST>`
-- `<STMT>`, `<DEBUG_STMT>`, `<LET_STMT>`, `<IF_STMT>`, `<ASSIGN_STMT>`, `<FOR_STMT>`
+- `<STMT>`, `<DEBUG_STMT>`, `<LET_STMT>`, `<IF_STMT>`, `<ASSIGN_STMT>`, `<FOR_STMT>`, `<FUNCTION_STMT>`, `<FUNCTION_CALL_STMT>`
 - `<COMP_EXP>` `<ADD_EXP>`, `<MUL_EXP>`, `<EXP>`
 - `<DATA_TYPE>`
+
 
 # Language Grammar
 
@@ -27,6 +30,9 @@
                 | <LET_STMT> 
                 | <IF_STMT>
                 | <ASSIGNMENT_STMT>
+                | <FOR_STMT>
+                | <FUNCTION_STMT>
+                | <FUNCTION_CALL_STMT>
 
 <DEBUG_STMT>  → DEBUG <COMP_EXP> SEMICOLON
 
@@ -40,6 +46,12 @@
 <FOR_STMT>    → FOR BRACKET_OPEN <LET_STMT> <COMP_EXP> SEMICOLON <ASSIGN_STMT> BRACKET_CLOSE 
                 BRACKET_OPEN_CURLY <STMT_LIST> BRACKET_CLOSE_CURLY 
 
+<FUNCTION_STMT> 
+              → FUCTION IDENTIFIER BRACKET_OPEN BRACKET_CLOSE BRACKET_OPEN_CURLY <STMT_LIST> BRACKET_CLOSE_CURLY
+
+<FUNCTION_CALL_STMT>
+              → CALL IDENTIFIER BRACKER_OPEN BRACKET_CLOSE SEMICOLON
+
 <COMP_EXP>    → <ADD_EXP> <COMP_OP> <COMP_EXP>
                 | <ADD_EXP>
 
@@ -51,6 +63,7 @@
 
 <EXP>         → IDENTIFIER 
                 | INT_LIT
+
 <DATA_TYPE>   → INT
                 | CHAR
 ```

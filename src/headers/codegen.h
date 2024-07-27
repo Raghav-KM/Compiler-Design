@@ -20,6 +20,9 @@ private:
   string data_section;
   string bss_section;
   string text_section;
+
+  string function_definations;
+
   bool require_print_integer_subroutine;
   bool require_comparison_subroutine;
   bool require_print_character_subroutine;
@@ -58,6 +61,8 @@ public:
   void traverse_if(NodeIf *IF);
   void traverse_assign(NodeAssign *assign);
   void traverse_for(NodeFor *FOR);
+  void traverse_function(NodeFunction *function);
+  void traverse_function_call(NodeFunctionCall *function_call);
 
   string traverse_comparative_expression(NodeComparativeExpression *comp_exp);
 

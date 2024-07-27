@@ -16,7 +16,7 @@ void Error::invalid_syntax(string msg, int line_no, int token_no) {
 
 void Error::undefined_variable(string symbol_name, int line_no, int token_no) {
   err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
-                " - Undefined Variable [ " + symbol_name + " ]\n";
+                " - Undefined identifier [ " + symbol_name + " ]\n";
 }
 
 void Error::redeclaration_variable(string symbol_name, int line_no,

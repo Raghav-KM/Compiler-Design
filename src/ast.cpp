@@ -13,6 +13,8 @@ NodeStatement::NodeStatement(NodeDebug *debug) {
   this->debug = debug;
   this->IF = NULL;
   this->assign = NULL;
+  this->function = NULL;
+  this->function_call = NULL;
 }
 
 NodeStatement::NodeStatement(NodeLet *let) {
@@ -21,6 +23,8 @@ NodeStatement::NodeStatement(NodeLet *let) {
   this->IF = NULL;
   this->assign = NULL;
   this->FOR = NULL;
+  this->function = NULL;
+  this->function_call = NULL;
 }
 
 NodeStatement::NodeStatement(NodeIf *IF) {
@@ -29,6 +33,8 @@ NodeStatement::NodeStatement(NodeIf *IF) {
   this->IF = IF;
   this->assign = NULL;
   this->FOR = NULL;
+  this->function = NULL;
+  this->function_call = NULL;
 }
 
 NodeStatement::NodeStatement(NodeAssign *assign) {
@@ -37,6 +43,8 @@ NodeStatement::NodeStatement(NodeAssign *assign) {
   this->IF = NULL;
   this->assign = assign;
   this->FOR = NULL;
+  this->function = NULL;
+  this->function_call = NULL;
 }
 
 NodeStatement::NodeStatement(NodeFor *FOR) {
@@ -45,6 +53,28 @@ NodeStatement::NodeStatement(NodeFor *FOR) {
   this->IF = NULL;
   this->assign = NULL;
   this->FOR = FOR;
+  this->function = NULL;
+  this->function_call = NULL;
+}
+
+NodeStatement::NodeStatement(NodeFunction *function) {
+  this->let = NULL;
+  this->debug = NULL;
+  this->IF = NULL;
+  this->assign = NULL;
+  this->FOR = NULL;
+  this->function = function;
+  this->function_call = NULL;
+}
+
+NodeStatement::NodeStatement(NodeFunctionCall *function_call) {
+  this->let = NULL;
+  this->debug = NULL;
+  this->IF = NULL;
+  this->assign = NULL;
+  this->FOR = NULL;
+  this->function = NULL;
+  this->function_call = function_call;
 }
 
 NodeDebug::NodeDebug(NodeComparativeExpression *comp_exp) {
@@ -77,6 +107,16 @@ NodeFor::NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp,
   this->comp_exp = comp_exp;
   this->assign = assign;
   this->stmt_list = stmt_list;
+}
+
+NodeFunction::NodeFunction(string function_identifier,
+                           NodeStatementList *stmt_list) {
+  this->function_identifier = function_identifier;
+  this->stmt_list = stmt_list;
+}
+
+NodeFunctionCall::NodeFunctionCall(string function_identifier) {
+  this->function_identifier = function_identifier;
 }
 
 NodeComparativeExpression::NodeComparativeExpression(
@@ -197,6 +237,16 @@ string NodeStatement::print(NodeStatement *stmt, int indent) {
     return tab(indent) + "[ 'statment': \n" +
            NodeFor::print(stmt->FOR, indent + 1) + tab(indent) + "]\n";
   }
+  if (stmt->function) {
+    return tab(indent) + "[ 'statment': \n" +
+           NodeFunction::print(stmt->function, indent + 1) + tab(indent) +
+           "]\n";
+  }
+  if (stmt->function_call) {
+    return tab(indent) + "[ 'statment': \n" +
+           NodeFunctionCall::print(stmt->function_call, indent + 1) +
+           tab(indent) + "]\n";
+  }
   return "";
 }
 
@@ -235,6 +285,18 @@ string NodeFor::print(NodeFor *FOR, int indent) {
          "[ 'statment_list' : \n" +
          NodeStatementList::print(FOR->stmt_list, indent + 2) +
          tab(indent + 1) + "]\n" + tab(indent) + "]\n";
+}
+
+string NodeFunction::print(NodeFunction *function, int indent) {
+  return tab(indent) + "[ 'function' (" + function->function_identifier +
+         "): \n" + tab(indent + 1) + "[ 'statment_list' : \n" +
+         NodeStatementList::print(function->stmt_list, indent + 2) +
+         tab(indent + 1) + "]\n" + tab(indent) + "]\n";
+}
+
+string NodeFunctionCall::print(NodeFunctionCall *function_call, int indent) {
+  return tab(indent) + "[ 'function_call' (" +
+         function_call->function_identifier + ")]\n";
 }
 
 string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,

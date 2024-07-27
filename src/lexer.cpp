@@ -68,13 +68,17 @@ string Token::get_token_name(TOKEN_TYPES type) {
     return "DT_CHAR";
   case ENDL:
     return "ENDL";
+  case FUNCTION:
+    return "FUNCTION";
+  case CALL:
+    return "CALL";
   default:
     return "INVALID_TOKEN";
   }
 }
 
-vector<string> Token::keywords = {"dbg", "let",  "if",  "else",
-                                  "for", "endl", "int", "char"};
+vector<string> Token::keywords = {"dbg",  "let", "if",   "else",     "for",
+                                  "endl", "int", "char", "function", "call"};
 vector<char> Token::char_symbols = {';', '{', '}', '(', ')', '\'', ':'};
 vector<char> Token::char_operators = {'+', '-', '*', '/', '=', '<', '>', '!'};
 
@@ -125,51 +129,73 @@ string Token::get_body() { return this->body; }
 TOKEN_TYPES Token::get_keyword_type(std::string keyword) {
   if (keyword == "dbg") {
     return DEBUG;
-  } else if (keyword == "let") {
-    return LET;
-  } else if (keyword == "if") {
-    return IF;
-  } else if (keyword == "else") {
-    return ELSE;
-  } else if (keyword == "for") {
-    return FOR;
-  } else if (keyword == "endl") {
-    return ENDL;
-  } else if (keyword == "int") {
-    return DT_INT;
-  } else if (keyword == "char") {
-    return DT_CHAR;
-  } else {
-    return INVALID_TOKEN;
   }
+  if (keyword == "let") {
+    return LET;
+  }
+  if (keyword == "if") {
+    return IF;
+  }
+  if (keyword == "else") {
+    return ELSE;
+  }
+  if (keyword == "for") {
+    return FOR;
+  }
+  if (keyword == "endl") {
+    return ENDL;
+  }
+  if (keyword == "int") {
+    return DT_INT;
+  }
+  if (keyword == "char") {
+    return DT_CHAR;
+  }
+  if (keyword == "function") {
+    return FUNCTION;
+  }
+  if (keyword == "call") {
+    return CALL;
+  }
+  return INVALID_TOKEN;
 }
 
 TOKEN_TYPES Token::get_operator_type(string op) {
   if (op == "+") {
     return ADD;
-  } else if (op == "-") {
-    return SUB;
-  } else if (op == "*") {
-    return MUL;
-  } else if (op == "/") {
-    return DIV;
-  } else if (op == "=") {
-    return EQUALS;
-  } else if (op == "==") {
-    return EQUAL_EQUALS;
-  } else if (op == ">") {
-    return GREATER;
-  } else if (op == "<") {
-    return LESS;
-  } else if (op == "<=") {
-    return LESS_EQUALS;
-  } else if (op == ">=") {
-    return GREATER_EQUALS;
-  } else if (op == "!=") {
-    return NOT_EQUALS;
-  } else {
-    return INVALID_TOKEN;
   }
+  if (op == "-") {
+    return SUB;
+  }
+  if (op == "*") {
+    return MUL;
+  }
+  if (op == "/") {
+    return DIV;
+  }
+  if (op == "=") {
+    return EQUALS;
+  }
+  if (op == "==") {
+    return EQUAL_EQUALS;
+  }
+  if (op == ">") {
+    return GREATER;
+  }
+  if (op == "<") {
+    return LESS;
+  }
+  if (op == "<=") {
+    return LESS_EQUALS;
+  }
+  if (op == ">=") {
+    return GREATER_EQUALS;
+  }
+  if (op == "!=") {
+    return NOT_EQUALS;
+  }
+
+  return INVALID_TOKEN;
 }
 
 TOKEN_TYPES Token::get_symbol_type(char symbol) {

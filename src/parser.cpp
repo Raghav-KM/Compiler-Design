@@ -80,9 +80,21 @@ NodeStatement *Parser::parse_statement() {
     }
     return NULL;
   }
+  if (look_ahead().get_type() == FUNCTION) {
+    if (NodeFunction *function = parse_function()) {
+      return new NodeStatement(function);
+    }
+    return NULL;
+  }
+  if (look_ahead().get_type() == CALL) {
+    if (NodeFunctionCall *function_call = parse_function_call()) {
+      return new NodeStatement(function_call);
+    }
+    return NULL;
+  }
 
   Error::invalid_syntax("Invalid TOKEN - Expected 'dbg' or 'let' or 'if' or "
-                        "'for' or 'IDENTIFIER'",
+                        "'for' or 'IDENTIFIER' or 'function' or 'call'",
                         look_ahead().line_no, look_ahead().token_no);
   return NULL;
 }
@@ -304,6 +316,85 @@ NodeAssign *Parser::parse_assign(bool check_semicolon) {
 
   consume();
   return new NodeAssign(identifier, comp_exp);
+}
+
+NodeFunction *Parser::parse_function() {
+  consume();
+
+  if (look_ahead().get_type() != IDENTIFIER) {
+    Error::invalid_syntax("Expected 'IDENTIFIER'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  NodeIdentifier *identifier = parse_identifier(REDECLARATION);
+  if (identifier == NULL)
+    return NULL;
+
+  if (look_ahead().get_type() != BRACKET_OPEN) {
+    Error::invalid_syntax("Expected 'BRACKET_OPEN'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+  if (look_ahead().get_type() != BRACKET_CLOSE) {
+    Error::invalid_syntax("Expected 'BRACKET_CLOSE'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+  if (look_ahead().get_type() != BRACKET_OPEN_CURLY) {
+    Error::invalid_syntax("Expected 'BRACKET_OPEN_CURLY'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+
+  NodeStatementList *stmt_list = parse_statement_list(BRACKET_CLOSE_CURLY);
+  if (stmt_list == NULL)
+    return NULL;
+
+  if (look_ahead().get_type() != BRACKET_CLOSE_CURLY) {
+    Error::invalid_syntax("Expected 'BRACKET_CLOSE_CURLY'",
+                          look_ahead().line_no, look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+
+  return new NodeFunction(identifier->name, stmt_list);
+}
+
+NodeFunctionCall *Parser::parse_function_call() {
+  consume();
+
+  if (look_ahead().get_type() != IDENTIFIER) {
+    Error::invalid_syntax("Expected 'IDENTIFIER'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  NodeIdentifier *identifier = parse_identifier(UNDECLARED);
+  if (identifier == NULL)
+    return NULL;
+
+  if (look_ahead().get_type() != BRACKET_OPEN) {
+    Error::invalid_syntax("Expected 'BRACKET_OPEN'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+  if (look_ahead().get_type() != BRACKET_CLOSE) {
+    Error::invalid_syntax("Expected 'BRACKET_CLOSE'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+  if (look_ahead().get_type() != SEMICOLON) {
+    Error::invalid_syntax("Missing ';'", look_ahead().line_no,
+                          look_ahead().token_no);
+    return NULL;
+  }
+  consume();
+
+  return new NodeFunctionCall(identifier->name);
 }
 
 NodeComparativeExpression *Parser::parse_comparative_expression() {

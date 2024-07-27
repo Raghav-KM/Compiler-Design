@@ -1,15 +1,11 @@
-
-dbg n;
-for(let i = 'a';i<='z';i=i+1){
-    let c1:char = i;
-    dbg c1;
-    dbg ' ';
+let a:int = 1;
+function funcA(){
+    dbg a;
 }
 
-dbg endl;
-
-for(let j:char = 'A';j<='Z';j=j+1){
-    let c2:char = j;
-    dbg c2;
-    dbg ' ';
+function funcB(){
+    dbg a;
 }
+
+call funcA();
+call funcB();

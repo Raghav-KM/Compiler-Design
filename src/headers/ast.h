@@ -21,6 +21,8 @@ class NodeLet;
 class NodeIf;
 class NodeAssign;
 class NodeFor;
+class NodeFunction;
+class NodeFunctionCall;
 
 class NodeComparativeExpression;
 class NodeAdditiveExpression;
@@ -57,12 +59,16 @@ public:
   NodeIf *IF;
   NodeAssign *assign;
   NodeFor *FOR;
+  NodeFunction *function;
+  NodeFunctionCall *function_call;
 
   NodeStatement(NodeDebug *debug);
   NodeStatement(NodeLet *let);
   NodeStatement(NodeIf *IF);
   NodeStatement(NodeAssign *assign);
   NodeStatement(NodeFor *FOR);
+  NodeStatement(NodeFunction *function);
+  NodeStatement(NodeFunctionCall *function_call);
 
   static string print(NodeStatement *stmt, int indent);
 };
@@ -113,6 +119,22 @@ public:
   NodeFor(NodeLet *let, NodeComparativeExpression *comp_exp, NodeAssign *assign,
           NodeStatementList *stmt_list);
   static string print(NodeFor *FOR, int indent);
+};
+
+class NodeFunction {
+public:
+  string function_identifier;
+  NodeStatementList *stmt_list;
+
+  NodeFunction(string function_identifier, NodeStatementList *stmt_list);
+  static string print(NodeFunction *function, int indent);
+};
+
+class NodeFunctionCall {
+public:
+  string function_identifier;
+  NodeFunctionCall(string function_identifier);
+  static string print(NodeFunctionCall *function, int indent);
 };
 
 class NodeComparativeExpression {
