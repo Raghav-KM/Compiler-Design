@@ -14,6 +14,7 @@ int Codegen::var_count = 0;
 int Codegen::if_count = 0;
 int Codegen::for_count = 0;
 int Codegen::max_count = 0;
+int Codegen::comp_count = 0;
 
 string Codegen::get_new_temp_variable() {
   var_count++;
@@ -28,134 +29,18 @@ int Codegen::get_for_count() {
   return for_count;
 }
 
-void Codegen::push_eax() { text_section += "    push eax\n"; }
+int Codegen::get_comp_count() {
+  comp_count++;
+  return comp_count;
+}
 
-void Codegen::pop_eax() { text_section += "    pop eax\n"; }
-
-void Codegen::declare_variable_data_section(string variable_name, int value) {
-  data_section += "    " + variable_name + " dd " + to_string(value) + "\n";
+void Codegen::reset_count() {
+  Codegen::max_count = max(max_count, var_count);
+  Codegen::var_count = 0;
 }
 
 void Codegen::declare_variable_bss_section(string variable_name) {
   bss_section += "    " + variable_name + " resd 1\n";
-}
-
-void Codegen::generate_debug(string variable_name) {
-  cout << "dbg " << variable_name << "\n";
-
-  if (!require_print_integer_subroutine) {
-    require_print_integer_subroutine = true;
-  }
-  text_section += "    mov eax, " + variable_name +
-                  "\n    call _print_integer_subroutine\n\n";
-  Codegen::reset_count();
-}
-
-void Codegen::generate_debug(string value, DATA_TYPES type) {
-  cout << "dbg " << value << "\n";
-
-  if (type == INT) {
-
-    if (!require_print_integer_subroutine) {
-      require_print_integer_subroutine = true;
-    }
-    text_section +=
-        "    mov eax, " + value + "\n    call _print_integer_subroutine\n";
-  } else if (type == CHAR) {
-
-    if (!require_print_character_subroutine) {
-      require_print_character_subroutine = true;
-    }
-    text_section +=
-        "    mov al, " + value + "\n    call _print_character_subroutine\n\n";
-  }
-  Codegen::reset_count();
-}
-
-void Codegen::generate_arithemetic_expressions(string new_var_name, string opdA,
-                                               char op, string opdB) {
-  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
-
-  text_section += "    mov eax, " + opdA + "\n";
-  if (op == '+') {
-    text_section += "    add eax, " + opdB + "\n";
-  }
-  if (op == '-') {
-    text_section += "    sub eax, " + opdB + "\n";
-  }
-  if (op == '*') {
-    text_section += "    imul eax, " + opdB + "\n";
-  }
-  if (op == '/') {
-    text_section += "    imul eax, " + opdB + "\n";
-  }
-  text_section += "    mov " + new_var_name + ", eax\n";
-}
-
-void Codegen::generate_comparative_expression(string new_var_name, string opdA,
-                                              string op, string opdB) {
-  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
-
-  if (!require_comparison_subroutine) {
-    require_comparison_subroutine = true;
-  }
-  text_section += "    mov eax, " + opdA + "\n";
-  text_section += "    mov ebx, " + opdB + "\n";
-  text_section += "    cmp eax, ebx\n";
-
-  if (op == "==") {
-    text_section += "    call _compare_equal_subroutine\n";
-  } else if (op == ">") {
-    text_section += "    call _compare_greater_subroutine\n";
-  } else if (op == "<") {
-    text_section += "    call _compare_less_subroutine\n";
-  } else if (op == ">=") {
-    text_section += "    call _compare_greater_equal_subroutine\n";
-  } else if (op == "<=") {
-    text_section += "    call _compare_less_equal_subroutine\n";
-  } else if (op == "!=") {
-    text_section += "    call _compare_not_equal_subroutine\n";
-  }
-
-  text_section += "    mov " + new_var_name + ", eax\n";
-  cout << new_var_name << " = " << opdA << " " << op << " " << opdB << "\n";
-}
-
-void Codegen::generate_let(string lval, string rval) {
-  text_section += "    mov eax, " + rval + "\n";
-  text_section += "    mov " + lval + ", eax\n";
-  cout << "let " << lval << " = " << rval << "\n\n";
-  Codegen::reset_count();
-}
-
-void Codegen::generate_if(string condition, NodeStatementList *stmt_list_if,
-                          NodeStatementList *stmt_list_else, int if_count) {
-
-  cout << "\nif " << condition << "\n";
-
-  text_section += "    mov eax, " + condition + "\n";
-  text_section += "    cmp eax, 0\n";
-  text_section += "    jnz _if" + to_string(if_count) + "\n\n";
-  if (stmt_list_else) {
-    cout << "<--- false --->\n";
-    // Else Statments
-    traverse_stmt_list(stmt_list_else);
-  }
-  text_section += "    jmp _if" + to_string(if_count) + "_end\n\n";
-  cout << "<--- true  --->\n";
-  // If Statments
-  text_section += "_if" + to_string(if_count) + ":\n";
-  traverse_stmt_list(stmt_list_if);
-
-  text_section += "_if" + to_string(if_count) + "_end:\n";
-  cout << "<--- ----- --->\n\n";
-}
-
-void Codegen::generate_assign(string lval, string rval) {
-  text_section += "    mov eax, " + rval + "\n";
-  text_section += "    mov " + lval + ", eax\n";
-  cout << lval << " = " << rval << "\n\n";
-  Codegen::reset_count();
 }
 
 void Codegen::export_asm() {
@@ -251,46 +136,6 @@ _print_newline_subroutine:
 
 )";
 
-  if (require_comparison_subroutine) {
-    program += R"(
-_compare_equal_subroutine:
-    je _true
-    mov eax, 0 
-    ret
-
-_compare_less_subroutine:
-    jl _true
-    mov eax, 0
-    ret
-
-_compare_greater_subroutine:
-    jg _true
-    mov eax, 0
-    ret
-
-_compare_less_equal_subroutine:
-    jl _true
-    je _true
-    mov eax, 0
-    ret
-
-_compare_greater_equal_subroutine:
-    jg _true
-    je _true
-    mov eax, 0
-    ret
-
-_compare_not_equal_subroutine:
-    jne _true
-    mov eax, 0
-    ret
-
-_true:
-    mov eax, 1
-    ret
-)";
-  }
-
   // --- Bss Section --- //
   program += "section .bss\n";
   if (require_print_integer_subroutine) {
@@ -306,7 +151,7 @@ _true:
   }
   program += bss_section;
 
-    program += "\n";
+  program += "\n";
 
   cout << program << "\n ";
 
@@ -319,27 +164,27 @@ _true:
   }
 }
 
-void Codegen::traverse_parse_tree(NodeProgram *program) {
+void Codegen::generate_parse_tree(NodeProgram *program) {
   cout << "\n<--- PROGRAM START --->\n\n";
-  traverse_stmt_list(program->stmt_list);
-  cout << "<--- PROGRAM END   --->\n\n";
+  generate_stmt_list(program->stmt_list);
+  cout << "\n<--- PROGRAM END   --->\n\n";
 }
 
-void Codegen::traverse_stmt_list(NodeStatementList *stmt_list) {
+void Codegen::generate_stmt_list(NodeStatementList *stmt_list) {
   for (auto stmt : stmt_list->stmts) {
-    traverse_stmt(stmt);
+    generate_stmt(stmt);
   }
 }
 
-void Codegen::traverse_stmt(NodeStatement *stmt) {
+void Codegen::generate_stmt(NodeStatement *stmt) {
   if (stmt->debug) {
-    traverse_debug(stmt->debug);
+    generate_debug(stmt->debug);
   } else if (stmt->let) {
-    traverse_let(stmt->let);
+    generate_let(stmt->let);
   } else if (stmt->IF) {
-    traverse_if(stmt->IF);
+    generate_if(stmt->IF);
   } else if (stmt->assign) {
-    traverse_assign(stmt->assign);
+    generate_assign(stmt->assign);
   } else if (stmt->FOR) {
     traverse_for(stmt->FOR);
   } else if (stmt->function) {
@@ -349,41 +194,90 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
   }
 }
 
-void Codegen::traverse_debug(NodeDebug *debug) {
-  string var = "";
-  if (debug->comp_exp) {
-    var = traverse_comparative_expression(debug->comp_exp);
-    generate_debug(var, debug->comp_exp->type);
+void Codegen::generate_debug(NodeDebug *debug) {
+  string rval = generate_comparative_expression(debug->comp_exp);
+
+  cout << "dbg " << rval << "\n\n";
+
+  if (debug->comp_exp->type == INT) {
+    require_print_integer_subroutine = true;
+
+    text_section +=
+        "    mov eax, " + rval + "\n    call _print_integer_subroutine\n";
+
+  } else if (debug->comp_exp->type == CHAR) {
+    require_print_character_subroutine = true;
+
+    text_section +=
+        "    mov al, " + rval + "\n    call _print_character_subroutine\n\n";
   }
+  Codegen::reset_count();
 }
 
-void Codegen::traverse_let(NodeLet *let) {
-  string var = traverse_comparative_expression(let->comp_exp);
+void Codegen::generate_let(NodeLet *let) {
   declare_variable_bss_section(let->identifier->name);
-  generate_let("[" + let->identifier->name + "]", var);
+
+  string rvar = generate_comparative_expression(let->comp_exp);
+  string lvar = "[" + let->identifier->name + "]";
+
+  cout << "let " << lvar << " = " << rvar << "\n\n";
+
+  text_section += "    mov eax, " + rvar + "\n";
+  text_section += "    mov " + lvar + ", eax\n";
+
+  Codegen::reset_count();
 }
 
-void Codegen::traverse_if(NodeIf *IF) {
-  string var = traverse_comparative_expression(IF->comp_exp);
-  generate_if(var, IF->stmt_list_if, IF->stmt_list_else,
-              Codegen::get_if_count());
+void Codegen::generate_if(NodeIf *IF) {
+
+  string condition = generate_comparative_expression(IF->comp_exp);
+  NodeStatementList *stmt_list_if = IF->stmt_list_if;
+  NodeStatementList *stmt_list_else = IF->stmt_list_else;
+  int if_count = get_if_count();
+
+  string if_label_start = "_if" + to_string(if_count);
+  string if_label_end = "_if" + to_string(if_count) + "_end";
+
+  cout << "if " << condition << " :\n";
+
+  text_section += "    mov eax, " + condition + "\n";
+  text_section += "    cmp eax, 1\n";
+  text_section += "    jne " + if_label_start + "\n\n";
+
+  generate_stmt_list(stmt_list_if);
+
+  text_section += "    jmp " + if_label_end + "\n\n";
+  text_section += if_label_start + ":\n";
+
+  if (stmt_list_else) {
+    cout << "else :\n";
+    generate_stmt_list(stmt_list_else);
+  }
+
+  text_section += if_label_end + ":\n";
 }
 
-void Codegen::traverse_assign(NodeAssign *assign) {
-  string var = traverse_comparative_expression(assign->comp_exp);
-  generate_assign("[" + assign->identifier->name + "]", var);
+void Codegen::generate_assign(NodeAssign *assign) {
+  string rval = generate_comparative_expression(assign->comp_exp);
+  string lval = "[" + assign->identifier->name + "]";
+  cout << lval << " = " << rval << "\n\n";
+
+  text_section += "    mov eax, " + rval + "\n";
+  text_section += "    mov " + lval + ", eax\n";
+
+  Codegen::reset_count();
 }
 
 void Codegen::traverse_for(NodeFor *FOR) {
   int for_count = Codegen::get_for_count();
-  traverse_let(FOR->let);
+  generate_let(FOR->let);
   text_section += "_for" + to_string(for_count) + ":\n";
-  string condition = traverse_comparative_expression(FOR->comp_exp);
+  string condition = generate_comparative_expression(FOR->comp_exp);
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 0\n";
   text_section += "    jz _for" + to_string(for_count) + "_end\n\n";
-  traverse_stmt_list(FOR->stmt_list);
-  traverse_assign(FOR->assign);
+  generate_stmt_list(FOR->stmt_list);
+  generate_assign(FOR->assign);
   text_section += "    jmp _for" + to_string(for_count) + "\n\n";
   text_section += "_for" + to_string(for_count) + "_end:\n\n";
 }
@@ -391,7 +285,7 @@ void Codegen::traverse_for(NodeFor *FOR) {
 void Codegen::traverse_function(NodeFunction *function) {
   text_section += "\n";
   text_section += function->function_identifier + ":\n";
-  traverse_stmt_list(function->stmt_list);
+  generate_stmt_list(function->stmt_list);
   text_section += "    ret\n";
 }
 
@@ -400,47 +294,93 @@ void Codegen::traverse_function_call(NodeFunctionCall *function_call) {
 }
 
 string
-Codegen::traverse_comparative_expression(NodeComparativeExpression *comp_exp) {
+Codegen::generate_comparative_expression(NodeComparativeExpression *comp_exp) {
+
   if (comp_exp->comp_operator == NULL && comp_exp->comp_exp == NULL) {
-    return traverse_additive_expression(comp_exp->add_exp);
-  } else {
-    string new_temp_var = get_new_temp_variable();
-
-    generate_comparative_expression(
-        new_temp_var, traverse_comparative_expression(comp_exp->comp_exp),
-        comp_exp->comp_operator->op,
-        traverse_additive_expression(comp_exp->add_exp));
-
-    return new_temp_var;
+    return generate_additive_expression(comp_exp->add_exp);
   }
+
+  string lvar = get_new_temp_variable();
+  string opdA = generate_comparative_expression(comp_exp->comp_exp);
+  string op = comp_exp->comp_operator->op;
+  string opdB = generate_additive_expression(comp_exp->add_exp);
+
+  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+
+  text_section += "    mov eax, " + opdA + "\n";
+  text_section += "    mov ebx, " + opdB + "\n";
+  text_section += "    cmp eax, ebx\n";
+  text_section += "    mov eax, 0\n";
+
+  if (op == "==") {
+    text_section += "    je ";
+  } else if (op == ">") {
+    text_section += "    jle ";
+  } else if (op == "<") {
+    text_section += "    jge ";
+  } else if (op == ">=") {
+    text_section += "    jl ";
+  } else if (op == "<=") {
+    text_section += "    jg ";
+  } else if (op == "!=") {
+    text_section += "    je ";
+  }
+
+  string comp_label = "_cmp" + to_string(get_comp_count()) + "_end";
+
+  text_section += comp_label + "\n";
+  text_section += "    mov eax, 1\n";
+  text_section += comp_label + ":\n";
+  text_section += "    mov " + lvar + ", eax\n";
+
+  return lvar;
 }
 
-string Codegen::traverse_additive_expression(NodeAdditiveExpression *add_exp) {
+string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   if (add_exp->add_operator == NULL && add_exp->add_exp == NULL) {
     return traverse_multiplicative_expression(add_exp->mul_exp);
-  } else {
-    string new_temp_var = get_new_temp_variable();
-
-    generate_arithemetic_expressions(
-        new_temp_var, traverse_additive_expression(add_exp->add_exp),
-        add_exp->add_operator->op,
-        traverse_multiplicative_expression(add_exp->mul_exp));
-
-    return new_temp_var;
   }
+  string lvar = get_new_temp_variable();
+
+  string opdA = generate_additive_expression(add_exp->add_exp);
+  string op = string(1, add_exp->add_operator->op);
+  string opdB = traverse_multiplicative_expression(add_exp->mul_exp);
+
+  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+
+  text_section += "    mov eax, " + opdA + "\n";
+  if (op == "+") {
+    text_section += "    add eax, " + opdB + "\n";
+  }
+  if (op == "-") {
+    text_section += "    sub eax, " + opdB + "\n";
+  }
+  text_section += "    mov " + lvar + ", eax\n";
+
+  return lvar;
 }
 
 string Codegen::traverse_multiplicative_expression(
     NodeMultiplicativeExpression *mul_exp) {
   if (mul_exp->mul_operator == NULL && mul_exp->mul_exp == NULL) {
     return traverse_expression(mul_exp->exp);
-  } else {
-    string new_temp_var = get_new_temp_variable();
-    generate_arithemetic_expressions(
-        new_temp_var, traverse_multiplicative_expression(mul_exp->mul_exp),
-        mul_exp->mul_operator->op, traverse_expression(mul_exp->exp));
-    return new_temp_var;
   }
+  string lvar = get_new_temp_variable();
+  string opdA = traverse_multiplicative_expression(mul_exp->mul_exp);
+  string op = string(1, mul_exp->mul_operator->op);
+  string opdB = traverse_expression(mul_exp->exp);
+
+  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+
+  text_section += "    mov eax, " + opdA + "\n";
+  if (op == "*") {
+    text_section += "    imul eax, " + opdB + "\n";
+  }
+  if (op == "/") {
+    text_section += "    imul eax, " + opdB + "\n";
+  }
+  text_section += "    mov " + lvar + ", eax\n";
+  return lvar;
 }
 
 string Codegen::traverse_expression(NodeExpression *exp) {
@@ -449,9 +389,4 @@ string Codegen::traverse_expression(NodeExpression *exp) {
   } else {
     return to_string(exp->literal->value);
   }
-}
-
-void Codegen::reset_count() {
-  Codegen::max_count = max(max_count, var_count);
-  Codegen::var_count = 0;
 }

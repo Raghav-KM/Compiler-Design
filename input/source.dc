@@ -1,17 +1,5 @@
-function funcA(){
-    for(let i:int=0;i<9;i=i+1){
-        dbg i;
-        dbg ' '; 
-    }
-}
-
-for(let j:int=0;j<9;j=j+1){
-    dbg j;
-    dbg ' ';
-    dbg ':';
-    dbg ' ';
-    call funcA();
-    if(j<8){
-        dbg endl;
-    }
+if(1>10){
+        dbg 1;
+}else{
+        dbg 2;
 }

@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
         cout << NodeProgram::print(program, 0) << endl;
 
         Codegen codegen;
-        codegen.traverse_parse_tree(program);
+        codegen.generate_parse_tree(program);
         codegen.export_asm();
       } else {
         Error::print_error();
