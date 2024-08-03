@@ -5,6 +5,7 @@
 #include "utils.h"
 #include <fstream>
 #include <iostream>
+#include <queue>
 #include <string>
 
 using namespace std;
@@ -21,7 +22,7 @@ private:
   string bss_section;
   string text_section;
 
-  string function_definations;
+  queue<NodeFunction *> function_definations;
 
   bool require_print_integer_subroutine;
   bool require_comparison_subroutine;
@@ -43,6 +44,7 @@ public:
   void generate_debug(string variable_name);
 
   void generate_debug(string value, DATA_TYPES type);
+
   void generate_let(string lval, string rval);
   void generate_if(string condition, NodeStatementList *stmt_list_if,
                    NodeStatementList *stmt_list_else, int if_count);
@@ -57,6 +59,7 @@ public:
 
   void traverse_stmt(NodeStatement *stmt);
   void traverse_debug(NodeDebug *debug);
+
   void traverse_let(NodeLet *let);
   void traverse_if(NodeIf *IF);
   void traverse_assign(NodeAssign *assign);

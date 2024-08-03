@@ -4,7 +4,7 @@ Codegen::Codegen() {
   data_section = "";
   bss_section = "";
   text_section = "";
-  function_definations = "";
+  function_definations = queue<NodeFunction *>();
   require_print_integer_subroutine = false;
   require_comparison_subroutine = false;
   require_print_character_subroutine = false;
@@ -165,27 +165,12 @@ void Codegen::export_asm() {
   program += "section .data\n";
   program += data_section + "\n";
 
-  // --- Bss Section --- //
-  program += "section .bss\n";
-  if (require_print_integer_subroutine) {
-    program += "    buffer  resb 12\n";
-  }
-  if (require_print_character_subroutine) {
-    program += "    char_buffer resb 1\n";
-  }
-  program += "    newline resb 1\n";
-
-  for (int i = 1; i <= Codegen::max_count; i++) {
-    declare_variable_bss_section("_t" + to_string(i));
-  }
-  program += bss_section;
-  program += "\n";
-
   // --- Text Section --- //
 
   program += "section .text\n    global _start\n\n_start:\n";
   program += text_section;
 
+  text_section = "";
   // --- Program Termination --- //
   program += R"(
     call _print_newline_subroutine
@@ -193,6 +178,13 @@ void Codegen::export_asm() {
     xor ebx, ebx
     int 0x80
   )";
+
+  while (!function_definations.empty()) {
+    traverse_function(function_definations.front());
+    function_definations.pop();
+  }
+
+  program += text_section;
 
   if (require_print_integer_subroutine) {
     program += R"(
@@ -299,6 +291,23 @@ _true:
 )";
   }
 
+  // --- Bss Section --- //
+  program += "section .bss\n";
+  if (require_print_integer_subroutine) {
+    program += "    buffer  resb 12\n";
+  }
+  if (require_print_character_subroutine) {
+    program += "    char_buffer resb 1\n";
+  }
+  program += "    newline resb 1\n";
+
+  for (int i = 1; i <= Codegen::max_count; i++) {
+    declare_variable_bss_section("_t" + to_string(i));
+  }
+  program += bss_section;
+
+    program += "\n";
+
   cout << program << "\n ";
 
   ofstream outfile("./build/Assembly/program.asm");
@@ -333,6 +342,10 @@ void Codegen::traverse_stmt(NodeStatement *stmt) {
     traverse_assign(stmt->assign);
   } else if (stmt->FOR) {
     traverse_for(stmt->FOR);
+  } else if (stmt->function) {
+    function_definations.push(stmt->function);
+  } else if (stmt->function_call) {
+    traverse_function_call(stmt->function_call);
   }
 }
 
@@ -375,9 +388,16 @@ void Codegen::traverse_for(NodeFor *FOR) {
   text_section += "_for" + to_string(for_count) + "_end:\n\n";
 }
 
-void Codegen::traverse_function(NodeFunction *function) {}
+void Codegen::traverse_function(NodeFunction *function) {
+  text_section += "\n";
+  text_section += function->function_identifier + ":\n";
+  traverse_stmt_list(function->stmt_list);
+  text_section += "    ret\n";
+}
 
-void Codegen::traverse_function_call(NodeFunctionCall *function_call) {}
+void Codegen::traverse_function_call(NodeFunctionCall *function_call) {
+  text_section += "    call " + function_call->function_identifier + "\n";
+}
 
 string
 Codegen::traverse_comparative_expression(NodeComparativeExpression *comp_exp) {

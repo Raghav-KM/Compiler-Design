@@ -1,11 +1,17 @@
-let a:int = 1;
 function funcA(){
-    dbg a;
+    for(let i:int=0;i<9;i=i+1){
+        dbg i;
+        dbg ' '; 
+    }
 }
 
-function funcB(){
-    dbg a;
+for(let j:int=0;j<9;j=j+1){
+    dbg j;
+    dbg ' ';
+    dbg ':';
+    dbg ' ';
+    call funcA();
+    if(j<8){
+        dbg endl;
+    }
 }
-
-call funcA();
-call funcB();
