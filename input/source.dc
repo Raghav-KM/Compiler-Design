@@ -1,5 +1,13 @@
-let i:int = 0;
-for(let j:int=0;j<5;j=j+1){
-        let i:int = j+1;
-        dbg i;
+function funcA(){
+        for(let i:char='a';i<='z';i=i+1){
+                dbg i;
+                dbg ' ';
+        }
+}
+
+for(let i:int=0;i<5;i=i+1){
+        call funcA();
+        if(i<4) {
+                dbg endl;
+        }
 }
