@@ -1,5 +1,5 @@
-if(1>10){
-        dbg 1;
-}else{
-        dbg 2;
+let i:int = 0;
+for(let j:int=0;j<5;j=j+1){
+        let i:int = j+1;
+        dbg i;
 }

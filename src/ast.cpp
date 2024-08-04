@@ -190,7 +190,11 @@ NodeMultiplicativeOperator::NodeMultiplicativeOperator(char op) {
   this->op = op;
 }
 
-NodeIdentifier::NodeIdentifier(string value) { name = value; }
+NodeIdentifier::NodeIdentifier(string name) { this->name = name; }
+NodeIdentifier::NodeIdentifier(string name, int scope) {
+  this->name = name;
+  this->scope = scope;
+}
 
 NodeLiteral::NodeLiteral(int value, DATA_TYPES type) {
   this->value = value;
@@ -414,12 +418,12 @@ string NodeMultiplicativeOperator::print(NodeMultiplicativeOperator *mul_op,
 string NodeIdentifier::print(NodeIdentifier *identifier, int indent) {
   string str = tab(indent) + "[ 'identifier': " + identifier->name;
   if (identifier->type == CHAR) {
-    str += " (character)";
+    str += " character | ";
   }
   if (identifier->type == INT) {
-    str += " (integer)";
+    str += " integer | ";
   }
-
+  str += to_string(identifier->scope);
   str += " ]\n";
   return str;
 }

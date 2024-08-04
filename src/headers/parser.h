@@ -9,6 +9,8 @@ class Parser {
 private:
   vector<Token> token_stream;
   int ptr;
+  int scope;
+
   SymbolTable *symbol_table;
 
   NodeStatementList *parse_statement_list(TOKEN_TYPES END_TOKEN);
@@ -43,6 +45,9 @@ public:
   Token look_ahead();
   void consume();
   NodeProgram *parse_program(vector<Token> token_stream);
+
+  void increment_scope();
+  void decrement_scope();
 };
 
 #endif

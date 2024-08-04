@@ -220,8 +220,10 @@ class NodeIdentifier {
 public:
   string name;
   DATA_TYPES type;
+  int scope;
 
   NodeIdentifier(string name);
+  NodeIdentifier(string name, int scope);
   static string print(NodeIdentifier *identifier, int indent);
 };
 

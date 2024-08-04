@@ -4,26 +4,39 @@ section .text
     global _start
 
 _start:
-    mov eax, 1
-    mov ebx, 10
+    mov eax, 0
+    mov [i_0], eax
+    mov eax, 0
+    mov [j_1], eax
+_for1:
+    mov eax, [j_1]
+    mov ebx, 5
     cmp eax, ebx
     mov eax, 0
-    jle _cmp1_end
+    jge _cmp1_end
     mov eax, 1
 _cmp1_end:
     mov [_t1], eax
     mov eax, [_t1]
-    cmp eax, 1
-    jne _if1
+    cmp eax, 0
+    jz _for1_end
 
-    mov eax, 1
+    mov eax, [j_1]
+    add eax, 1
+    mov [_t2], eax
+    mov eax, [_t2]
+    mov [i_1], eax
+    mov eax, [i_1]
     call _print_integer_subroutine
-    jmp _if1_end
+    mov eax, [j_1]
+    add eax, 1
+    mov [_t1], eax
+    mov eax, [_t1]
+    mov [j_1], eax
+    jmp _for1
 
-_if1:
-    mov eax, 2
-    call _print_integer_subroutine
-_if1_end:
+_for1_end:
+
 
     call _print_newline_subroutine
     mov eax, 1
@@ -78,5 +91,9 @@ _print_newline_subroutine:
 section .bss
     buffer  resb 12
     newline resb 1
+    i_0 resd 1
+    j_1 resd 1
+    i_1 resd 1
     _t1 resd 1
+    _t2 resd 1
 

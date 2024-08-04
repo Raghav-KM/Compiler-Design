@@ -39,6 +39,10 @@ void Codegen::reset_count() {
   Codegen::var_count = 0;
 }
 
+string Codegen::get_identifier_name(NodeIdentifier *identifier) {
+  return identifier->name + "_" + to_string(identifier->scope);
+}
+
 void Codegen::declare_variable_bss_section(string variable_name) {
   bss_section += "    " + variable_name + " resd 1\n";
 }
@@ -215,10 +219,10 @@ void Codegen::generate_debug(NodeDebug *debug) {
 }
 
 void Codegen::generate_let(NodeLet *let) {
-  declare_variable_bss_section(let->identifier->name);
+  declare_variable_bss_section(get_identifier_name(let->identifier));
 
   string rvar = generate_comparative_expression(let->comp_exp);
-  string lvar = "[" + let->identifier->name + "]";
+  string lvar = "[" + get_identifier_name(let->identifier) + "]";
 
   cout << "let " << lvar << " = " << rvar << "\n\n";
 
@@ -259,7 +263,7 @@ void Codegen::generate_if(NodeIf *IF) {
 
 void Codegen::generate_assign(NodeAssign *assign) {
   string rval = generate_comparative_expression(assign->comp_exp);
-  string lval = "[" + assign->identifier->name + "]";
+  string lval = "[" + get_identifier_name(assign->identifier) + "]";
   cout << lval << " = " << rval << "\n\n";
 
   text_section += "    mov eax, " + rval + "\n";
@@ -385,7 +389,7 @@ string Codegen::traverse_multiplicative_expression(
 
 string Codegen::traverse_expression(NodeExpression *exp) {
   if (exp->identifier != NULL) {
-    return "[" + exp->identifier->name + "]";
+    return "[" + get_identifier_name(exp->identifier) + "]";
   } else {
     return to_string(exp->literal->value);
   }

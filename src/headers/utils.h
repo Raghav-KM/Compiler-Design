@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <set>
 #include <stdexcept>
 #include <string>
 
@@ -29,16 +30,20 @@ class SymbolTable {
 
 private:
   static SymbolTable *instance;
-  map<string, DATA_TYPES> table;
+  map<int, map<string, DATA_TYPES>> _table;
   SymbolTable();
 
 public:
   static SymbolTable *get_instance();
 
-  RESULT_TYPE declare(string symbol_name);
-  RESULT_TYPE exists(string symbol_name);
-  void set_datatype(string symbol_name, DATA_TYPES type);
-  DATA_TYPES get_datatype(string symbol_name);
+  RESULT_TYPE declare(string symbol_name, int scope);
+
+  RESULT_TYPE exists(string symbol_name, int scope, int &present_scope);
+
+  void set_datatype(string symbol_name, DATA_TYPES type,int scope);
+  DATA_TYPES get_datatype(string symbol_name, int scope);
+
+  void clear_scope(int scope);
 
   void reset();
 };

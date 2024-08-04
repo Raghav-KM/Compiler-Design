@@ -62,6 +62,8 @@ public:
   string
   traverse_multiplicative_expression(NodeMultiplicativeExpression *mul_exp);
   string traverse_expression(NodeExpression *exp);
+
+  string get_identifier_name(NodeIdentifier *identifier);
 };
 
 #endif

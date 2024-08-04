@@ -8,6 +8,7 @@
 
 Parser::Parser() {
   ptr = 0;
+  scope = 0;
   symbol_table = SymbolTable::get_instance();
 }
 
@@ -25,6 +26,13 @@ Token Parser::look_ahead() {
 }
 
 void Parser::consume() { ptr++; }
+
+void Parser::increment_scope() { scope++; }
+
+void Parser::decrement_scope() {
+  symbol_table->clear_scope(scope);
+  scope--;
+}
 
 NodeProgram *Parser::parse_program(vector<Token> token_stream) {
   reset();
@@ -57,6 +65,7 @@ NodeStatement *Parser::parse_statement() {
     return NULL;
   }
   if (look_ahead().get_type() == LET) {
+
     if (NodeLet *let = parse_let()) {
       return new NodeStatement(let);
     }
@@ -75,15 +84,19 @@ NodeStatement *Parser::parse_statement() {
     return NULL;
   }
   if (look_ahead().get_type() == FOR) {
+    increment_scope();
     if (NodeFor *FOR = parse_for()) {
       return new NodeStatement(FOR);
     }
+    decrement_scope();
     return NULL;
   }
   if (look_ahead().get_type() == FUNCTION) {
+    increment_scope();
     if (NodeFunction *function = parse_function()) {
       return new NodeStatement(function);
     }
+    decrement_scope();
     return NULL;
   }
   if (look_ahead().get_type() == CALL) {
@@ -101,9 +114,15 @@ NodeStatement *Parser::parse_statement() {
 
 NodeDebug *Parser::parse_debug() {
   consume();
+  // if (symbol_table->declare("i", 2) == SUCCESS)
+  //   cout << "before[SUCCESS]\n";
+
   if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
+
+      // if (symbol_table->declare("i", 2) == SUCCESS)
+      //   cout << "after[SUCCESS]\n";
       return new NodeDebug(comp_exp);
     }
     Error::invalid_syntax("Missing ';'", look_ahead().line_no,
@@ -140,7 +159,10 @@ NodeIf *Parser::parse_if() {
   }
   consume();
 
+  increment_scope();
   NodeStatementList *stmt_list_if = parse_statement_list(BRACKET_CLOSE_CURLY);
+  decrement_scope();
+
   if (stmt_list_if == NULL) {
     return NULL;
   }
@@ -164,7 +186,9 @@ NodeIf *Parser::parse_if() {
   }
   consume();
 
+  increment_scope();
   NodeStatementList *stmt_list_else = parse_statement_list(BRACKET_CLOSE_CURLY);
+  decrement_scope();
   if (stmt_list_else == NULL) {
     return NULL;
   }
@@ -198,7 +222,7 @@ NodeLet *Parser::parse_let() {
     if (look_ahead().get_type() == DT_INT) {
       identifier->type = (DATA_TYPES)INT;
     }
-    symbol_table->set_datatype(identifier->name, identifier->type);
+    symbol_table->set_datatype(identifier->name, identifier->type, scope);
   } else {
     Error::invalid_syntax("Expected a valid DATATYPE", look_ahead().line_no,
                           look_ahead().token_no);
@@ -281,7 +305,6 @@ NodeFor *Parser::parse_for() {
                           look_ahead().token_no);
     return NULL;
   }
-
   consume();
   return new NodeFor(let, comp_exp, assign, stmt_list);
 }
@@ -523,6 +546,7 @@ NodeMultiplicativeOperator *Parser::parse_multiplicative_operator() {
 NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
 
   string symbol_name = look_ahead().get_body();
+  /*
   if (symbol_table->exists(symbol_name) == UNDECLARED &&
       check_type == UNDECLARED) {
     Error::undefined_variable(symbol_name, look_ahead().line_no,
@@ -535,11 +559,29 @@ NodeIdentifier *Parser::parse_identifier(RESULT_TYPE check_type) {
                                   look_ahead().token_no);
     return NULL;
   }
+  */
 
-  NodeIdentifier *identifier = new NodeIdentifier(symbol_name);
-  if (check_type == UNDECLARED) {
-    identifier->type = symbol_table->get_datatype(symbol_name);
+  int present_scope = scope;
+  if (check_type == UNDECLARED &&
+      symbol_table->exists(symbol_name, scope, present_scope) == UNDECLARED) {
+    Error::undefined_variable(symbol_name, look_ahead().line_no,
+                              look_ahead().token_no);
+    return NULL;
   }
+
+  if (check_type == REDECLARATION &&
+      symbol_table->declare(symbol_name, scope) == REDECLARATION) {
+    Error::redeclaration_variable(symbol_name, look_ahead().line_no,
+                                  look_ahead().token_no);
+    return NULL;
+  }
+
+  NodeIdentifier *identifier = new NodeIdentifier(symbol_name, scope);
+  if (check_type == UNDECLARED) {
+    identifier->type = symbol_table->get_datatype(symbol_name, present_scope);
+    identifier->scope = present_scope;
+  }
+
   consume();
   return identifier;
 }
