@@ -52,18 +52,23 @@ public:
   void generate_let(NodeLet *let);
   void generate_if(NodeIf *IF);
   void generate_assign(NodeAssign *assign);
-  void traverse_for(NodeFor *FOR);
-  void traverse_function(NodeFunction *function);
-  void traverse_function_call(NodeFunctionCall *function_call);
+
+  void generate_for(NodeFor *FOR);
+  void generate_function(NodeFunction *function);
+  void generate_function_call(NodeFunctionCall *function_call);
 
   string generate_comparative_expression(NodeComparativeExpression *comp_exp);
 
   string generate_additive_expression(NodeAdditiveExpression *add_exp);
   string
-  traverse_multiplicative_expression(NodeMultiplicativeExpression *mul_exp);
-  string traverse_expression(NodeExpression *exp);
+  generate_multiplicative_expression(NodeMultiplicativeExpression *mul_exp);
+  string generate_expression(NodeExpression *exp);
 
   string get_identifier_name(NodeIdentifier *identifier);
+
+  void finalize_text_section();
+  void finalize_data_section();
+  void finalize_bss_section();
 };
 
 #endif

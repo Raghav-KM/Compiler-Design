@@ -50,18 +50,39 @@ void Codegen::declare_variable_bss_section(string variable_name) {
 void Codegen::export_asm() {
   string program = "";
 
+  finalize_data_section();
+  finalize_text_section();
+  finalize_bss_section();
+
   // --- Data Section --- //
   program += "section .data\n";
-  program += data_section + "\n";
+  program += data_section;
+  program += "\n";
+
+  // --- Bss Section --- //
+  program += "section .bss\n";
+  program += bss_section;
+  program += "\n";
 
   // --- Text Section --- //
-
   program += "section .text\n    global _start\n\n_start:\n";
   program += text_section;
+  program += "\n";
 
-  text_section = "";
-  // --- Program Termination --- //
-  program += R"(
+  cout << program;
+
+  ofstream outfile("./build/Assembly/program.asm");
+  if (outfile.is_open()) {
+    outfile << program;
+    outfile.close();
+  } else {
+    cerr << "Error: ASM Code Generation Failed\n";
+  }
+}
+
+void Codegen::finalize_text_section() {
+
+  text_section += R"(
     call _print_newline_subroutine
     mov eax, 1
     xor ebx, ebx
@@ -69,14 +90,12 @@ void Codegen::export_asm() {
   )";
 
   while (!function_definations.empty()) {
-    traverse_function(function_definations.front());
+    generate_function(function_definations.front());
     function_definations.pop();
   }
 
-  program += text_section;
-
   if (require_print_integer_subroutine) {
-    program += R"(
+    text_section += R"(
 _print_integer_subroutine:
     push eax
     mov ecx, buffer + 10
@@ -115,7 +134,7 @@ _print_integer_subroutine:
 )";
   }
   if (require_print_character_subroutine) {
-    program += R"(
+    text_section += R"(
 _print_character_subroutine:
     mov ecx, char_buffer 
     mov [ecx], al
@@ -128,7 +147,7 @@ _print_character_subroutine:
 )";
   }
 
-  program += R"(
+  text_section += R"(
 _print_newline_subroutine:
     mov ecx, newline
     mov byte [ecx], 0xA
@@ -139,32 +158,21 @@ _print_newline_subroutine:
     ret
 
 )";
+}
 
-  // --- Bss Section --- //
-  program += "section .bss\n";
+void Codegen::finalize_data_section() {}
+
+void Codegen::finalize_bss_section() {
   if (require_print_integer_subroutine) {
-    program += "    buffer  resb 12\n";
+    bss_section += "    buffer  resb 12\n";
   }
   if (require_print_character_subroutine) {
-    program += "    char_buffer resb 1\n";
+    bss_section += "    char_buffer resb 1\n";
   }
-  program += "    newline resb 1\n";
+  bss_section += "    newline resb 1\n";
 
   for (int i = 1; i <= Codegen::max_count; i++) {
     declare_variable_bss_section("_t" + to_string(i));
-  }
-  program += bss_section;
-
-  program += "\n";
-
-  cout << program << "\n ";
-
-  ofstream outfile("./build/Assembly/program.asm");
-  if (outfile.is_open()) {
-    outfile << program;
-    outfile.close();
-  } else {
-    cerr << "Error: ASM Code Generation Failed\n";
   }
 }
 
@@ -190,11 +198,11 @@ void Codegen::generate_stmt(NodeStatement *stmt) {
   } else if (stmt->assign) {
     generate_assign(stmt->assign);
   } else if (stmt->FOR) {
-    traverse_for(stmt->FOR);
+    generate_for(stmt->FOR);
   } else if (stmt->function) {
     function_definations.push(stmt->function);
   } else if (stmt->function_call) {
-    traverse_function_call(stmt->function_call);
+    generate_function_call(stmt->function_call);
   }
 }
 
@@ -272,28 +280,33 @@ void Codegen::generate_assign(NodeAssign *assign) {
   Codegen::reset_count();
 }
 
-void Codegen::traverse_for(NodeFor *FOR) {
+void Codegen::generate_for(NodeFor *FOR) {
   int for_count = Codegen::get_for_count();
+
   generate_let(FOR->let);
   text_section += "_for" + to_string(for_count) + ":\n";
   string condition = generate_comparative_expression(FOR->comp_exp);
+
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 0\n";
   text_section += "    jz _for" + to_string(for_count) + "_end\n\n";
+
   generate_stmt_list(FOR->stmt_list);
+
   generate_assign(FOR->assign);
+
   text_section += "    jmp _for" + to_string(for_count) + "\n\n";
   text_section += "_for" + to_string(for_count) + "_end:\n\n";
 }
 
-void Codegen::traverse_function(NodeFunction *function) {
+void Codegen::generate_function(NodeFunction *function) {
   text_section += "\n";
   text_section += function->function_identifier + ":\n";
   generate_stmt_list(function->stmt_list);
   text_section += "    ret\n";
 }
 
-void Codegen::traverse_function_call(NodeFunctionCall *function_call) {
+void Codegen::generate_function_call(NodeFunctionCall *function_call) {
   text_section += "    call " + function_call->function_identifier + "\n";
 }
 
@@ -342,13 +355,13 @@ Codegen::generate_comparative_expression(NodeComparativeExpression *comp_exp) {
 
 string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   if (add_exp->add_operator == NULL && add_exp->add_exp == NULL) {
-    return traverse_multiplicative_expression(add_exp->mul_exp);
+    return generate_multiplicative_expression(add_exp->mul_exp);
   }
   string lvar = get_new_temp_variable();
 
   string opdA = generate_additive_expression(add_exp->add_exp);
   string op = string(1, add_exp->add_operator->op);
-  string opdB = traverse_multiplicative_expression(add_exp->mul_exp);
+  string opdB = generate_multiplicative_expression(add_exp->mul_exp);
 
   cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
 
@@ -364,15 +377,15 @@ string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   return lvar;
 }
 
-string Codegen::traverse_multiplicative_expression(
+string Codegen::generate_multiplicative_expression(
     NodeMultiplicativeExpression *mul_exp) {
   if (mul_exp->mul_operator == NULL && mul_exp->mul_exp == NULL) {
-    return traverse_expression(mul_exp->exp);
+    return generate_expression(mul_exp->exp);
   }
   string lvar = get_new_temp_variable();
-  string opdA = traverse_multiplicative_expression(mul_exp->mul_exp);
+  string opdA = generate_multiplicative_expression(mul_exp->mul_exp);
   string op = string(1, mul_exp->mul_operator->op);
-  string opdB = traverse_expression(mul_exp->exp);
+  string opdB = generate_expression(mul_exp->exp);
 
   cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
 
@@ -387,7 +400,7 @@ string Codegen::traverse_multiplicative_expression(
   return lvar;
 }
 
-string Codegen::traverse_expression(NodeExpression *exp) {
+string Codegen::generate_expression(NodeExpression *exp) {
   if (exp->identifier != NULL) {
     return "[" + get_identifier_name(exp->identifier) + "]";
   } else {

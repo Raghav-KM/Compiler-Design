@@ -1,5 +1,13 @@
 section .data
 
+section .bss
+    i_3 resd 1
+    i_2 resd 1
+    char_buffer resb 1
+    newline resb 1
+    _t1 resd 1
+    _t2 resd 1
+
 section .text
     global _start
 
@@ -106,11 +114,4 @@ _print_newline_subroutine:
     int 0x80
     ret
 
-section .bss
-    char_buffer resb 1
-    newline resb 1
-    i_3 resd 1
-    i_2 resd 1
-    _t1 resd 1
-    _t2 resd 1
 
