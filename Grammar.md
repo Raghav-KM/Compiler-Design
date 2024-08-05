@@ -63,6 +63,7 @@
 
 <EXP>         → IDENTIFIER 
                 | INT_LIT
+                | BRACKER_OPEN <COMP_EXP> BRACKET_CLOSE
 
 <DATA_TYPE>   → INT
                 | CHAR

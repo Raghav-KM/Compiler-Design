@@ -188,10 +188,13 @@ class NodeExpression {
 public:
   NodeLiteral *literal;
   NodeIdentifier *identifier;
+  NodeComparativeExpression *comp_exp;
+
   DATA_TYPES type;
 
   NodeExpression(NodeIdentifier *identifier);
   NodeExpression(NodeLiteral *literal);
+  NodeExpression(NodeComparativeExpression *comp_exp);
   static string print(NodeExpression *expression, int indent);
 };
 

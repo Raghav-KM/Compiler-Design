@@ -173,13 +173,22 @@ NodeMultiplicativeExpression::NodeMultiplicativeExpression(
 NodeExpression::NodeExpression(NodeIdentifier *identifier) {
   this->literal = NULL;
   this->identifier = identifier;
+  this->comp_exp = NULL;
   this->type = identifier->type;
 }
 
 NodeExpression::NodeExpression(NodeLiteral *literal) {
   this->literal = literal;
-  this->type = literal->type;
   this->identifier = NULL;
+  this->comp_exp = NULL;
+  this->type = literal->type;
+}
+
+NodeExpression::NodeExpression(NodeComparativeExpression *comp_exp) {
+  this->literal = NULL;
+  this->identifier = NULL;
+  this->comp_exp = comp_exp;
+  this->type = comp_exp->type;
 }
 
 NodeComparativeOperator::NodeComparativeOperator(string op) { this->op = op; }
@@ -396,6 +405,11 @@ string NodeExpression::print(NodeExpression *expression, int indent) {
   if (expression->identifier) {
     return tab(indent) + "[ 'expression': " + type + "\n" +
            NodeIdentifier::print(expression->identifier, indent + 1) +
+           tab(indent) + "]\n";
+  }
+  if (expression->comp_exp) {
+    return tab(indent) + "[ 'expression': " + "\n" +
+           NodeComparativeExpression::print(expression->comp_exp, indent + 1) +
            tab(indent) + "]\n";
   }
   return "";

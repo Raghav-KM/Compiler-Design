@@ -267,6 +267,8 @@ void Codegen::generate_if(NodeIf *IF) {
   }
 
   text_section += if_label_end + ":\n";
+
+  Codegen::reset_count();
 }
 
 void Codegen::generate_assign(NodeAssign *assign) {
@@ -297,6 +299,8 @@ void Codegen::generate_for(NodeFor *FOR) {
 
   text_section += "    jmp _for" + to_string(for_count) + "\n\n";
   text_section += "_for" + to_string(for_count) + "_end:\n\n";
+
+  Codegen::reset_count();
 }
 
 void Codegen::generate_function(NodeFunction *function) {
@@ -403,7 +407,10 @@ string Codegen::generate_multiplicative_expression(
 string Codegen::generate_expression(NodeExpression *exp) {
   if (exp->identifier != NULL) {
     return "[" + get_identifier_name(exp->identifier) + "]";
-  } else {
+  } else if (exp->literal != NULL) {
     return to_string(exp->literal->value);
+  } else if (exp->comp_exp != NULL) {
+    return generate_comparative_expression(exp->comp_exp);
   }
+  return "";
 }

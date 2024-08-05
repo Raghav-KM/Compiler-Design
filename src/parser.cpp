@@ -486,8 +486,24 @@ NodeExpression *Parser::parse_expression() {
     }
     return NULL;
   }
-  Error::invalid_syntax("Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER'",
-                        look_ahead().line_no, look_ahead().token_no);
+  if (look_ahead().get_type() == BRACKET_OPEN) {
+    consume();
+    NodeComparativeExpression *comp_exp = parse_comparative_expression();
+    if (comp_exp == NULL) {
+      return NULL;
+    }
+    if (look_ahead().get_type() != BRACKET_CLOSE) {
+      Error::invalid_syntax("Exprected '('", look_ahead().line_no,
+                            look_ahead().token_no);
+      return NULL;
+    }
+    consume();
+    return new NodeExpression(comp_exp);
+  }
+
+  Error::invalid_syntax(
+      "Invalid TOKEN - Expected 'INT_LIT' or 'IDENTIFIER' or '('",
+      look_ahead().line_no, look_ahead().token_no);
   return NULL;
 }
 

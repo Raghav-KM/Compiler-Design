@@ -1,13 +1,3 @@
-function funcA(){
-        for(let i:char='a';i<='z';i=i+1){
-                dbg i;
-                dbg ' ';
-        }
-}
-
-for(let i:int=0;i<5;i=i+1){
-        call funcA();
-        if(i<4) {
-                dbg endl;
-        }
+if((1+2)*10>10){
+        dbg 1;
 }
