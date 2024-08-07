@@ -1,4 +1,3 @@
-
 main.o = ./build/main.o
 main.cpp = ./src/main.cpp
 
@@ -33,8 +32,7 @@ program = ./build/Assembly/program
 output = ./build/output
 input = ./input/source.dc
 
-
-output:	${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${codegen.o} ${main.o} ${testing.o}
+output:  ${lexer.o} ${parser.o} ${ast.o} ${utils.o} ${codegen.o} ${main.o} ${testing.o}
 	g++ $^ -o ${output}
 
 ${main.o}: ${main.cpp}
@@ -64,11 +62,12 @@ run: output
 test: output
 	${output} ${input} -t
 
-asm:
+asm: 
 	nasm -f elf -o ${program.o} ${program.asm}
 	ld -m elf_i386 -o ${program} ${program.o}
 	${program}
 
 clean: 
-	rm ./build/*.o ${output}
-	rm ${program.o} ${program}
+	rm -rf ./build/*.o ${output}
+	rm -rf ./build/Assembly/*
+
