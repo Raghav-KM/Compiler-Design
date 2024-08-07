@@ -15,7 +15,7 @@
 - `<PROGRAM>`
 - `<STMT_LIST>`
 - `<STMT>`, `<DEBUG_STMT>`, `<LET_STMT>`, `<IF_STMT>`, `<ASSIGN_STMT>`, `<FOR_STMT>`, `<FUNCTION_STMT>`, `<FUNCTION_CALL_STMT>`
-- `<COMP_EXP>` `<ADD_EXP>`, `<MUL_EXP>`, `<EXP>`
+- `<COMP_EXP>` `<ADD_EXP>`,`<NEG_EXP>` `<MUL_EXP>`, `<EXP>`
 - `<DATA_TYPE>`
 
 
