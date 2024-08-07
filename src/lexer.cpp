@@ -304,6 +304,10 @@ bool Lexer::analyse(string input_stream) {
       return false;
     }
   }
+
+  for (auto token : token_stream)
+    if (token.get_type() == INVALID_TOKEN)
+      return false;
   return true;
 }
 

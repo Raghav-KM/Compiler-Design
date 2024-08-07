@@ -114,15 +114,10 @@ NodeStatement *Parser::parse_statement() {
 
 NodeDebug *Parser::parse_debug() {
   consume();
-  // if (symbol_table->declare("i", 2) == SUCCESS)
-  //   cout << "before[SUCCESS]\n";
 
   if (NodeComparativeExpression *comp_exp = parse_comparative_expression()) {
     if (look_ahead().get_type() == SEMICOLON) {
       consume();
-
-      // if (symbol_table->declare("i", 2) == SUCCESS)
-      //   cout << "after[SUCCESS]\n";
       return new NodeDebug(comp_exp);
     }
     Error::invalid_syntax("Missing ';'", look_ahead().line_no,
@@ -438,13 +433,11 @@ NodeComparativeExpression *Parser::parse_comparative_expression() {
 }
 
 NodeAdditiveExpression *Parser::parse_additive_expression() {
-  if (NodeMultiplicativeExpression *mul_exp =
-          parse_multiplicative_expression()) {
-    NodeAdditiveExpression *add_exp = new NodeAdditiveExpression(mul_exp);
+  if (NodeNegativeExpression *neg_exp = parse_negative_expression()) {
+    NodeAdditiveExpression *add_exp = new NodeAdditiveExpression(neg_exp);
     while (NodeAdditiveOperator *add_op = parse_additive_operator()) {
-      if (NodeMultiplicativeExpression *new_mul_exp =
-              parse_multiplicative_expression()) {
-        add_exp = new NodeAdditiveExpression(add_exp, add_op, new_mul_exp);
+      if (NodeNegativeExpression *new_neg_exp = parse_negative_expression()) {
+        add_exp = new NodeAdditiveExpression(add_exp, add_op, new_neg_exp);
       } else {
         return NULL;
       }
@@ -452,6 +445,22 @@ NodeAdditiveExpression *Parser::parse_additive_expression() {
     return add_exp;
   }
   return NULL;
+}
+
+NodeNegativeExpression *Parser::parse_negative_expression() {
+  if (look_ahead().get_type() == SUB) {
+    consume();
+    if (NodeNegativeExpression *neg_exp = parse_negative_expression()) {
+      return new NodeNegativeExpression(neg_exp);
+    }
+    return NULL;
+  } else {
+    if (NodeMultiplicativeExpression *mul_exp =
+            parse_multiplicative_expression()) {
+      return new NodeNegativeExpression(mul_exp);
+    }
+    return NULL;
+  }
 }
 
 NodeMultiplicativeExpression *Parser::parse_multiplicative_expression() {

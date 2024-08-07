@@ -1,35 +1,26 @@
 section .data
 
 section .bss
+    i_0 resd 1
+    i_1 resd 1
     buffer  resb 12
     newline resb 1
-    _t1 resd 1
-    _t2 resd 1
-    _t3 resd 1
 
 section .text
     global _start
 
 _start:
     mov eax, 1
-    add eax, 2
-    mov [_t3], eax
-    mov eax, [_t3]
-    imul eax, 10
-    mov [_t2], eax
-    mov eax, [_t2]
-    mov ebx, 10
-    cmp eax, ebx
-    mov eax, 0
-    jle _cmp1_end
+    mov [i_0], eax
     mov eax, 1
-_cmp1_end:
-    mov [_t1], eax
-    mov eax, [_t1]
     cmp eax, 1
     jne _if1
 
-    mov eax, 1
+    mov eax, [i_0]
+    call _print_integer_subroutine
+    mov eax, 2
+    mov [i_1], eax
+    mov eax, [i_1]
     call _print_integer_subroutine
     jmp _if1_end
 

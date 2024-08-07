@@ -138,18 +138,32 @@ NodeComparativeExpression::NodeComparativeExpression(
 
 NodeAdditiveExpression::NodeAdditiveExpression(
     NodeAdditiveExpression *add_exp, NodeAdditiveOperator *add_operator,
-    NodeMultiplicativeExpression *mul_exp) {
+    NodeNegativeExpression *neg_exp) {
   this->add_exp = add_exp;
   this->add_operator = add_operator;
-  this->mul_exp = mul_exp;
-  this->type = max_datatype(add_exp->type, mul_exp->type);
+  this->neg_exp = neg_exp;
+  this->type = max_datatype(add_exp->type, neg_exp->type);
 }
 
 NodeAdditiveExpression::NodeAdditiveExpression(
-    NodeMultiplicativeExpression *mul_exp) {
-  this->mul_exp = mul_exp;
+    NodeNegativeExpression *neg_exp) {
+  this->neg_exp = neg_exp;
   this->add_exp = NULL;
   this->add_operator = NULL;
+  this->type = neg_exp->type;
+}
+
+NodeNegativeExpression::NodeNegativeExpression(
+    NodeNegativeExpression *neg_exp) {
+  this->neg_exp = neg_exp;
+  this->mul_exp = NULL;
+  this->type = max_datatype(neg_exp->type, INT);
+}
+
+NodeNegativeExpression::NodeNegativeExpression(
+    NodeMultiplicativeExpression *mul_exp) {
+  this->neg_exp = NULL;
+  this->mul_exp = mul_exp;
   this->type = mul_exp->type;
 }
 
@@ -352,11 +366,33 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
     return tab(indent) + "[ 'add_expression': " + type + "\n" +
            NodeAdditiveExpression::print(add_exp->add_exp, indent + 1) +
            NodeAdditiveOperator::print(add_exp->add_operator, indent + 1) +
-           NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
+           NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) +
            tab(indent) + "]\n";
   } else {
     return tab(indent) + "[ 'add_expression': " + type + "\n" +
-           NodeMultiplicativeExpression::print(add_exp->mul_exp, indent + 1) +
+           NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) +
+           tab(indent) + "]\n";
+  }
+}
+
+string NodeNegativeExpression::print(NodeNegativeExpression *neg_exp,
+                                     int indent) {
+  string type = "";
+  if (neg_exp->type == INT) {
+    type = "integer";
+  } else if (neg_exp->type == CHAR) {
+    type = "character";
+  } else if (neg_exp->type == UNDEFINED) {
+    type = "undefined";
+  }
+
+  if (neg_exp->neg_exp != NULL) {
+    return tab(indent) + "[ 'neg_expression'(-1): " + type + "\n" +
+           NodeNegativeExpression::print(neg_exp->neg_exp, indent + 1) +
+           tab(indent) + "]\n";
+  } else {
+    return tab(indent) + "[ 'neg_expression': " + type + "\n" +
+           NodeMultiplicativeExpression::print(neg_exp->mul_exp, indent + 1) +
            tab(indent) + "]\n";
   }
 }

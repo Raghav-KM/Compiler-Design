@@ -359,13 +359,13 @@ Codegen::generate_comparative_expression(NodeComparativeExpression *comp_exp) {
 
 string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   if (add_exp->add_operator == NULL && add_exp->add_exp == NULL) {
-    return generate_multiplicative_expression(add_exp->mul_exp);
+    return generate_negative_expression(add_exp->neg_exp);
   }
   string lvar = get_new_temp_variable();
 
   string opdA = generate_additive_expression(add_exp->add_exp);
   string op = string(1, add_exp->add_operator->op);
-  string opdB = generate_multiplicative_expression(add_exp->mul_exp);
+  string opdB = generate_negative_expression(add_exp->neg_exp);
 
   cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
 
@@ -376,6 +376,23 @@ string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   if (op == "-") {
     text_section += "    sub eax, " + opdB + "\n";
   }
+  text_section += "    mov " + lvar + ", eax\n";
+
+  return lvar;
+}
+
+string Codegen::generate_negative_expression(NodeNegativeExpression *neg_exp) {
+  if (neg_exp->neg_exp == NULL) {
+    return generate_multiplicative_expression(neg_exp->mul_exp);
+  }
+  string lvar = get_new_temp_variable();
+
+  string opd = generate_negative_expression(neg_exp->neg_exp);
+
+  cout << lvar << " = " << "-1 * " << opd << "\n";
+
+  text_section += "    mov eax, " + opd + "\n";
+  text_section += "    imul eax, -1\n";
   text_section += "    mov " + lvar + ", eax\n";
 
   return lvar;
