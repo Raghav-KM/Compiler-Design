@@ -1,7 +1,7 @@
 # Compiler-Design
 ----
 1.  
-2.  **TODO : Add Support for negative integers**
+2.  <!-- **TODO : Add Support for negative integers** --!>
 3.  **TODO : Add Test-CASES for Lexer**
 4.  **TODO : Add Test-CASES for Parser**
 5.  **TODO : Add Test-CASES for Codegen**
@@ -133,3 +133,12 @@
 # 03-07-2024
 - Woking Functions and function calls (Without Arguments and return)
 - Partially re-wrote codgen
+
+# 04-07-2024
+- Working scope
+
+# 05-07-2024
+- Added support for brackets in arithemetic operations
+
+# 08-07-2024
+- Added support for negative expressions

@@ -28,6 +28,8 @@ private:
 
   NodeComparativeExpression *parse_comparative_expression();
   NodeAdditiveExpression *parse_additive_expression();
+  NodeNegativeExpression *parse_negative_expression();
+
   NodeMultiplicativeExpression *parse_multiplicative_expression();
   NodeExpression *parse_expression();
 

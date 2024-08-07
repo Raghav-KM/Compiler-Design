@@ -26,6 +26,7 @@ class NodeFunctionCall;
 
 class NodeComparativeExpression;
 class NodeAdditiveExpression;
+class NodeNegativeExpression;
 class NodeMultiplicativeExpression;
 class NodeExpression;
 
@@ -157,16 +158,28 @@ class NodeAdditiveExpression {
 public:
   NodeAdditiveExpression *add_exp;
   NodeAdditiveOperator *add_operator;
-  NodeMultiplicativeExpression *mul_exp;
+  NodeNegativeExpression *neg_exp;
   DATA_TYPES type;
 
   NodeAdditiveExpression(NodeAdditiveExpression *add_exp,
                          NodeAdditiveOperator *add_operator,
-                         NodeMultiplicativeExpression *mul_exp);
+                         NodeNegativeExpression *neg_exp);
 
-  NodeAdditiveExpression(NodeMultiplicativeExpression *mul_exp);
+  NodeAdditiveExpression(NodeNegativeExpression *neg_exp);
 
   static string print(NodeAdditiveExpression *add_exp, int indent);
+};
+
+class NodeNegativeExpression {
+public:
+  NodeNegativeExpression *neg_exp;
+  NodeMultiplicativeExpression *mul_exp;
+  DATA_TYPES type;
+
+  NodeNegativeExpression(NodeNegativeExpression *neg_exp);
+  NodeNegativeExpression(NodeMultiplicativeExpression *mul_exp);
+
+  static string print(NodeNegativeExpression *neg_exp, int indent);
 };
 
 class NodeMultiplicativeExpression {

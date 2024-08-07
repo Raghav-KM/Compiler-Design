@@ -52,7 +52,7 @@ RESULT_TYPE SymbolTable::declare(string symbol_name, int scope) {
 
 RESULT_TYPE SymbolTable::exists(string symbol_name, int scope,
                                 int &present_scope) {
-  for (int i = scope; i >= 1; i--) {
+  for (int i = scope; i >= 0; i--) {
     if (_table[i].find(symbol_name) != _table[i].end()) {
       present_scope = i;
       return SUCCESS;

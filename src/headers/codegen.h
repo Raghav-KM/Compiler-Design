@@ -60,6 +60,9 @@ public:
   string generate_comparative_expression(NodeComparativeExpression *comp_exp);
 
   string generate_additive_expression(NodeAdditiveExpression *add_exp);
+
+  string generate_negative_expression(NodeNegativeExpression *neg_exp);
+
   string
   generate_multiplicative_expression(NodeMultiplicativeExpression *mul_exp);
   string generate_expression(NodeExpression *exp);

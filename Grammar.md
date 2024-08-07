@@ -55,7 +55,10 @@
 <COMP_EXP>    → <ADD_EXP> <COMP_OP> <COMP_EXP>
                 | <ADD_EXP>
 
-<ADD_EXP>     → <MUL_EXP> <ADD_OP> <ADD_EXP> 
+<ADD_EXP>     → <NEG_EXP> <ADD_OP> <ADD_EXP> 
+                | <NEG_EXP>
+
+<NEG_EXP>     → SUB <NEG_EXP>
                 | <MUL_EXP>
 
 <MUL_EXP>     → <EXP> <MUL_OP> <MUL_EXP> 
