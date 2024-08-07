@@ -71,3 +71,6 @@ clean:
 	rm -rf ./build/*.o ${output}
 	rm -rf ./build/Assembly/*
 
+build_dirs:
+	mkdir -p ./build/Assembly
+	mkdir -p ./build
