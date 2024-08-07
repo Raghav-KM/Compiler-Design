@@ -56,16 +56,18 @@ ${utils.o}: ${utils.cpp} ${utils.h}
 ${testing.o}: ${testing.cpp} ${testing.h}
 	g++ -c ${testing.cpp} -o ${testing.o}
 
-run: output
+compiler: output
+
+run_compiler: compiler
 	${output} ${input}
 
-test: output
-	${output} ${input} -t
-
-asm: 
+asm: run_compiler
 	nasm -f elf -o ${program.o} ${program.asm}
 	ld -m elf_i386 -o ${program} ${program.o}
 	${program}
+
+test: run_compiler
+	${output} ${input} -t
 
 clean: 
 	rm -rf ./build/*.o ${output}
