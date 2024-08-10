@@ -1,6 +1,11 @@
 #include "./headers/codegen.h"
+#include <cerrno>
+#include <cstring> // For strerror
 
 Codegen::Codegen() {
+  icode = "";
+  program_code = "";
+
   data_section = "";
   bss_section = "";
   text_section = "";
@@ -15,6 +20,9 @@ int Codegen::if_count = 0;
 int Codegen::for_count = 0;
 int Codegen::max_count = 0;
 int Codegen::comp_count = 0;
+
+string Codegen::get_icode() { return icode; }
+string Codegen::get_asm_code() { return program_code; }
 
 string Codegen::get_new_temp_variable() {
   var_count++;
@@ -47,41 +55,30 @@ void Codegen::declare_variable_bss_section(string variable_name) {
   bss_section += "    " + variable_name + " resd 1\n";
 }
 
-void Codegen::export_asm() {
-  string program = "";
+void Codegen::export_asm(string dir) {
+  ofstream outfile(dir);
 
-  finalize_data_section();
-  finalize_text_section();
-  finalize_bss_section();
+  if (!outfile) {
+    cerr << "Err!! ASM Code Generation" << endl;
+    exit(EXIT_FAILURE);
+  }
 
-  // --- Data Section --- //
-  program += "section .data\n";
-  program += data_section;
-  program += "\n";
+  outfile << program_code;
 
-  // --- Bss Section --- //
-  program += "section .bss\n";
-  program += bss_section;
-  program += "\n";
-
-  // --- Text Section --- //
-  program += "section .text\n    global _start\n\n_start:\n";
-  program += text_section;
-  program += "\n";
-
-  cout << program;
-
-  ofstream outfile("./build/Assembly/program.asm");
-  if (outfile.is_open()) {
-    outfile << program;
+  if (outfile.fail()) {
     outfile.close();
-  } else {
-    cerr << "Error: ASM Code Generation Failed\n";
+    cerr << "Err!! ASM Code Generation" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  outfile.close();
+  if (outfile.fail()) {
+    cerr << "Err!! ASM Code Generation" << endl;
+    exit(EXIT_FAILURE);
   }
 }
 
 void Codegen::finalize_text_section() {
-
   text_section += R"(
     call _print_newline_subroutine
     mov eax, 1
@@ -177,9 +174,28 @@ void Codegen::finalize_bss_section() {
 }
 
 void Codegen::generate_parse_tree(NodeProgram *program) {
-  cout << "\n<--- PROGRAM START --->\n\n";
   generate_stmt_list(program->stmt_list);
-  cout << "\n<--- PROGRAM END   --->\n\n";
+
+  program_code = "";
+
+  finalize_data_section();
+  finalize_text_section();
+  finalize_bss_section();
+
+  // --- Data Section --- //
+  program_code += "section .data\n";
+  program_code += data_section;
+  program_code += "\n";
+
+  // --- Bss Section --- //
+  program_code += "section .bss\n";
+  program_code += bss_section;
+  program_code += "\n";
+
+  // --- Text Section --- //
+  program_code += "section .text\n    global _start\n\n_start:\n";
+  program_code += text_section;
+  program_code += "\n";
 }
 
 void Codegen::generate_stmt_list(NodeStatementList *stmt_list) {
@@ -209,7 +225,7 @@ void Codegen::generate_stmt(NodeStatement *stmt) {
 void Codegen::generate_debug(NodeDebug *debug) {
   string rval = generate_comparative_expression(debug->comp_exp);
 
-  cout << "dbg " << rval << "\n\n";
+  icode += "dbg " + rval + "\n\n";
 
   if (debug->comp_exp->type == INT) {
     require_print_integer_subroutine = true;
@@ -232,7 +248,7 @@ void Codegen::generate_let(NodeLet *let) {
   string rvar = generate_comparative_expression(let->comp_exp);
   string lvar = "[" + get_identifier_name(let->identifier) + "]";
 
-  cout << "let " << lvar << " = " << rvar << "\n\n";
+  icode += "let " + lvar + " = " + rvar + "\n\n";
 
   text_section += "    mov eax, " + rvar + "\n";
   text_section += "    mov " + lvar + ", eax\n";
@@ -241,7 +257,6 @@ void Codegen::generate_let(NodeLet *let) {
 }
 
 void Codegen::generate_if(NodeIf *IF) {
-
   string condition = generate_comparative_expression(IF->comp_exp);
   NodeStatementList *stmt_list_if = IF->stmt_list_if;
   NodeStatementList *stmt_list_else = IF->stmt_list_else;
@@ -250,7 +265,7 @@ void Codegen::generate_if(NodeIf *IF) {
   string if_label_start = "_if" + to_string(if_count);
   string if_label_end = "_if" + to_string(if_count) + "_end";
 
-  cout << "if " << condition << " :\n";
+  icode += "if " + condition + " :\n";
 
   text_section += "    mov eax, " + condition + "\n";
   text_section += "    cmp eax, 1\n";
@@ -262,7 +277,7 @@ void Codegen::generate_if(NodeIf *IF) {
   text_section += if_label_start + ":\n";
 
   if (stmt_list_else) {
-    cout << "else :\n";
+    icode += "else :\n";
     generate_stmt_list(stmt_list_else);
   }
 
@@ -274,7 +289,7 @@ void Codegen::generate_if(NodeIf *IF) {
 void Codegen::generate_assign(NodeAssign *assign) {
   string rval = generate_comparative_expression(assign->comp_exp);
   string lval = "[" + get_identifier_name(assign->identifier) + "]";
-  cout << lval << " = " << rval << "\n\n";
+  icode += lval + " = " + rval + "\n\n";
 
   text_section += "    mov eax, " + rval + "\n";
   text_section += "    mov " + lval + ", eax\n";
@@ -316,7 +331,6 @@ void Codegen::generate_function_call(NodeFunctionCall *function_call) {
 
 string
 Codegen::generate_comparative_expression(NodeComparativeExpression *comp_exp) {
-
   if (comp_exp->comp_operator == NULL && comp_exp->comp_exp == NULL) {
     return generate_additive_expression(comp_exp->add_exp);
   }
@@ -326,7 +340,7 @@ Codegen::generate_comparative_expression(NodeComparativeExpression *comp_exp) {
   string op = comp_exp->comp_operator->op;
   string opdB = generate_additive_expression(comp_exp->add_exp);
 
-  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+  icode += lvar + " = " + opdA + " " + op + " " + opdB + "\n";
 
   text_section += "    mov eax, " + opdA + "\n";
   text_section += "    mov ebx, " + opdB + "\n";
@@ -367,7 +381,7 @@ string Codegen::generate_additive_expression(NodeAdditiveExpression *add_exp) {
   string op = string(1, add_exp->add_operator->op);
   string opdB = generate_negative_expression(add_exp->neg_exp);
 
-  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+  icode += lvar + " = " + opdA + " " + op + " " + opdB + "\n";
 
   text_section += "    mov eax, " + opdA + "\n";
   if (op == "+") {
@@ -389,7 +403,7 @@ string Codegen::generate_negative_expression(NodeNegativeExpression *neg_exp) {
 
   string opd = generate_negative_expression(neg_exp->neg_exp);
 
-  cout << lvar << " = " << "-1 * " << opd << "\n";
+  icode += lvar + " = " + "-1 * " + opd + "\n";
 
   text_section += "    mov eax, " + opd + "\n";
   text_section += "    imul eax, -1\n";
@@ -408,7 +422,7 @@ string Codegen::generate_multiplicative_expression(
   string op = string(1, mul_exp->mul_operator->op);
   string opdB = generate_expression(mul_exp->exp);
 
-  cout << lvar << " = " << opdA << " " << op << " " << opdB << "\n";
+  icode += lvar + " = " + opdA + " " + op + " " + opdB + "\n";
 
   text_section += "    mov eax, " + opdA + "\n";
   if (op == "*") {

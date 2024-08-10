@@ -30,6 +30,9 @@ private:
   bool require_comparison_subroutine;
   bool require_print_character_subroutine;
 
+  string icode;
+  string program_code;
+
 public:
   Codegen();
 
@@ -41,7 +44,7 @@ public:
 
   void declare_variable_bss_section(string variable_name);
 
-  void export_asm();
+  void export_asm(string dir);
 
   void generate_parse_tree(NodeProgram *program);
   void generate_stmt_list(NodeStatementList *stmt_list);
@@ -72,6 +75,9 @@ public:
   void finalize_text_section();
   void finalize_data_section();
   void finalize_bss_section();
+
+  string get_icode();
+  string get_asm_code();
 };
 
 #endif

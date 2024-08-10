@@ -27,6 +27,8 @@ map<string, Flags> flag_mapping;
 
 vector<bool> execution_flags;
 
+string asm_dir = "./build/Assembly/program.asm";
+
 int main(int argc, char *argv[]) {
 
   execution_flags = vector<bool>(FLAG_COUNT, false);
@@ -45,9 +47,14 @@ int main(int argc, char *argv[]) {
     cerr << "ERR : Input File Missing" << endl;
     return EXIT_FAILURE;
   }
+  if (argc < 3) {
+    cerr << "ERR : Output File Missing" << endl;
+    return EXIT_FAILURE;
+  }
 
-  if (argc >= 3) {
-    for (int i = 2; i < argc; i++) {
+  if (argc >= 4) {
+    asm_dir = string(argv[2]);
+    for (int i = 3; i < argc; i++) {
       string flag = string(argv[i]);
       if (flag_mapping.find(flag) == flag_mapping.end()) {
         cerr << "ERR : Invalid Flag [" << argv[i] << "]" << endl;
@@ -108,7 +115,20 @@ int main(int argc, char *argv[]) {
 
   Codegen codegen;
   codegen.generate_parse_tree(program);
-  codegen.export_asm();
+
+  if (execution_flags[P_ICODE]) {
+    cout << codegen.get_icode() << endl;
+  }
+
+  if (execution_flags[P_ASM]) {
+    cout << codegen.get_asm_code() << endl;
+  }
+
+  codegen.export_asm(asm_dir);
+
+  if (execution_flags[E_CODEGEN]) {
+    return EXIT_SUCCESS;
+  }
 
   return EXIT_SUCCESS;
 }

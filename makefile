@@ -59,16 +59,16 @@ ${testing.o}: ${testing.cpp} ${testing.h}
 compiler: output
 
 run_compiler: compiler
-	${output} ${input} -pl -pp -pc
+	${output} ${input} ${program.asm} -pl -pp -pc -pa
 
 run_lexer: compiler
-	${output} ${input} -l -pl 
+	${output} ${input} ${program.asm} -l -pl 
 
 run_parser: compiler
-	${output} ${input} -p -pl -pp
+	${output} ${input} ${program.asm} -p -pl -pp
 
 run_codegen: compiler
-	${output} ${input} -c -pl -pp -pc
+	${output} ${input} ${program.asm} -c -pl -pp -pc -pa
 
 
 asm: run_compiler
