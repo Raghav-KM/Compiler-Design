@@ -317,11 +317,6 @@ string Lexer::get_token_stream_string() {
   string token_stream_str = "";
   for (int i = 0; i < token_stream.size(); i++) {
     token_stream_str += "[" + token_stream[i].get_name() + "]";
-
-    // token_stream_str += "[" + token_stream[i].get_name() + " " +
-    //                     to_string(token_stream[i].line_no) + ":" +
-    //                     to_string(token_stream[i].token_no) + "]";
-
     if (i != token_stream.size() - 1)
       token_stream_str += " ";
   }

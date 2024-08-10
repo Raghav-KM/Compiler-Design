@@ -1,9 +1,1 @@
-let i:int = 1;
-
-if(1){
-        dbg i;
-        let i:int = 2;
-        dbg i;
-}
-
-
+let N:int = 1;

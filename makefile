@@ -59,7 +59,17 @@ ${testing.o}: ${testing.cpp} ${testing.h}
 compiler: output
 
 run_compiler: compiler
-	${output} ${input}
+	${output} ${input} -pl -pp -pc
+
+run_lexer: compiler
+	${output} ${input} -l -pl 
+
+run_parser: compiler
+	${output} ${input} -p -pl -pp
+
+run_codegen: compiler
+	${output} ${input} -c -pl -pp -pc
+
 
 asm: run_compiler
 	nasm -f elf -o ${program.o} ${program.asm}
