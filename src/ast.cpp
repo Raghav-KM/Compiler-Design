@@ -225,128 +225,119 @@ NodeLiteral::NodeLiteral(int value, DATA_TYPES type) {
 }
 
 string NodeProgram::print(NodeProgram *program, int indent) {
-  string res = "[ 'program': \n";
+  string res = "{\"program\": {";
   res += NodeStatementList::print(program->stmt_list, indent + 1);
   // for (auto stmt : program->stmts) {
   //   res += NodeStatement::print(stmt, indent + 1);
   // }
-  res += "]";
+  res += "}}";
   return res;
 }
 
 string NodeStatementList::print(NodeStatementList *stmt_list, int indent) {
-  string res = "";
-  for (auto stmt : stmt_list->stmts) {
-    res += NodeStatement::print(stmt, indent);
+  string res = "\"statement_list\":[";
+  for (int i = 0; i < stmt_list->stmts.size(); i++) {
+    res += NodeStatement::print(stmt_list->stmts[i], indent);
+    if (i < stmt_list->stmts.size() - 1)
+      res += ",";
   }
+  res += "]";
   return res;
 }
 
 string NodeStatement::print(NodeStatement *stmt, int indent) {
   if (stmt->debug)
     if (stmt->debug) {
-      return tab(indent) + "[ 'statement': \n" +
-             NodeDebug::print(stmt->debug, indent + 1) + tab(indent) + "]\n";
+      return "{\"statement\": {" + NodeDebug::print(stmt->debug, indent + 1) +
+             "}}";
     }
   if (stmt->let) {
-    return tab(indent) + "[ 'statement': \n" +
-           NodeLet::print(stmt->let, indent + 1) + tab(indent) + "]\n";
+    return "{\"statement\":{" + NodeLet::print(stmt->let, indent + 1) + "}}";
   }
   if (stmt->IF) {
-    return tab(indent) + "[ 'statment': \n" +
-           NodeIf::print(stmt->IF, indent + 1) + tab(indent) + "]\n";
+    return "{\"statement\":{" + NodeIf::print(stmt->IF, indent + 1) + +"}}";
   }
   if (stmt->assign) {
-    return tab(indent) + "[ 'statment': \n" +
-           NodeAssign::print(stmt->assign, indent + 1) + tab(indent) + "]\n";
+    return "{\"statement\":{" + NodeAssign::print(stmt->assign, indent + 1) +
+           +"}}";
   }
   if (stmt->FOR) {
-    return tab(indent) + "[ 'statment': \n" +
-           NodeFor::print(stmt->FOR, indent + 1) + tab(indent) + "]\n";
+    return "{\"statement\":{" + NodeFor::print(stmt->FOR, indent + 1) + +"}}";
   }
   if (stmt->function) {
-    return tab(indent) + "[ 'statment': \n" +
-           NodeFunction::print(stmt->function, indent + 1) + tab(indent) +
-           "]\n";
+    return "{\"statement\":{" +
+           NodeFunction::print(stmt->function, indent + 1) + "}}";
   }
   if (stmt->function_call) {
-    return tab(indent) + "[ 'statment': \n" +
-           NodeFunctionCall::print(stmt->function_call, indent + 1) +
-           tab(indent) + "]\n";
+    return "{\"statment\":" +
+           NodeFunctionCall::print(stmt->function_call, indent + 1) + "}}";
   }
   return "";
 }
 
 string NodeLet::print(NodeLet *let, int indent) {
-  return tab(indent) + "[ 'let': \n" +
-         NodeIdentifier::print(let->identifier, indent + 1) +
-         NodeComparativeExpression::print(let->comp_exp, indent + 1) +
-         tab(indent) + "]\n";
+  return " \"let\":{" + NodeIdentifier::print(let->identifier, indent + 1) +
+         "," + NodeComparativeExpression::print(let->comp_exp, indent + 1) +
+         "}";
 }
 
 string NodeIf::print(NodeIf *IF, int indent) {
-  string str = tab(indent) + "[ 'if': \n" +
+  string str = " \"if-else\":{" +
                NodeComparativeExpression::print(IF->comp_exp, indent + 1) +
-               tab(indent + 1) + "[ 'true' : \n" +
-               NodeStatementList::print(IF->stmt_list_if, indent + 2) +
-               tab(indent + 1) + "]\n";
+               ", \"true\" :{" +
+               NodeStatementList::print(IF->stmt_list_if, indent + 2) + "}";
   if (IF->stmt_list_else) {
-    str += tab(indent + 1) + "[ 'false' : \n" +
-           NodeStatementList::print(IF->stmt_list_else, indent + 2) +
-           tab(indent + 1) + "]\n";
+    str += ", \"false\" :{" +
+           NodeStatementList::print(IF->stmt_list_else, indent + 2) + "}";
   }
-  return str + tab(indent) + "]\n";
+  return str + "}";
 }
 
 string NodeAssign::print(NodeAssign *assign, int indent) {
-  return tab(indent) + "[ 'assign': \n" +
-         NodeIdentifier::print(assign->identifier, indent + 1) + " " +
-         NodeComparativeExpression::print(assign->comp_exp, indent + 1) +
-         tab(indent) + "]\n";
+  return " \"assign\": {" +
+         NodeIdentifier::print(assign->identifier, indent + 1) + "," +
+         NodeComparativeExpression::print(assign->comp_exp, indent + 1) + "}";
 }
 
 string NodeFor::print(NodeFor *FOR, int indent) {
-  return tab(indent) + "[ 'for': \n" + NodeLet::print(FOR->let, indent + 1) +
-         NodeComparativeExpression::print(FOR->comp_exp, indent + 1) +
-         NodeAssign::print(FOR->assign, indent + 1) + tab(indent + 1) +
-         "[ 'statment_list' : \n" +
-         NodeStatementList::print(FOR->stmt_list, indent + 2) +
-         tab(indent + 1) + "]\n" + tab(indent) + "]\n";
+  return " \"for\":{" + NodeLet::print(FOR->let, indent + 1) + "," +
+         NodeComparativeExpression::print(FOR->comp_exp, indent + 1) + "," +
+         NodeAssign::print(FOR->assign, indent + 1) + "," +
+         NodeStatementList::print(FOR->stmt_list, indent + 2) + "}";
 }
 
 string NodeFunction::print(NodeFunction *function, int indent) {
-  return tab(indent) + "[ 'function' (" + function->function_identifier +
-         "): \n" + tab(indent + 1) + "[ 'statment_list' : \n" +
-         NodeStatementList::print(function->stmt_list, indent + 2) +
-         tab(indent + 1) + "]\n" + tab(indent) + "]\n";
+  return "[ \"function\" (" + function->function_identifier + "): \n" +
+         "[ \"statment_list\" : \n" +
+         NodeStatementList::print(function->stmt_list, indent + 2) + "]\n" +
+         "]\n";
 }
 
 string NodeFunctionCall::print(NodeFunctionCall *function_call, int indent) {
-  return tab(indent) + "[ 'function_call' (" +
-         function_call->function_identifier + ")]\n";
+  return "[ \"function_call\" (" + function_call->function_identifier + ")]\n";
 }
 
 string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,
                                         int indent) {
-  string type = "undefined";
+  string type = "\"undefined\"";
   if (comp_exp->type == INT) {
-    type = "integer";
+    type = "\"integer\"";
   } else if (comp_exp->type == CHAR) {
-    type = "character";
+    type = "\"character\"";
   } else if (comp_exp->type == UNDEFINED) {
-    type = "undefined";
+    type = "\"undefined\"";
   }
 
   if (comp_exp->comp_operator != NULL && comp_exp->add_exp != NULL) {
-    return tab(indent) + "[ 'comp_expression': " + type + "\n" +
+    return " \"comp_expression\": {\"type\":" + type + "," +
            NodeComparativeExpression::print(comp_exp->comp_exp, indent + 1) +
+           "," +
            NodeComparativeOperator::print(comp_exp->comp_operator, indent + 1) +
-           NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
-           tab(indent) + "]\n";
+           "," + NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
+           "}";
   } else {
-    return tab(indent) + "[ 'comp_expression': " + type + "\n" +
-           NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) +
-           tab(indent) + "]\n";
+    return " \"comp_expression\": {\"type\":" + type + "," +
+           NodeAdditiveExpression::print(comp_exp->add_exp, indent + 1) + "}";
   }
 }
 
@@ -355,23 +346,22 @@ string NodeAdditiveExpression::print(NodeAdditiveExpression *add_exp,
 
   string type = "";
   if (add_exp->type == INT) {
-    type = "integer";
+    type = "\"integer\"";
   } else if (add_exp->type == CHAR) {
-    type = "character";
+    type = "\"character\"";
   } else if (add_exp->type == UNDEFINED) {
-    type = "undefined";
+    type = "\"undefined\"";
   }
 
   if (add_exp->add_operator != NULL && add_exp->add_exp != NULL) {
-    return tab(indent) + "[ 'add_expression': " + type + "\n" +
-           NodeAdditiveExpression::print(add_exp->add_exp, indent + 1) +
+    return " \"add_expression\": {\"type\":" + type + "," +
+           NodeAdditiveExpression::print(add_exp->add_exp, indent + 1) + "," +
            NodeAdditiveOperator::print(add_exp->add_operator, indent + 1) +
-           NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) +
-           tab(indent) + "]\n";
+           "," + NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) +
+           +"}";
   } else {
-    return tab(indent) + "[ 'add_expression': " + type + "\n" +
-           NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) +
-           tab(indent) + "]\n";
+    return "\"add_expression\": {\"type\":" + type + "," +
+           NodeNegativeExpression::print(add_exp->neg_exp, indent + 1) + "}";
   }
 }
 
@@ -379,21 +369,20 @@ string NodeNegativeExpression::print(NodeNegativeExpression *neg_exp,
                                      int indent) {
   string type = "";
   if (neg_exp->type == INT) {
-    type = "integer";
+    type = "\"integer\"";
   } else if (neg_exp->type == CHAR) {
-    type = "character";
+    type = "\"character\"";
   } else if (neg_exp->type == UNDEFINED) {
-    type = "undefined";
+    type = "\"undefined\"";
   }
 
   if (neg_exp->neg_exp != NULL) {
-    return tab(indent) + "[ 'neg_expression'(-1): " + type + "\n" +
-           NodeNegativeExpression::print(neg_exp->neg_exp, indent + 1) +
-           tab(indent) + "]\n";
+    return " \"neg_expression\": {\"type\":" + type + "," +
+           NodeNegativeExpression::print(neg_exp->neg_exp, indent + 1) + "}";
   } else {
-    return tab(indent) + "[ 'neg_expression': " + type + "\n" +
+    return " \"neg_expression\": {\"type\":" + type + "," +
            NodeMultiplicativeExpression::print(neg_exp->mul_exp, indent + 1) +
-           tab(indent) + "]\n";
+           "}";
   }
 }
 
@@ -402,107 +391,95 @@ NodeMultiplicativeExpression::print(NodeMultiplicativeExpression *mul_exp,
                                     int indent) {
   string type = "";
   if (mul_exp->type == INT) {
-    type = "integer";
+    type = "\"integer\"";
   } else if (mul_exp->type == CHAR) {
-    type = "character";
+    type = "\"character\"";
   } else if (mul_exp->type == UNDEFINED) {
-    type = "undefined";
+    type = "\"undefined\"";
   }
 
   if (mul_exp->mul_operator != NULL && mul_exp->mul_exp != NULL) {
-    return tab(indent) + "[ 'mul_expression': " + type + "\n" +
+    return " \"mul_expression\": {\"type\":" + type + "," +
            NodeMultiplicativeExpression::print(mul_exp->mul_exp, indent + 1) +
+           "," +
            NodeMultiplicativeOperator::print(mul_exp->mul_operator,
                                              indent + 1) +
-           NodeExpression::print(mul_exp->exp, indent + 1) + tab(indent) +
-           "]\n";
+           "," + NodeExpression::print(mul_exp->exp, indent + 1) + "}";
   } else {
-    return tab(indent) + "[ 'mul_expression': " + type + "\n" +
-           NodeExpression::print(mul_exp->exp, indent + 1) + tab(indent) +
-           "]\n";
+    return " \"mul_expression\": {\"type\":" + type + "," +
+           NodeExpression::print(mul_exp->exp, indent + 1) + "}";
   }
 }
 
 string NodeExpression::print(NodeExpression *expression, int indent) {
   string type = "";
   if (expression->type == INT) {
-    type = "integer";
+    type = "\"integer\"";
   } else if (expression->type == CHAR) {
-    type = "character";
+    type = "\"character\"";
   } else if (expression->type == UNDEFINED) {
-    type = "undefined";
+    type = "\"undefined\"";
   }
 
   if (expression->literal) {
-    return tab(indent) + "[ 'expression': " + type + "\n" +
-           NodeLiteral::print(expression->literal, indent + 1) + tab(indent) +
-           "]\n";
+    return " \"expression\": {\"type\":" + type + "," +
+           NodeLiteral::print(expression->literal, indent + 1) + "}";
   }
   if (expression->identifier) {
-    return tab(indent) + "[ 'expression': " + type + "\n" +
-           NodeIdentifier::print(expression->identifier, indent + 1) +
-           tab(indent) + "]\n";
+    return " \"expression\": {\"type\":" + type + "," +
+           NodeIdentifier::print(expression->identifier, indent + 1) + "}";
   }
   if (expression->comp_exp) {
-    return tab(indent) + "[ 'expression': " + "\n" +
+    return " \"expression\": {\"type\":" + type + "," +
            NodeComparativeExpression::print(expression->comp_exp, indent + 1) +
-           tab(indent) + "]\n";
+           "}";
   }
   return "";
 }
 
 string NodeComparativeOperator::print(NodeComparativeOperator *comp_op,
                                       int indent) {
-  return tab(indent) + "[ 'comp_operator': " + (comp_op->op) + " ]\n";
+  return "\"comp_operator\": \"" + comp_op->op + "\"";
 }
 
 string NodeAdditiveOperator::print(NodeAdditiveOperator *add_op, int indent) {
-  return tab(indent) + "[ 'add_operator': " + (add_op->op) + " ]\n";
+  return "\"add_operator\": \"" + string(1, (add_op->op)) + "\"";
 }
 
 string NodeMultiplicativeOperator::print(NodeMultiplicativeOperator *mul_op,
                                          int indent) {
-  return tab(indent) + "[ 'mul_operator': " + (mul_op->op) + " ]\n";
+  return "\"mul_operator\": \"" + string(1, (mul_op->op)) + "\"";
 }
 
 string NodeIdentifier::print(NodeIdentifier *identifier, int indent) {
-  string str = tab(indent) + "[ 'identifier': " + identifier->name;
+  string str =
+      " \"identifier\": {\"name\":\"" + identifier->name + "\",\"type\":";
   if (identifier->type == CHAR) {
-    str += " character | ";
+    str += " \"character\"";
   }
   if (identifier->type == INT) {
-    str += " integer | ";
+    str += " \"integer\"";
   }
+  str += ",\"scope\":";
   str += to_string(identifier->scope);
-  str += " ]\n";
+  str += "}";
   return str;
 }
 
 string NodeLiteral::print(NodeLiteral *literal, int indent) {
   if (literal->type == CHAR) {
-    return tab(indent) + "[ 'char_literal': " + to_string(literal->value) +
-           " ]\n";
+    return "\"char_literal\": " + to_string(literal->value);
   }
   if (literal->type == INT) {
-    return tab(indent) + "[ 'int_literal': " + to_string(literal->value) +
-           " ]\n";
+    return " \"int_literal\": " + to_string(literal->value);
   }
   return "";
 }
 
 string NodeDebug::print(NodeDebug *debug, int indent) {
   if (debug->comp_exp) {
-    return tab(indent) + "[ 'debug': \n" +
-           NodeComparativeExpression::print(debug->comp_exp, indent + 1) +
-           tab(indent) + "]\n";
+    return " \"debug\": {" +
+           NodeComparativeExpression::print(debug->comp_exp, indent + 1) + "}";
   }
   return "";
-}
-
-string tab(int n) {
-  string s = "";
-  for (int i = 0; i < n; i++) {
-    s += " ";
-  }
-  return s;
 }
