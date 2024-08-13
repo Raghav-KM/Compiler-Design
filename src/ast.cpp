@@ -269,7 +269,7 @@ string NodeStatement::print(NodeStatement *stmt, int indent) {
            NodeFunction::print(stmt->function, indent + 1) + "}}";
   }
   if (stmt->function_call) {
-    return "{\"statment\":" +
+    return "{\"statement\":" +
            NodeFunctionCall::print(stmt->function_call, indent + 1) + "}}";
   }
   return "";
@@ -307,14 +307,14 @@ string NodeFor::print(NodeFor *FOR, int indent) {
 }
 
 string NodeFunction::print(NodeFunction *function, int indent) {
-  return "[ \"function\" (" + function->function_identifier + "): \n" +
-         "[ \"statment_list\" : \n" +
-         NodeStatementList::print(function->stmt_list, indent + 2) + "]\n" +
-         "]\n";
+  return "\"function\" :{ \"name\": \"" + function->function_identifier +
+         "\"," + NodeStatementList::print(function->stmt_list, indent + 2) +
+         "}";
 }
 
 string NodeFunctionCall::print(NodeFunctionCall *function_call, int indent) {
-  return "[ \"function_call\" (" + function_call->function_identifier + ")]\n";
+  return "\"function_call\" :{\"name\": \"" +
+         function_call->function_identifier + "\"}";
 }
 
 string NodeComparativeExpression::print(NodeComparativeExpression *comp_exp,

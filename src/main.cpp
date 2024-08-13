@@ -29,7 +29,7 @@ vector<bool> execution_flags;
 
 string asm_dir = "./build/Assembly/program.asm";
 
-void print_output_json(string &output) { cout << output << "}"; }
+void print_output_json(string &output) { cout << "\n" << output << "}\n\n"; }
 
 int main(int argc, char *argv[]) {
 
@@ -90,12 +90,12 @@ int main(int argc, char *argv[]) {
 
   if (execution_flags[P_LEXER]) {
     output_json += "\"lexer\":";
-    // output_json += "\"" + lexer.get_token_stream_string() + "\"";
-    cout << lexer.get_token_stream_string() << "\n";
+    output_json += "\"" + lexer.get_token_stream_string() + "\"";
+    // cout << lexer.get_token_stream_string() << "\n";
   }
 
   if (execution_flags[E_LEXER]) {
-    print_output_json(output_json);
+    // print_output_json(output_json);
     return EXIT_SUCCESS;
   }
 
@@ -112,8 +112,8 @@ int main(int argc, char *argv[]) {
 
   if (execution_flags[P_PARSER]) {
     output_json += ",\"parser\":";
-    output_json += "\"" + NodeProgram::print(program, 0) + "\"";
-    cout << NodeProgram::print(program, 0) << endl;
+    output_json += NodeProgram::print(program, 0);
+    // cout << NodeProgram::print(program, 0) << endl;
   }
 
   if (execution_flags[E_PARSER]) {
@@ -128,14 +128,14 @@ int main(int argc, char *argv[]) {
 
   if (execution_flags[P_ICODE]) {
     output_json += ",\"icode\":";
-    // output_json += "\"" + codegen.get_icode() + "\"";
-    cout << codegen.get_icode() << endl;
+    output_json += "\"" + codegen.get_icode() + "\"";
+    // cout << codegen.get_icode() << endl;
   }
 
   if (execution_flags[P_ASM]) {
     output_json += ",\"asm\":";
-    // output_json += "\"" + codegen.get_asm_code() + "\"";
-    cout << codegen.get_asm_code() << endl;
+    output_json += "\"" + codegen.get_asm_code() + "\"";
+    // cout << codegen.get_asm_code() << endl;
   }
 
   codegen.export_asm(asm_dir);
@@ -144,7 +144,8 @@ int main(int argc, char *argv[]) {
     print_output_json(output_json);
     return EXIT_SUCCESS;
   }
-  // print_output_json(output_json);
+
+  print_output_json(output_json);
 
   return EXIT_SUCCESS;
 }
