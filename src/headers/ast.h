@@ -252,6 +252,4 @@ public:
   static string print(NodeLiteral *literal, int indent);
 };
 
-string tab(int n);
-
 #endif

@@ -17,6 +17,7 @@ class Error {
   static string err_buffer;
 
 public:
+  static void invalid_token(int line_no, int token_no);
   static void invalid_syntax(int line_no, int token_no);
   static void invalid_syntax(string msg, int line_no, int token_no);
   static void undefined_variable(string symbol_name, int line_no, int token_no);
@@ -40,7 +41,7 @@ public:
 
   RESULT_TYPE exists(string symbol_name, int scope, int &present_scope);
 
-  void set_datatype(string symbol_name, DATA_TYPES type,int scope);
+  void set_datatype(string symbol_name, DATA_TYPES type, int scope);
   DATA_TYPES get_datatype(string symbol_name, int scope);
 
   void clear_scope(int scope);

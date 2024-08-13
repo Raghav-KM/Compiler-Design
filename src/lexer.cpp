@@ -220,7 +220,7 @@ TOKEN_TYPES Token::get_symbol_type(char symbol) {
 //--- Lexical Analyzer ---//
 
 int Lexer::global_line_no = 1;
-int Lexer::global_token_no = 0;
+int Lexer::global_token_no = 1;
 
 Lexer::Lexer() { token_stream = vector<Token>(); }
 
@@ -233,7 +233,7 @@ bool Lexer::analyse(string input_stream) {
     if (isspace(input_stream[current_pos])) {
       if (input_stream[current_pos] == '\n') {
         Lexer::global_line_no++;
-        Lexer::global_token_no = 0;
+        Lexer::global_token_no = 1;
       }
       current_pos++;
     } else if (isalpha(input_stream[current_pos])) {
@@ -286,14 +286,15 @@ bool Lexer::analyse(string input_stream) {
           buffer.push_back(input_stream[current_pos]);
           current_pos++;
         }
-        if (buffer.size() > 1) {
+        if (buffer.size() > 1 || current_pos == input_stream.size()) {
           Lexer::global_token_no++;
-          token_stream.push_back(Token(INVALID_TOKEN));
-          return false;
+          const Token t = Token(INVALID_TOKEN);
+          token_stream.push_back(t);
+          Lexer::global_token_no++;
+        } else {
+          Lexer::global_token_no++;
+          token_stream.push_back(Token(CHAR_LIT, buffer));
         }
-        Lexer::global_token_no++;
-        token_stream.push_back(Token(CHAR_LIT, buffer));
-
       } else {
         Lexer::global_token_no++;
         token_stream.push_back(
@@ -301,14 +302,20 @@ bool Lexer::analyse(string input_stream) {
       }
       current_pos++;
     } else {
-      return false;
+      const Token t = Token(INVALID_TOKEN);
+      token_stream.push_back(t);
+      Lexer::global_token_no++;
+      current_pos++;
     }
   }
 
+  bool isValid = true;
   for (auto token : token_stream)
-    if (token.get_type() == INVALID_TOKEN)
-      return false;
-  return true;
+    if (token.get_type() == INVALID_TOKEN) {
+      Error::invalid_token(token.line_no, token.token_no);
+      isValid = false;
+    }
+  return isValid;
 }
 
 vector<Token> Lexer::get_token_stream() { return token_stream; }

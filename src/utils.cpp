@@ -25,6 +25,11 @@ void Error::redeclaration_variable(string symbol_name, int line_no,
                 " - Redefination of Variable [ " + symbol_name + " ]\n";
 }
 
+void Error::invalid_token(int line_no, int token_no) {
+  err_buffer += "Error " + to_string(line_no) + ":" + to_string(token_no) +
+                " - Invalid Token \n";
+}
+
 void Error::print_error() { cerr << err_buffer; }
 
 // --- Symbol Table --- //

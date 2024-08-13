@@ -85,17 +85,17 @@ int main(int argc, char *argv[]) {
 
   if (!lexer_success) {
     cerr << "Lexical Analysis Failed\n";
+    Error::print_error();
     return EXIT_FAILURE;
   }
 
   if (execution_flags[P_LEXER]) {
     output_json += "\"lexer\":";
     output_json += "\"" + lexer.get_token_stream_string() + "\"";
-    // cout << lexer.get_token_stream_string() << "\n";
   }
 
   if (execution_flags[E_LEXER]) {
-    // print_output_json(output_json);
+    print_output_json(output_json);
     return EXIT_SUCCESS;
   }
 
@@ -106,14 +106,13 @@ int main(int argc, char *argv[]) {
 
   if (program == NULL) {
     cerr << "Parsing Failed\n";
-
+    Error::print_error();
     return EXIT_FAILURE;
   }
 
   if (execution_flags[P_PARSER]) {
     output_json += ",\"parser\":";
     output_json += NodeProgram::print(program, 0);
-    // cout << NodeProgram::print(program, 0) << endl;
   }
 
   if (execution_flags[E_PARSER]) {
@@ -129,13 +128,11 @@ int main(int argc, char *argv[]) {
   if (execution_flags[P_ICODE]) {
     output_json += ",\"icode\":";
     output_json += "\"" + codegen.get_icode() + "\"";
-    // cout << codegen.get_icode() << endl;
   }
 
   if (execution_flags[P_ASM]) {
     output_json += ",\"asm\":";
     output_json += "\"" + codegen.get_asm_code() + "\"";
-    // cout << codegen.get_asm_code() << endl;
   }
 
   codegen.export_asm(asm_dir);
